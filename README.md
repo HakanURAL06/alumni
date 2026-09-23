@@ -28,6 +28,38 @@ This application uses JavaScript across the full stack alongside a relational da
 
 - [Docker](https://docs.docker.com/get-docker/)
 - [Docker Compose](https://docs.docker.com/compose/)
+- [Node.js](https://nodejs.org/) (v18+)
+
+### Running Locally with Node.js
+
+1. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+2. **Start the server:**
+   ```bash
+   npm start
+   ```
+
+3. **Verify the server:**
+   Open [http://localhost:3000](http://localhost:3000) or run:
+   ```bash
+   curl http://localhost:3000/
+   # Output: Temporary Home Page (HTML)
+
+   curl http://localhost:3000/about
+   # Output: About Page (HTML)
+
+   curl http://localhost:3000/hello
+   # Output: Hello World
+
+   curl http://localhost:3000/hello/hakan
+   # Output: Hello Hakan!
+
+   curl http://localhost:3000/sum/3/5
+   # Output: toplam= 8
+   ```
 
 ### Running with Docker Compose
 

@@ -1,0 +1,25 @@
+{
+  "name": "alumni",
+  "version": "1.0.0",
+  "description": "A simple alumni tracking application designed to organize, search, and manage alumni profiles and records.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "node --test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HakanURAL06/alumni.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/HakanURAL06/alumni/issues"
+  },
+  "homepage": "https://github.com/HakanURAL06/alumni#readme",
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}

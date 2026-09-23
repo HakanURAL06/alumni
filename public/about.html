@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About - Alumni Tracking System</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      max-width: 750px;
+      margin: 40px auto;
+      padding: 0 20px 40px;
+      line-height: 1.6;
+      color: #333;
+    }
+    header {
+      border-bottom: 2px solid #eaeaea;
+      padding-bottom: 16px;
+      margin-bottom: 24px;
+    }
+    h1 {
+      color: #1a1a1a;
+      margin-bottom: 8px;
+    }
+    .badge {
+      display: inline-block;
+      background: #eef2ff;
+      color: #4338ca;
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      margin-bottom: 12px;
+    }
+    .card {
+      background: #fdfdfd;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .card h3 {
+      margin-top: 0;
+      color: #2563eb;
+    }
+    ul {
+      padding-left: 20px;
+      margin: 8px 0;
+    }
+    li {
+      margin-bottom: 6px;
+    }
+    .nav-links {
+      margin-top: 30px;
+      padding-top: 16px;
+      border-top: 1px solid #eaeaea;
+    }
+    a {
+      color: #2563eb;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <span class="badge">About This Project</span>
+    <h1>🎓 Alumni Tracking System</h1>
+    <p>A simple alumni tracking application designed to organize, search, and manage alumni profiles and records.</p>
+  </header>
+
+  <div class="card">
+    <h3>🎯 Purpose & Core Capabilities</h3>
+    <p>The primary goal of this application is to establish a centralized portal for managing alumni data and maintaining institutional connections. It facilitates:</p>
+    <ul>
+      <li><strong>Profile Management:</strong> Storing graduation year, academic department, contact details, and career/employment history.</li>
+      <li><strong>Search & Filter:</strong> Quickly discovering alumni by graduation year, field of study, or current professional status.</li>
+      <li><strong>Continuous Engagement:</strong> Providing structured records to foster alumni networks and mentorship opportunities.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>💻 Tech Stack & Architecture</h3>
+    <ul>
+      <li><strong>Frontend (JavaScript):</strong> Powers responsive UI rendering, dynamic DOM manipulation, and asynchronous API communication (<code>fetch</code> / <code>axios</code>) for instantaneous profile filtering without page reloads.</li>
+      <li><strong>Backend (Node.js & Express):</strong> Serves RESTful API endpoints, request validation, authentication, and communication with the database.</li>
+      <li><strong>Database (PostgreSQL):</strong> Relational database providing strict schema integrity, indexing, foreign key constraints, and transactional consistency for all alumni records.</li>
+      <li><strong>Containerization (Docker & Docker Compose):</strong> Fully containerized runtime ensuring reproducible zero-configuration execution across any environment with a single command.</li>
+    </ul>
+  </div>
+
+  <div class="nav-links">
+    <p><a href="/">← Return to Home Page</a></p>
+  </div>
+</body>
+</html>
