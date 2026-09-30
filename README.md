@@ -54,6 +54,12 @@ This application uses JavaScript across the full stack alongside a relational da
    curl http://localhost:3000/api/health
    # Output: {"status":"ok"}
 
+   curl http://localhost:3000/api/swagger
+   # Output: Swagger UI (HTML)
+
+   curl http://localhost:3000/api/users
+   # Output: [{"id":1,"name":"Hakan Ural",...}]
+
    curl http://localhost:3000/hello
    # Output: Hello World
 
@@ -63,6 +69,18 @@ This application uses JavaScript across the full stack alongside a relational da
    curl http://localhost:3000/sum/3/5
    # Output: toplam= 8
    ```
+
+---
+
+## 📖 API Documentation (Swagger)
+
+All available REST API endpoints are documented with interactive Swagger UI:
+
+- **Swagger UI URL:** [http://localhost:3000/api/swagger](http://localhost:3000/api/swagger)
+- **OpenAPI 3.0 Specification (JSON):** [http://localhost:3000/api/swagger.json](http://localhost:3000/api/swagger.json)
+
+> ⚠️ **ÖNEMLİ: Swagger Sürekli Güncellenmelidir (Swagger Maintenance Rule)**  
+> Bu projeye eklenen veya güncellenen her yeni API route'u, parametreleri, gövdesi (request body) ve yanıt formatı için **Swagger dokümantasyonu (`swagger.json` / `/api/swagger`) sürekli ve eşzamanlı olarak güncellenmelidir**. Yapılan her API geliştirmesinde Swagger dokümantasyonunun güncel tutulması zorunludur.
 
 ### Running with Docker Compose
 

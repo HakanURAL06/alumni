@@ -1,5 +1,7 @@
 const express = require('express');
 const path = require('path');
+const swaggerUi = require('swagger-ui-express');
+const swaggerDocument = require('./swagger.json');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -13,6 +15,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use(express.static(path.join(__dirname, 'public')));
+
+// Swagger Documentation
+app.use('/api/swagger', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.get('/api/swagger.json', (req, res) => res.json(swaggerDocument));
 
 // In-memory data store (no database)
 const users = [

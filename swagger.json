@@ -1,0 +1,380 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Alumni Tracking System API",
+    "version": "1.0.0",
+    "description": "RESTful API for the Alumni Tracking System. Allows managing alumni profiles, checking application health, and running utility endpoints."
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Development / Docker Server"
+    }
+  ],
+  "paths": {
+    "/api/health": {
+      "get": {
+        "summary": "Health check (GET)",
+        "description": "Returns status ok in JSON format to verify API health.",
+        "responses": {
+          "200": {
+            "description": "API is healthy",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "ok" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Health check (POST)",
+        "description": "Returns status ok in JSON format when requested via POST.",
+        "responses": {
+          "200": {
+            "description": "API is healthy",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "ok" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/users": {
+      "get": {
+        "summary": "List all alumni users",
+        "description": "Retrieves the full list of in-memory alumni users.",
+        "responses": {
+          "200": {
+            "description": "List of alumni users",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/User"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new alumni user",
+        "description": "Adds a new alumni user to the in-memory store.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string", "example": "Burak Yılmaz" },
+                  "department": { "type": "string", "example": "Software Engineering" },
+                  "graduationYear": { "type": "integer", "example": 2025 },
+                  "email": { "type": "string", "example": "burak@alumni.edu" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string", "example": "User created successfully" },
+                    "user": { "$ref": "#/components/schemas/User" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/users/{id}": {
+      "get": {
+        "summary": "Get alumni user by ID",
+        "description": "Retrieves a specific alumni profile by its ID.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" },
+            "description": "User ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User details",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/User" }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string", "example": "User not found" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Update alumni user (PUT)",
+        "description": "Updates fields of an existing alumni profile.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" },
+            "description": "User ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string", "example": "Hakan Ural" },
+                  "department": { "type": "string", "example": "Artificial Intelligence" },
+                  "graduationYear": { "type": "integer", "example": 2024 },
+                  "email": { "type": "string", "example": "hakan.ai@alumni.edu" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string", "example": "User updated successfully (PUT)" },
+                    "user": { "$ref": "#/components/schemas/User" }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found"
+          }
+        }
+      },
+      "patch": {
+        "summary": "Partially modify alumni user (PATCH)",
+        "description": "Partially modifies specific fields of an alumni profile.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" },
+            "description": "User ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "department": { "type": "string", "example": "Cyber Security" },
+                  "email": { "type": "string", "example": "hakan.cyber@alumni.edu" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User modified successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string", "example": "User modified successfully (PATCH)" },
+                    "user": { "$ref": "#/components/schemas/User" }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete alumni user (DELETE)",
+        "description": "Removes an alumni user from the in-memory store.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" },
+            "description": "User ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string", "example": "User deleted successfully" },
+                    "deletedUser": { "$ref": "#/components/schemas/User" }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found"
+          }
+        }
+      }
+    },
+    "/hello": {
+      "get": {
+        "summary": "Static greeting",
+        "responses": {
+          "200": {
+            "description": "Returns Hello World",
+            "content": {
+              "text/plain": {
+                "schema": { "type": "string", "example": "Hello World" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/hello/{name}": {
+      "get": {
+        "summary": "Dynamic greeting",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Person name to greet"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns personalized greeting",
+            "content": {
+              "text/plain": {
+                "schema": { "type": "string", "example": "Hello Hakan!" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sum/{number1}/{number2}": {
+      "get": {
+        "summary": "Calculate sum of two numbers",
+        "parameters": [
+          {
+            "name": "number1",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "number" },
+            "description": "First number"
+          },
+          {
+            "name": "number2",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "number" },
+            "description": "Second number"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sum result",
+            "content": {
+              "text/plain": {
+                "schema": { "type": "string", "example": "toplam= 8" }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid number input"
+          }
+        }
+      }
+    },
+    "/about": {
+      "get": {
+        "summary": "About page HTML",
+        "responses": {
+          "200": { "description": "About page HTML" }
+        }
+      }
+    },
+    "/": {
+      "get": {
+        "summary": "Temporary Home Page HTML",
+        "responses": {
+          "200": { "description": "Home page HTML" }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "example": 1 },
+          "name": { "type": "string", "example": "Hakan Ural" },
+          "department": { "type": "string", "example": "Computer Engineering" },
+          "graduationYear": { "type": "integer", "example": 2024 },
+          "email": { "type": "string", "example": "hakan@alumni.edu" }
+        }
+      }
+    }
+  }
+}

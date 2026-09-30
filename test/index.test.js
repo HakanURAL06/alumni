@@ -246,3 +246,34 @@ test('GET /sum/:number1/:number2 returns toplam= <sum> and status 200', async ()
   }
 });
 
+test('GET /api/swagger serves Swagger UI and status 200', async () => {
+  const server = app.listen(0);
+  const { port } = server.address();
+
+  try {
+    const res = await fetch(`http://127.0.0.1:${port}/api/swagger/`);
+    assert.strictEqual(res.status, 200);
+    const body = await res.text();
+    assert.ok(body.includes('swagger-ui') || body.includes('Swagger UI'));
+  } finally {
+    await new Promise((resolve) => server.close(resolve));
+  }
+});
+
+test('GET /api/swagger.json returns OpenAPI spec JSON and status 200', async () => {
+  const server = app.listen(0);
+  const { port } = server.address();
+
+  try {
+    const res = await fetch(`http://127.0.0.1:${port}/api/swagger.json`);
+    assert.strictEqual(res.status, 200);
+    const spec = await res.json();
+    assert.strictEqual(spec.openapi, '3.0.0');
+    assert.strictEqual(spec.info.title, 'Alumni Tracking System API');
+    assert.ok(spec.paths['/api/users']);
+    assert.ok(spec.paths['/api/health']);
+  } finally {
+    await new Promise((resolve) => server.close(resolve));
+  }
+});
+
