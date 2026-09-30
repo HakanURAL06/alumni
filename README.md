@@ -51,6 +51,9 @@ This application uses JavaScript across the full stack alongside a relational da
    curl http://localhost:3000/about
    # Output: About Page (HTML)
 
+   curl http://localhost:3000/api/health
+   # Output: {"status":"ok"}
+
    curl http://localhost:3000/hello
    # Output: Hello World
 
