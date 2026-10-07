@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit {{TITLE}} - Announcements</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      max-width: 700px;
+      margin: 40px auto;
+      padding: 0 20px;
+      color: #1e293b;
+      background: #f8fafc;
+      line-height: 1.5;
+    }
+    .card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 32px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    }
+    .badge {
+      display: inline-block;
+      background: #fef3c7;
+      color: #92400e;
+      padding: 4px 12px;
+      border-radius: 9999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+    h1 {
+      margin-top: 0;
+      color: #0f172a;
+      font-size: 1.6rem;
+      margin-bottom: 6px;
+    }
+    p.subtitle {
+      color: #64748b;
+      margin-top: 0;
+      margin-bottom: 24px;
+    }
+    .form-group {
+      margin-bottom: 16px;
+      display: flex;
+      flex-direction: column;
+    }
+    label {
+      font-size: 0.875rem;
+      font-weight: 500;
+      margin-bottom: 6px;
+      color: #334155;
+    }
+    input, select, textarea {
+      padding: 10px 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      background: #ffffff;
+      font-family: inherit;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: #f59e0b;
+      box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15);
+    }
+    .button-group {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+    }
+    button.btn-primary {
+      background: #d97706;
+      color: #ffffff;
+      border: none;
+      padding: 10px 24px;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+    button.btn-primary:hover {
+      background: #b45309;
+    }
+    a.btn-secondary {
+      background: #f1f5f9;
+      color: #475569;
+      text-decoration: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      transition: background 0.15s ease;
+    }
+    a.btn-secondary:hover {
+      background: #e2e8f0;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <span class="badge">Edit Mode</span>
+    <h1>✏️ Edit Announcement</h1>
+    <p class="subtitle">Modifying announcement #{{ID}}</p>
+
+    <form action="/announcements/{{ID}}/edit" method="POST">
+      <div class="form-group">
+        <label for="title">Title</label>
+        <input type="text" id="title" name="title" value="{{TITLE}}" required />
+      </div>
+
+      <div class="form-group">
+        <label for="category">Category</label>
+        <input type="text" id="category" name="category" value="{{CATEGORY}}" required />
+      </div>
+
+      <div class="form-group">
+        <label for="author">Author / Office</label>
+        <input type="text" id="author" name="author" value="{{AUTHOR}}" required />
+      </div>
+
+      <div class="form-group">
+        <label for="date">Date</label>
+        <input type="date" id="date" name="date" value="{{DATE}}" />
+      </div>
+
+      <div class="form-group">
+        <label for="content">Content</label>
+        <textarea id="content" name="content" required>{{CONTENT}}</textarea>
+      </div>
+
+      <div class="button-group">
+        <button type="submit" class="btn-primary">💾 Save Changes</button>
+        <a href="/announcements/{{ID}}" class="btn-secondary">Cancel</a>
+      </div>
+    </form>
+  </div>
+</body>
+</html>

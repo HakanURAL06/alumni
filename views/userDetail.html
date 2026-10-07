@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{NAME}} - Profile (View Layer)</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      max-width: 650px;
+      margin: 50px auto;
+      padding: 0 20px;
+      color: #1e293b;
+      background: #f8fafc;
+      line-height: 1.5;
+    }
+    .card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 32px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    }
+    h1 {
+      margin-top: 0;
+      color: #0f172a;
+      font-size: 1.6rem;
+      margin-bottom: 4px;
+    }
+    .badge {
+      display: inline-block;
+      background: #e0f2fe;
+      color: #0369a1;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+    .details {
+      margin: 20px 0;
+      border-top: 1px solid #f1f5f9;
+      border-bottom: 1px solid #f1f5f9;
+      padding: 16px 0;
+    }
+    p {
+      margin: 8px 0;
+      font-size: 1rem;
+    }
+    strong {
+      color: #475569;
+      display: inline-block;
+      width: 140px;
+    }
+    .actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-top: 24px;
+      flex-wrap: wrap;
+    }
+    .btn {
+      padding: 9px 18px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      transition: background 0.15s ease;
+    }
+    .btn-edit {
+      background: #fef3c7;
+      color: #92400e;
+    }
+    .btn-edit:hover {
+      background: #fde68a;
+    }
+    .btn-delete {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+    .btn-delete:hover {
+      background: #fecaca;
+    }
+    .btn-secondary {
+      background: #f1f5f9;
+      color: #475569;
+    }
+    .btn-secondary:hover {
+      background: #e2e8f0;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <span class="badge">MVC View Layer &bull; Detail View</span>
+    <h1>👤 {{NAME}}</h1>
+    
+    <div class="details">
+      <p><strong>ID:</strong> {{ID}}</p>
+      <p><strong>Department:</strong> {{DEPARTMENT}}</p>
+      <p><strong>Graduation Year:</strong> {{GRADUATION_YEAR}}</p>
+      <p><strong>Email:</strong> {{EMAIL}}</p>
+    </div>
+
+    <div class="actions">
+      <a href="/users/{{ID}}/edit" class="btn btn-edit">✏️ Edit Profile</a>
+      <form action="/users/{{ID}}/delete" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this profile?');">
+        <button type="submit" class="btn btn-delete">🗑️ Delete Profile</button>
+      </form>
+      <a href="/users" class="btn btn-secondary">← Back to Directory</a>
+    </div>
+  </div>
+</body>
+</html>

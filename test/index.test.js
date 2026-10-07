@@ -271,7 +271,337 @@ test('GET /api/swagger.json returns OpenAPI spec JSON and status 200', async () 
     assert.strictEqual(spec.openapi, '3.0.0');
     assert.strictEqual(spec.info.title, 'Alumni Tracking System API');
     assert.ok(spec.paths['/api/users']);
+    assert.ok(spec.paths['/apiuser']);
+    assert.ok(spec.paths['/user']);
     assert.ok(spec.paths['/api/health']);
+  } finally {
+    await new Promise((resolve) => server.close(resolve));
+  }
+});
+
+test('GET /apiuser returns list of users via apiUser router and status 200', async () => {
+  const server = app.listen(0);
+  const { port } = server.address();
+
+  try {
+    const res = await fetch(`http://127.0.0.1:${port}/apiuser`);
+    assert.strictEqual(res.status, 200);
+    assert.ok(res.headers.get('content-type').includes('application/json'));
+    const data = await res.json();
+    assert.ok(Array.isArray(data));
+  } finally {
+    await new Promise((resolve) => server.close(resolve));
+  }
+});
+
+test('GET /users returns HTML alumni directory with View layer and form', async () => {
+  const server = app.listen(0);
+  const { port } = server.address();
+
+  try {
+    const res = await fetch(`http://127.0.0.1:${port}/users`, {
+      headers: { 'Accept': 'text/html' }
+    });
+    assert.strictEqual(res.status, 200);
+    const body = await res.text();
+    assert.ok(body.includes('Alumni Directory'));
+    assert.ok(body.includes('View Layer'));
+    assert.ok(body.includes('<form action="/users" method="POST">'));
+  } finally {
+    await new Promise((resolve) => server.close(resolve));
+  }
+});
+
+test('POST /users creates alumni and redirects to /users with View layer', async () => {
+  const server = app.listen(0);
+  const { port } = server.address();
+
+  try {
+    const params = new URLSearchParams({
+      name: 'Ece Aydın',
+      department: 'Mechanical Engineering',
+      graduationYear: '2024',
+      email: 'ece@alumni.edu'
+    });
+
+    const res = await fetch(`http://127.0.0.1:${port}/users`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Accept': 'text/html'
+      },
+      body: params.toString(),
+      redirect: 'manual'
+    });
+
+    assert.strictEqual(res.status, 302);
+    assert.ok(res.headers.get('location').includes('/users'));
+  } finally {
+    await new Promise((resolve) => server.close(resolve));
+  }
+});
+
+test('GET /users/:id renders HTML detail profile view', async () => {
+  const server = app.listen(0);
+  const { port } = server.address();
+
+  try {
+    const res = await fetch(`http://127.0.0.1:${port}/users/1`, {
+      headers: { 'Accept': 'text/html' }
+    });
+    assert.strictEqual(res.status, 200);
+    const body = await res.text();
+    assert.ok(body.includes('Detail View'));
+    assert.ok(body.includes('Hakan Ural'));
+    assert.ok(body.includes('/users/1/edit'));
+    assert.ok(body.includes('/users/1/delete'));
+  } finally {
+    await new Promise((resolve) => server.close(resolve));
+  }
+});
+
+test('GET /users/:id/edit renders HTML edit form pre-filled with data', async () => {
+  const server = app.listen(0);
+  const { port } = server.address();
+
+  try {
+    const res = await fetch(`http://127.0.0.1:${port}/users/1/edit`, {
+      headers: { 'Accept': 'text/html' }
+    });
+    assert.strictEqual(res.status, 200);
+    const body = await res.text();
+    assert.ok(body.includes('Edit Alumni Profile'));
+    assert.ok(body.includes('action="/users/1/edit"'));
+    assert.ok(body.includes('Hakan Ural'));
+  } finally {
+    await new Promise((resolve) => server.close(resolve));
+  }
+});
+
+test('POST /users/:id/edit updates user and redirects to /users?updated=1', async () => {
+  const server = app.listen(0);
+  const { port } = server.address();
+
+  try {
+    const params = new URLSearchParams({
+      name: 'Hakan Ural (Updated)',
+      department: 'Software & AI',
+      graduationYear: '2024',
+      email: 'hakan.updated@alumni.edu'
+    });
+
+    const res = await fetch(`http://127.0.0.1:${port}/users/1/edit`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Accept': 'text/html'
+      },
+      body: params.toString(),
+      redirect: 'manual'
+    });
+
+    assert.strictEqual(res.status, 302);
+    assert.ok(res.headers.get('location').includes('updated=1'));
+  } finally {
+    await new Promise((resolve) => server.close(resolve));
+  }
+});
+
+test('POST /users/:id/delete deletes user and redirects to /users?deleted=1', async () => {
+  const server = app.listen(0);
+  const { port } = server.address();
+
+  try {
+    // Create temporary user first
+    const createRes = await fetch(`http://127.0.0.1:${port}/api/users`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: 'User To Remove', department: 'Math', graduationYear: 2020, email: 'temp@alumni.edu' })
+    });
+    const { user } = await createRes.json();
+
+    const deleteRes = await fetch(`http://127.0.0.1:${port}/users/${user.id}/delete`, {
+      method: 'POST',
+      headers: { 'Accept': 'text/html' },
+      redirect: 'manual'
+    });
+
+    assert.strictEqual(deleteRes.status, 302);
+    assert.ok(deleteRes.headers.get('location').includes('deleted=1'));
+  } finally {
+    await new Promise((resolve) => server.close(resolve));
+  }
+});
+
+test('GET /api/announcements returns list of announcements and status 200', async () => {
+  const server = app.listen(0);
+  const { port } = server.address();
+
+  try {
+    const res = await fetch(`http://127.0.0.1:${port}/api/announcements`);
+    assert.strictEqual(res.status, 200);
+    const data = await res.json();
+    assert.ok(Array.isArray(data));
+    assert.ok(data.length >= 1);
+  } finally {
+    await new Promise((resolve) => server.close(resolve));
+  }
+});
+
+test('POST /api/announcements adds announcement and returns 201', async () => {
+  const server = app.listen(0);
+  const { port } = server.address();
+
+  try {
+    const res = await fetch(`http://127.0.0.1:${port}/api/announcements`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        title: 'New Fellowship Program',
+        content: 'Fellowship funding available for graduates.',
+        category: 'Academic',
+        author: 'Dean Office'
+      })
+    });
+    assert.strictEqual(res.status, 201);
+    const data = await res.json();
+    assert.strictEqual(data.announcement.title, 'New Fellowship Program');
+  } finally {
+    await new Promise((resolve) => server.close(resolve));
+  }
+});
+
+test('GET /announcements returns management interface HTML view with form', async () => {
+  const server = app.listen(0);
+  const { port } = server.address();
+
+  try {
+    const res = await fetch(`http://127.0.0.1:${port}/announcements`, {
+      headers: { 'Accept': 'text/html' }
+    });
+    assert.strictEqual(res.status, 200);
+    const body = await res.text();
+    assert.ok(body.includes('Announcements Management'));
+    assert.ok(body.includes('<form action="/announcements" method="POST">'));
+  } finally {
+    await new Promise((resolve) => server.close(resolve));
+  }
+});
+
+test('POST /announcements submits form and redirects to /announcements?success=1', async () => {
+  const server = app.listen(0);
+  const { port } = server.address();
+
+  try {
+    const params = new URLSearchParams({
+      title: 'Spring Homecoming',
+      category: 'Event',
+      author: 'Alumni Association',
+      date: '2026-05-20',
+      content: 'Save the date for the spring gathering.'
+    });
+
+    const res = await fetch(`http://127.0.0.1:${port}/announcements`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Accept': 'text/html'
+      },
+      body: params.toString(),
+      redirect: 'manual'
+    });
+
+    assert.strictEqual(res.status, 302);
+    assert.ok(res.headers.get('location').includes('success=1'));
+  } finally {
+    await new Promise((resolve) => server.close(resolve));
+  }
+});
+
+test('GET /announcements/:id renders HTML detail view', async () => {
+  const server = app.listen(0);
+  const { port } = server.address();
+
+  try {
+    const res = await fetch(`http://127.0.0.1:${port}/announcements/1`, {
+      headers: { 'Accept': 'text/html' }
+    });
+    assert.strictEqual(res.status, 200);
+    const body = await res.text();
+    assert.ok(body.includes('Homecoming'));
+    assert.ok(body.includes('/announcements/1/edit'));
+  } finally {
+    await new Promise((resolve) => server.close(resolve));
+  }
+});
+
+test('GET /announcements/:id/edit renders HTML edit form pre-filled with data', async () => {
+  const server = app.listen(0);
+  const { port } = server.address();
+
+  try {
+    const res = await fetch(`http://127.0.0.1:${port}/announcements/1/edit`, {
+      headers: { 'Accept': 'text/html' }
+    });
+    assert.strictEqual(res.status, 200);
+    const body = await res.text();
+    assert.ok(body.includes('Edit Announcement'));
+    assert.ok(body.includes('action="/announcements/1/edit"'));
+  } finally {
+    await new Promise((resolve) => server.close(resolve));
+  }
+});
+
+test('POST /announcements/:id/edit updates announcement and redirects to /announcements?updated=1', async () => {
+  const server = app.listen(0);
+  const { port } = server.address();
+
+  try {
+    const params = new URLSearchParams({
+      title: 'Homecoming Updated Title',
+      category: 'Event',
+      author: 'Office',
+      date: '2026-10-20',
+      content: 'Updated content here.'
+    });
+
+    const res = await fetch(`http://127.0.0.1:${port}/announcements/1/edit`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Accept': 'text/html'
+      },
+      body: params.toString(),
+      redirect: 'manual'
+    });
+
+    assert.strictEqual(res.status, 302);
+    assert.ok(res.headers.get('location').includes('updated=1'));
+  } finally {
+    await new Promise((resolve) => server.close(resolve));
+  }
+});
+
+test('POST /announcements/:id/delete deletes announcement and redirects to /announcements?deleted=1', async () => {
+  const server = app.listen(0);
+  const { port } = server.address();
+
+  try {
+    const createRes = await fetch(`http://127.0.0.1:${port}/api/announcements`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title: 'Delete Candidate', content: 'Will be removed', category: 'General' })
+    });
+    const { announcement } = await createRes.json();
+
+    const deleteRes = await fetch(`http://127.0.0.1:${port}/announcements/${announcement.id}/delete`, {
+      method: 'POST',
+      headers: { 'Accept': 'text/html' },
+      redirect: 'manual'
+    });
+
+    assert.strictEqual(deleteRes.status, 302);
+    assert.ok(deleteRes.headers.get('location').includes('deleted=1'));
   } finally {
     await new Promise((resolve) => server.close(resolve));
   }

@@ -16,97 +16,73 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(express.static(path.join(__dirname, 'public')));
 
+// View Engine Configuration (MVC View Layer)
+const UserView = require('./views/UserView');
+const AnnouncementView = require('./views/AnnouncementView');
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'html');
+app.engine('html', (filePath, options, callback) => {
+  try {
+    if (filePath.endsWith('users.html')) {
+      const output = UserView.renderUsers(options.users || [], options);
+      return callback(null, output);
+    }
+    if (filePath.endsWith('userDetail.html')) {
+      const output = UserView.renderUserDetail(options.user || {});
+      return callback(null, output);
+    }
+    if (filePath.endsWith('userEdit.html')) {
+      const output = UserView.renderUserEdit(options.user || {});
+      return callback(null, output);
+    }
+    if (filePath.endsWith('announcements.html')) {
+      const output = AnnouncementView.renderAnnouncements(options.announcements || [], options);
+      return callback(null, output);
+    }
+    if (filePath.endsWith('announcementDetail.html')) {
+      const output = AnnouncementView.renderAnnouncementDetail(options.announcement || {});
+      return callback(null, output);
+    }
+    if (filePath.endsWith('announcementEdit.html')) {
+      const output = AnnouncementView.renderAnnouncementEdit(options.announcement || {});
+      return callback(null, output);
+    }
+    const fs = require('fs');
+    fs.readFile(filePath, 'utf-8', callback);
+  } catch (err) {
+    callback(err);
+  }
+});
+
 // Swagger Documentation
 app.use('/api/swagger', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.get('/api/swagger.json', (req, res) => res.json(swaggerDocument));
 
-// In-memory data store (no database)
-const users = [
-  { id: 1, name: 'Hakan Ural', department: 'Computer Engineering', graduationYear: 2024, email: 'hakan@alumni.edu' },
-  { id: 2, name: 'Ayşe Yılmaz', department: 'Industrial Engineering', graduationYear: 2023, email: 'ayse@alumni.edu' },
-  { id: 3, name: 'Mehmet Demir', department: 'Electrical & Electronics Engineering', graduationYear: 2022, email: 'mehmet@alumni.edu' }
-];
+// Routes (MVC Architecture)
+const apiUserRoutes = require('./routes/apiUser');
+const userRoutes = require('./routes/user');
+const apiAnnouncementRoutes = require('./routes/apiAnnouncement');
+const announcementRoutes = require('./routes/announcement');
 
-app.get('/api/users', (req, res) => {
-  res.json(users);
-});
+// ApiUser routes -> ApiUserController (RESTful API)
+app.use('/apiuser', apiUserRoutes);
+app.use('/apiusers', apiUserRoutes);
+app.use('/api/users', apiUserRoutes);
+app.use('/api/user', apiUserRoutes);
 
-app.post('/api/users', (req, res) => {
-  const { name, department, graduationYear, email } = req.body || {};
+// User routes -> UserController (Web & Presentation)
+app.use('/user', userRoutes);
+app.use('/users', userRoutes);
 
-  const newUser = {
-    id: users.length ? users[users.length - 1].id + 1 : 1,
-    name: name || 'Yeni Mezun',
-    department: department || 'Computer Engineering',
-    graduationYear: graduationYear ? Number(graduationYear) : 2024,
-    email: email || `${(name || 'mezun').toLowerCase().replace(/\s+/g, '')}@alumni.edu`
-  };
+// ApiAnnouncement routes -> ApiAnnouncementController (RESTful API)
+app.use('/apiannouncement', apiAnnouncementRoutes);
+app.use('/apiannouncements', apiAnnouncementRoutes);
+app.use('/api/announcements', apiAnnouncementRoutes);
+app.use('/api/announcement', apiAnnouncementRoutes);
 
-  users.push(newUser);
-
-  res.status(201).json({
-    message: 'User created successfully',
-    user: newUser
-  });
-});
-
-app.get('/api/users/:id', (req, res) => {
-  const user = users.find(u => u.id === Number(req.params.id));
-  if (!user) {
-    return res.status(404).json({ error: 'User not found' });
-  }
-  res.json(user);
-});
-
-app.put('/api/users/:id', (req, res) => {
-  const user = users.find(u => u.id === Number(req.params.id));
-  if (!user) {
-    return res.status(404).json({ error: 'User not found' });
-  }
-
-  const { name, department, graduationYear, email } = req.body || {};
-  if (name !== undefined) user.name = name;
-  if (department !== undefined) user.department = department;
-  if (graduationYear !== undefined) user.graduationYear = Number(graduationYear);
-  if (email !== undefined) user.email = email;
-
-  res.json({
-    message: 'User updated successfully (PUT)',
-    user
-  });
-});
-
-app.patch('/api/users/:id', (req, res) => {
-  const user = users.find(u => u.id === Number(req.params.id));
-  if (!user) {
-    return res.status(404).json({ error: 'User not found' });
-  }
-
-  const { name, department, graduationYear, email } = req.body || {};
-  if (name !== undefined) user.name = name;
-  if (department !== undefined) user.department = department;
-  if (graduationYear !== undefined) user.graduationYear = Number(graduationYear);
-  if (email !== undefined) user.email = email;
-
-  res.json({
-    message: 'User modified successfully (PATCH)',
-    user
-  });
-});
-
-app.delete('/api/users/:id', (req, res) => {
-  const index = users.findIndex(u => u.id === Number(req.params.id));
-  if (index === -1) {
-    return res.status(404).json({ error: 'User not found' });
-  }
-
-  const deletedUser = users.splice(index, 1)[0];
-
-  res.json({
-    message: 'User deleted successfully',
-    deletedUser
-  });
-});
+// Announcement routes -> AnnouncementController (Web & Management Interface)
+app.use('/announcement', announcementRoutes);
+app.use('/announcements', announcementRoutes);
 
 app.all('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));

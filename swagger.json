@@ -3,8 +3,38 @@
   "info": {
     "title": "Alumni Tracking System API",
     "version": "1.0.0",
-    "description": "RESTful API for the Alumni Tracking System. Allows managing alumni profiles, checking application health, and running utility endpoints."
+    "description": "RESTful API and Web Services for the Alumni Tracking System. Demonstrates clean MVC architecture with separated routes (routes/user.js, routes/apiUser.js), controllers (UserController, ApiUserController), and in-memory model (UserModel)."
   },
+  "tags": [
+    {
+      "name": "ApiUser",
+      "description": "RESTful JSON API endpoints handled by ApiUserController via routes/apiUser.js (/apiuser and /api/users)"
+    },
+    {
+      "name": "User",
+      "description": "Web and Presentation endpoints handled by UserController via routes/user.js (/user and /users)"
+    },
+    {
+      "name": "Health",
+      "description": "Application health and status diagnostics"
+    },
+    {
+      "name": "Utility",
+      "description": "Utility endpoints (greetings and arithmetic calculator)"
+    },
+    {
+      "name": "Pages",
+      "description": "Application static and presentation HTML pages"
+    },
+    {
+      "name": "ApiAnnouncement",
+      "description": "RESTful JSON API endpoints handled by ApiAnnouncementController via routes/apiAnnouncement.js (/api/announcements)"
+    },
+    {
+      "name": "Announcement",
+      "description": "Web and Management Interface endpoints handled by AnnouncementController via routes/announcement.js (/announcements)"
+    }
+  ],
   "servers": [
     {
       "url": "http://localhost:3000",
@@ -12,19 +42,20 @@
     }
   ],
   "paths": {
-    "/api/health": {
+    "/apiuser": {
       "get": {
-        "summary": "Health check (GET)",
-        "description": "Returns status ok in JSON format to verify API health.",
+        "tags": ["ApiUser"],
+        "summary": "List all alumni users (ApiUser route)",
+        "description": "Retrieves all alumni profiles in JSON format via ApiUserController (routes/apiUser.js).",
         "responses": {
           "200": {
-            "description": "API is healthy",
+            "description": "List of alumni users",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": { "type": "string", "example": "ok" }
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/User"
                   }
                 }
               }
@@ -33,19 +64,173 @@
         }
       },
       "post": {
-        "summary": "Health check (POST)",
-        "description": "Returns status ok in JSON format when requested via POST.",
+        "tags": ["ApiUser"],
+        "summary": "Create a new alumni user (ApiUser route)",
+        "description": "Creates a new alumni user record via ApiUserController.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserInput"
+              }
+            }
+          }
+        },
         "responses": {
-          "200": {
-            "description": "API is healthy",
+          "201": {
+            "description": "User created successfully",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": { "type": "string", "example": "ok" }
-                  }
+                  "$ref": "#/components/schemas/UserResponse"
                 }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/apiuser/{id}": {
+      "get": {
+        "tags": ["ApiUser"],
+        "summary": "Get alumni user by ID (ApiUser route)",
+        "description": "Retrieves an alumni profile by its numeric ID via ApiUserController.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" },
+            "description": "User ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User details",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/User" }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["ApiUser"],
+        "summary": "Update alumni user (PUT - ApiUser route)",
+        "description": "Fully updates an existing alumni record via ApiUserController.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" },
+            "description": "User ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UserInput" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User updated successfully",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/UserResponse" }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": ["ApiUser"],
+        "summary": "Partially modify alumni user (PATCH - ApiUser route)",
+        "description": "Partially modifies specific fields of an alumni record via ApiUserController.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" },
+            "description": "User ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UserPartialInput" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User modified successfully",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/UserResponse" }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["ApiUser"],
+        "summary": "Delete alumni user (DELETE - ApiUser route)",
+        "description": "Deletes an alumni record via ApiUserController.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" },
+            "description": "User ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/UserDeleteResponse" }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
               }
             }
           }
@@ -54,7 +239,8 @@
     },
     "/api/users": {
       "get": {
-        "summary": "List all alumni users",
+        "tags": ["ApiUser"],
+        "summary": "List all alumni users (/api/users endpoint)",
         "description": "Retrieves the full list of in-memory alumni users.",
         "responses": {
           "200": {
@@ -73,20 +259,15 @@
         }
       },
       "post": {
-        "summary": "Create a new alumni user",
+        "tags": ["ApiUser"],
+        "summary": "Create a new alumni user (/api/users endpoint)",
         "description": "Adds a new alumni user to the in-memory store.",
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "name": { "type": "string", "example": "Burak Yılmaz" },
-                  "department": { "type": "string", "example": "Software Engineering" },
-                  "graduationYear": { "type": "integer", "example": 2025 },
-                  "email": { "type": "string", "example": "burak@alumni.edu" }
-                }
+                "$ref": "#/components/schemas/UserInput"
               }
             }
           }
@@ -97,11 +278,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": { "type": "string", "example": "User created successfully" },
-                    "user": { "$ref": "#/components/schemas/User" }
-                  }
+                  "$ref": "#/components/schemas/UserResponse"
                 }
               }
             }
@@ -111,7 +288,8 @@
     },
     "/api/users/{id}": {
       "get": {
-        "summary": "Get alumni user by ID",
+        "tags": ["ApiUser"],
+        "summary": "Get alumni user by ID (/api/users/{id})",
         "description": "Retrieves a specific alumni profile by its ID.",
         "parameters": [
           {
@@ -135,19 +313,15 @@
             "description": "User not found",
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "error": { "type": "string", "example": "User not found" }
-                  }
-                }
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
               }
             }
           }
         }
       },
       "put": {
-        "summary": "Update alumni user (PUT)",
+        "tags": ["ApiUser"],
+        "summary": "Update alumni user (PUT - /api/users/{id})",
         "description": "Updates fields of an existing alumni profile.",
         "parameters": [
           {
@@ -162,15 +336,7 @@
           "required": true,
           "content": {
             "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "name": { "type": "string", "example": "Hakan Ural" },
-                  "department": { "type": "string", "example": "Artificial Intelligence" },
-                  "graduationYear": { "type": "integer", "example": 2024 },
-                  "email": { "type": "string", "example": "hakan.ai@alumni.edu" }
-                }
-              }
+              "schema": { "$ref": "#/components/schemas/UserInput" }
             }
           }
         },
@@ -179,23 +345,23 @@
             "description": "User updated successfully",
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": { "type": "string", "example": "User updated successfully (PUT)" },
-                    "user": { "$ref": "#/components/schemas/User" }
-                  }
-                }
+                "schema": { "$ref": "#/components/schemas/UserResponse" }
               }
             }
           },
           "404": {
-            "description": "User not found"
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
           }
         }
       },
       "patch": {
-        "summary": "Partially modify alumni user (PATCH)",
+        "tags": ["ApiUser"],
+        "summary": "Partially modify alumni user (PATCH - /api/users/{id})",
         "description": "Partially modifies specific fields of an alumni profile.",
         "parameters": [
           {
@@ -210,13 +376,7 @@
           "required": true,
           "content": {
             "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "department": { "type": "string", "example": "Cyber Security" },
-                  "email": { "type": "string", "example": "hakan.cyber@alumni.edu" }
-                }
-              }
+              "schema": { "$ref": "#/components/schemas/UserPartialInput" }
             }
           }
         },
@@ -225,23 +385,23 @@
             "description": "User modified successfully",
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": { "type": "string", "example": "User modified successfully (PATCH)" },
-                    "user": { "$ref": "#/components/schemas/User" }
-                  }
-                }
+                "schema": { "$ref": "#/components/schemas/UserResponse" }
               }
             }
           },
           "404": {
-            "description": "User not found"
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
           }
         }
       },
       "delete": {
-        "summary": "Delete alumni user (DELETE)",
+        "tags": ["ApiUser"],
+        "summary": "Delete alumni user (DELETE - /api/users/{id})",
         "description": "Removes an alumni user from the in-memory store.",
         "parameters": [
           {
@@ -257,13 +417,193 @@
             "description": "User deleted successfully",
             "content": {
               "application/json": {
+                "schema": { "$ref": "#/components/schemas/UserDeleteResponse" }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user": {
+      "get": {
+        "tags": ["User"],
+        "summary": "List alumni users (User route - HTML/JSON)",
+        "description": "Renders an HTML directory table of alumni profiles (or JSON) handled by UserController (routes/user.js).",
+        "responses": {
+          "200": {
+            "description": "Alumni directory view",
+            "content": {
+              "text/html": {
+                "schema": { "type": "string" }
+              },
+              "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": { "type": "string", "example": "User deleted successfully" },
-                    "deletedUser": { "$ref": "#/components/schemas/User" }
-                  }
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/User" }
                 }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["User"],
+        "summary": "Create alumni user (User route)",
+        "description": "Creates a new user record and redirects to /users (for web forms) or returns 201 JSON.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": { "$ref": "#/components/schemas/UserInput" }
+            },
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UserInput" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User created",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/UserResponse" }
+              }
+            }
+          },
+          "302": {
+            "description": "Redirects to /users after form submission"
+          }
+        }
+      }
+    },
+    "/user/{id}": {
+      "get": {
+        "tags": ["User"],
+        "summary": "Get alumni profile by ID (User route)",
+        "description": "Renders an HTML profile card for the specified alumni member via UserController.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" },
+            "description": "User ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Profile card view",
+            "content": {
+              "text/html": {
+                "schema": { "type": "string" }
+              },
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/User" }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found"
+          }
+        }
+      },
+      "put": {
+        "tags": ["User"],
+        "summary": "Update alumni user (User route - PUT)",
+        "description": "Updates an alumni record via UserController.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" },
+            "description": "User ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UserInput" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User updated successfully",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/UserResponse" }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found"
+          }
+        }
+      },
+      "patch": {
+        "tags": ["User"],
+        "summary": "Partially update alumni user (User route - PATCH)",
+        "description": "Partially modifies an alumni record via UserController.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" },
+            "description": "User ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UserPartialInput" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User modified successfully",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/UserResponse" }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["User"],
+        "summary": "Delete alumni user (User route - DELETE)",
+        "description": "Deletes an alumni record via UserController.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" },
+            "description": "User ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/UserDeleteResponse" }
               }
             }
           },
@@ -273,8 +613,205 @@
         }
       }
     },
+    "/users": {
+      "get": {
+        "tags": ["User"],
+        "summary": "List alumni directory (/users endpoint)",
+        "description": "Renders an HTML directory table of alumni profiles handled by UserController.",
+        "responses": {
+          "200": {
+            "description": "Alumni directory view"
+          }
+        }
+      },
+      "post": {
+        "tags": ["User"],
+        "summary": "Create alumni user (/users endpoint)",
+        "description": "Creates a new user record via UserController.",
+        "responses": {
+          "201": {
+            "description": "User created"
+          }
+        }
+      }
+    },
+    "/users/{id}": {
+      "get": {
+        "tags": ["User"],
+        "summary": "Get alumni profile by ID (/users/{id})",
+        "description": "Renders an HTML profile card via UserController.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Profile card view"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        }
+      },
+      "put": {
+        "tags": ["User"],
+        "summary": "Update alumni user (/users/{id})",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User updated"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        }
+      },
+      "patch": {
+        "tags": ["User"],
+        "summary": "Partially update alumni user (/users/{id})",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User modified"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["User"],
+        "summary": "Delete alumni user (/users/{id})",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User deleted"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        }
+      }
+    },
+    "/users/{id}/edit": {
+      "get": {
+        "tags": ["User"],
+        "summary": "Render alumni edit form (View Layer)",
+        "description": "Renders an HTML edit form pre-filled with the current alumni details.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Edit form HTML rendered" },
+          "404": { "description": "User not found" }
+        }
+      },
+      "post": {
+        "tags": ["User"],
+        "summary": "Update alumni user via HTML form",
+        "description": "Receives form submission data and redirects to /users with View feedback.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "302": { "description": "Redirects to /users?updated=1" },
+          "404": { "description": "User not found" }
+        }
+      }
+    },
+    "/users/{id}/delete": {
+      "post": {
+        "tags": ["User"],
+        "summary": "Delete alumni user via HTML form button",
+        "description": "Deletes the alumni user and redirects to /users with View feedback.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "302": { "description": "Redirects to /users?deleted=1" },
+          "404": { "description": "User not found" }
+        }
+      }
+    },
+    "/api/health": {
+      "get": {
+        "tags": ["Health"],
+        "summary": "Health check (GET)",
+        "description": "Returns status ok in JSON format to verify API health.",
+        "responses": {
+          "200": {
+            "description": "API is healthy",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Health"],
+        "summary": "Health check (POST)",
+        "description": "Returns status ok in JSON format when requested via POST.",
+        "responses": {
+          "200": {
+            "description": "API is healthy",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/hello": {
       "get": {
+        "tags": ["Utility"],
         "summary": "Static greeting",
         "responses": {
           "200": {
@@ -290,6 +827,7 @@
     },
     "/hello/{name}": {
       "get": {
+        "tags": ["Utility"],
         "summary": "Dynamic greeting",
         "parameters": [
           {
@@ -314,6 +852,7 @@
     },
     "/sum/{number1}/{number2}": {
       "get": {
+        "tags": ["Utility"],
         "summary": "Calculate sum of two numbers",
         "parameters": [
           {
@@ -348,6 +887,7 @@
     },
     "/about": {
       "get": {
+        "tags": ["Pages"],
         "summary": "About page HTML",
         "responses": {
           "200": { "description": "About page HTML" }
@@ -356,15 +896,248 @@
     },
     "/": {
       "get": {
+        "tags": ["Pages"],
         "summary": "Temporary Home Page HTML",
         "responses": {
           "200": { "description": "Home page HTML" }
+        }
+      }
+    },
+    "/api/announcements": {
+      "get": {
+        "tags": ["ApiAnnouncement"],
+        "summary": "List all announcements (JSON API)",
+        "description": "Retrieves all announcements in JSON format via ApiAnnouncementController.",
+        "responses": {
+          "200": {
+            "description": "List of announcements",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Announcement" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["ApiAnnouncement"],
+        "summary": "Create announcement (JSON API)",
+        "description": "Creates a new announcement via ApiAnnouncementController.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/AnnouncementInput" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Announcement created",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/AnnouncementResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/announcements/{id}": {
+      "get": {
+        "tags": ["ApiAnnouncement"],
+        "summary": "Get announcement by ID (JSON API)",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Announcement details",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/Announcement" } }
+            }
+          },
+          "404": { "description": "Announcement not found" }
+        }
+      },
+      "put": {
+        "tags": ["ApiAnnouncement"],
+        "summary": "Update announcement (Full)",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/AnnouncementInput" } }
+          }
+        },
+        "responses": {
+          "200": { "description": "Announcement updated" },
+          "404": { "description": "Announcement not found" }
+        }
+      },
+      "patch": {
+        "tags": ["ApiAnnouncement"],
+        "summary": "Update announcement (Partial)",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/AnnouncementInput" } }
+          }
+        },
+        "responses": {
+          "200": { "description": "Announcement modified" },
+          "404": { "description": "Announcement not found" }
+        }
+      },
+      "delete": {
+        "tags": ["ApiAnnouncement"],
+        "summary": "Delete announcement",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": { "description": "Announcement deleted" },
+          "404": { "description": "Announcement not found" }
+        }
+      }
+    },
+    "/announcements": {
+      "get": {
+        "tags": ["Announcement"],
+        "summary": "Announcements Management Dashboard (View Layer)",
+        "description": "Renders HTML management interface with announcement list and creation form.",
+        "responses": {
+          "200": { "description": "HTML dashboard view" }
+        }
+      },
+      "post": {
+        "tags": ["Announcement"],
+        "summary": "Create announcement (HTML Form)",
+        "description": "Submits form data to publish announcement and redirects to /announcements.",
+        "responses": {
+          "302": { "description": "Redirect to /announcements?success=1" }
+        }
+      }
+    },
+    "/announcements/{id}": {
+      "get": {
+        "tags": ["Announcement"],
+        "summary": "Announcement Detail View (HTML)",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": { "description": "HTML detail card view" },
+          "404": { "description": "Announcement not found" }
+        }
+      },
+      "put": {
+        "tags": ["Announcement"],
+        "summary": "Update announcement (AnnouncementController)",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": { "description": "Announcement updated" },
+          "404": { "description": "Announcement not found" }
+        }
+      },
+      "delete": {
+        "tags": ["Announcement"],
+        "summary": "Delete announcement (AnnouncementController)",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": { "description": "Announcement deleted" },
+          "404": { "description": "Announcement not found" }
+        }
+      }
+    },
+    "/announcements/{id}/edit": {
+      "get": {
+        "tags": ["Announcement"],
+        "summary": "Announcement Edit Form View (HTML)",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": { "description": "HTML edit form view" },
+          "404": { "description": "Announcement not found" }
+        }
+      },
+      "post": {
+        "tags": ["Announcement"],
+        "summary": "Submit announcement edit via HTML form",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "302": { "description": "Redirect to /announcements?updated=1" },
+          "404": { "description": "Announcement not found" }
+        }
+      }
+    },
+    "/announcements/{id}/delete": {
+      "post": {
+        "tags": ["Announcement"],
+        "summary": "Delete announcement via HTML form button",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "302": { "description": "Redirect to /announcements?deleted=1" },
+          "404": { "description": "Announcement not found" }
         }
       }
     }
   },
   "components": {
     "schemas": {
+      "Announcement": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "example": 1 },
+          "title": { "type": "string", "example": "Annual Alumni Homecoming 2026" },
+          "content": { "type": "string", "example": "Join us on campus for speeches and cocktails." },
+          "category": { "type": "string", "example": "Event" },
+          "author": { "type": "string", "example": "Alumni Office" },
+          "date": { "type": "string", "example": "2026-10-15" }
+        }
+      },
+      "AnnouncementInput": {
+        "type": "object",
+        "required": ["title", "content"],
+        "properties": {
+          "title": { "type": "string", "example": "Career Fair Announcement" },
+          "content": { "type": "string", "example": "Top tech companies hiring alumni." },
+          "category": { "type": "string", "example": "Career" },
+          "author": { "type": "string", "example": "Career Center" },
+          "date": { "type": "string", "example": "2026-11-01" }
+        }
+      },
+      "AnnouncementResponse": {
+        "type": "object",
+        "properties": {
+          "message": { "type": "string", "example": "Announcement created successfully" },
+          "announcement": { "$ref": "#/components/schemas/Announcement" }
+        }
+      },
+      "AnnouncementDeleteResponse": {
+        "type": "object",
+        "properties": {
+          "message": { "type": "string", "example": "Announcement deleted successfully" },
+          "deletedAnnouncement": { "$ref": "#/components/schemas/Announcement" }
+        }
+      },
       "User": {
         "type": "object",
         "properties": {
@@ -373,6 +1146,51 @@
           "department": { "type": "string", "example": "Computer Engineering" },
           "graduationYear": { "type": "integer", "example": 2024 },
           "email": { "type": "string", "example": "hakan@alumni.edu" }
+        }
+      },
+      "UserInput": {
+        "type": "object",
+        "required": ["name"],
+        "properties": {
+          "name": { "type": "string", "example": "Burak Yılmaz" },
+          "department": { "type": "string", "example": "Software Engineering" },
+          "graduationYear": { "type": "integer", "example": 2025 },
+          "email": { "type": "string", "example": "burak@alumni.edu" }
+        }
+      },
+      "UserPartialInput": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string", "example": "Burak Yılmaz" },
+          "department": { "type": "string", "example": "Cyber Security" },
+          "graduationYear": { "type": "integer", "example": 2025 },
+          "email": { "type": "string", "example": "burak.cyber@alumni.edu" }
+        }
+      },
+      "UserResponse": {
+        "type": "object",
+        "properties": {
+          "message": { "type": "string", "example": "User created successfully" },
+          "user": { "$ref": "#/components/schemas/User" }
+        }
+      },
+      "UserDeleteResponse": {
+        "type": "object",
+        "properties": {
+          "message": { "type": "string", "example": "User deleted successfully" },
+          "deletedUser": { "$ref": "#/components/schemas/User" }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": { "type": "string", "example": "User not found" }
+        }
+      },
+      "HealthResponse": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "string", "example": "ok" }
         }
       }
     }
