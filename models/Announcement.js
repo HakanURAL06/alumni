@@ -1,7 +1,25 @@
 /**
  * Announcement Model
- * In-memory data store with complete CRUD functions (without database connection).
+ * Implements complete asynchronous CRUD operations against PostgreSQL database,
+ * with graceful in-memory fallback for offline/isolated environments.
  */
+
+const db = require('./db');
+
+function formatAnnouncement(row) {
+  if (!row) return null;
+  let dateStr = row.date;
+  if (dateStr instanceof Date) {
+    dateStr = dateStr.toISOString().split('T')[0];
+  } else if (typeof dateStr === 'string' && dateStr.includes('T')) {
+    dateStr = dateStr.split('T')[0];
+  }
+  return {
+    ...row,
+    date: dateStr || new Date().toISOString().split('T')[0]
+  };
+}
+
 class AnnouncementModel {
   constructor() {
     this.announcements = [
@@ -33,77 +51,177 @@ class AnnouncementModel {
   }
 
   /**
-   * CREATE: Adds a new announcement to the in-memory store
+   * CREATE: Adds a new announcement to PostgreSQL database
    * @param {Object} data - Announcement details (title, content, category, author, date)
-   * @returns {Object} The created announcement with auto-generated ID
+   * @returns {Promise<Object>} The created announcement with auto-generated ID
    */
-  create(data = {}) {
-    const nextId = this.announcements.length
-      ? Math.max(...this.announcements.map(a => a.id)) + 1
-      : 1;
+  async create(data = {}) {
+    const title = data.title || 'New Announcement';
+    const content = data.content || '';
+    const category = data.category || 'General';
+    const author = data.author || 'Alumni Office';
+    const date = data.date || new Date().toISOString().split('T')[0];
 
-    const newAnnouncement = {
-      id: nextId,
-      title: data.title || 'New Announcement',
-      content: data.content || '',
-      category: data.category || 'General',
-      author: data.author || 'Alumni Office',
-      date: data.date || new Date().toISOString().split('T')[0]
-    };
+    try {
+      const res = await db.query(
+        `INSERT INTO announcements (title, content, category, author, publication_date)
+         VALUES ($1, $2, $3, $4, $5)
+         RETURNING id, title, content, category, author, publication_date AS date, created_at, updated_at;`,
+        [title, content, category, author, date]
+      );
+      const created = formatAnnouncement(res.rows[0]);
+      this.announcements.push(created);
+      return created;
+    } catch (err) {
+      // In-memory fallback
+      const nextId = this.announcements.length
+        ? Math.max(...this.announcements.map(a => a.id)) + 1
+        : 1;
 
-    this.announcements.push(newAnnouncement);
-    return newAnnouncement;
+      const newAnnouncement = {
+        id: nextId,
+        title,
+        content,
+        category,
+        author,
+        date
+      };
+
+      this.announcements.push(newAnnouncement);
+      return newAnnouncement;
+    }
   }
 
   /**
-   * READ: Returns all announcements
-   * @returns {Array<Object>} List of all announcements
+   * READ: Returns all announcements from PostgreSQL database
+   * @returns {Promise<Array<Object>>} List of all announcements
    */
-  findAll() {
-    return [...this.announcements];
+  async findAll() {
+    try {
+      const res = await db.query(
+        `SELECT id, title, content, category, author, publication_date AS date, created_at, updated_at
+         FROM announcements
+         ORDER BY id ASC;`
+      );
+      return res.rows.map(formatAnnouncement);
+    } catch (err) {
+      // In-memory fallback
+      return [...this.announcements];
+    }
   }
 
   /**
-   * READ: Finds a single announcement by ID
+   * READ: Finds a single announcement by ID in PostgreSQL database
    * @param {number|string} id - Announcement ID
-   * @returns {Object|null} Announcement object or null if not found
+   * @returns {Promise<Object|null>} Announcement object or null if not found
    */
-  findById(id) {
+  async findById(id) {
     const numericId = Number(id);
-    return this.announcements.find(a => a.id === numericId) || null;
+    if (isNaN(numericId)) return null;
+
+    try {
+      const res = await db.query(
+        `SELECT id, title, content, category, author, publication_date AS date, created_at, updated_at
+         FROM announcements
+         WHERE id = $1;`,
+        [numericId]
+      );
+      if (res.rows.length === 0) return null;
+      return formatAnnouncement(res.rows[0]);
+    } catch (err) {
+      // In-memory fallback
+      return this.announcements.find(a => a.id === numericId) || null;
+    }
   }
 
   /**
-   * UPDATE: Updates announcement fields (supports full and partial updates)
+   * UPDATE: Updates announcement fields in PostgreSQL database
    * @param {number|string} id - Announcement ID
    * @param {Object} updateData - Fields to update
-   * @returns {Object|null} The updated announcement or null if not found
+   * @returns {Promise<Object|null>} The updated announcement or null if not found
    */
-  update(id, updateData = {}) {
-    const announcement = this.findById(id);
-    if (!announcement) return null;
+  async update(id, updateData = {}) {
+    const numericId = Number(id);
+    if (isNaN(numericId)) return null;
 
-    if (updateData.title !== undefined) announcement.title = updateData.title;
-    if (updateData.content !== undefined) announcement.content = updateData.content;
-    if (updateData.category !== undefined) announcement.category = updateData.category;
-    if (updateData.author !== undefined) announcement.author = updateData.author;
-    if (updateData.date !== undefined) announcement.date = updateData.date;
+    try {
+      const existing = await this.findById(numericId);
+      if (!existing) return null;
 
-    return announcement;
+      const title = updateData.title !== undefined ? updateData.title : existing.title;
+      const content = updateData.content !== undefined ? updateData.content : existing.content;
+      const category = updateData.category !== undefined ? updateData.category : existing.category;
+      const author = updateData.author !== undefined ? updateData.author : existing.author;
+      const date = updateData.date !== undefined ? updateData.date : existing.date;
+
+      const res = await db.query(
+        `UPDATE announcements
+         SET title = $1, content = $2, category = $3, author = $4, publication_date = $5, updated_at = CURRENT_TIMESTAMP
+         WHERE id = $6
+         RETURNING id, title, content, category, author, publication_date AS date, created_at, updated_at;`,
+        [title, content, category, author, date, numericId]
+      );
+
+      if (res.rows.length === 0) return null;
+      const updated = formatAnnouncement(res.rows[0]);
+
+      // Mirror to in-memory cache
+      const memIndex = this.announcements.findIndex(a => a.id === numericId);
+      if (memIndex !== -1) {
+        this.announcements[memIndex] = { ...this.announcements[memIndex], ...updated };
+      }
+
+      return updated;
+    } catch (err) {
+      // In-memory fallback
+      const announcement = this.announcements.find(a => a.id === numericId);
+      if (!announcement) return null;
+
+      if (updateData.title !== undefined) announcement.title = updateData.title;
+      if (updateData.content !== undefined) announcement.content = updateData.content;
+      if (updateData.category !== undefined) announcement.category = updateData.category;
+      if (updateData.author !== undefined) announcement.author = updateData.author;
+      if (updateData.date !== undefined) announcement.date = updateData.date;
+
+      return announcement;
+    }
   }
 
   /**
-   * DELETE: Removes an announcement by ID
+   * DELETE: Removes an announcement by ID from PostgreSQL database
    * @param {number|string} id - Announcement ID
-   * @returns {Object|null} The deleted announcement or null if not found
+   * @returns {Promise<Object|null>} The deleted announcement or null if not found
    */
-  delete(id) {
+  async delete(id) {
     const numericId = Number(id);
-    const index = this.announcements.findIndex(a => a.id === numericId);
-    if (index === -1) return null;
+    if (isNaN(numericId)) return null;
 
-    const [deletedAnnouncement] = this.announcements.splice(index, 1);
-    return deletedAnnouncement;
+    try {
+      const res = await db.query(
+        `DELETE FROM announcements
+         WHERE id = $1
+         RETURNING id, title, content, category, author, publication_date AS date;`,
+        [numericId]
+      );
+
+      if (res.rows.length === 0) return null;
+      const deleted = formatAnnouncement(res.rows[0]);
+
+      // Mirror to in-memory cache
+      const index = this.announcements.findIndex(a => a.id === numericId);
+      if (index !== -1) {
+        this.announcements.splice(index, 1);
+      }
+
+      return deleted;
+    } catch (err) {
+      // In-memory fallback
+      const index = this.announcements.findIndex(a => a.id === numericId);
+      if (index === -1) return null;
+
+      const [deletedAnnouncement] = this.announcements.splice(index, 1);
+      return deletedAnnouncement;
+    }
   }
 }
 

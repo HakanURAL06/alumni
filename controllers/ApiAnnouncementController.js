@@ -2,15 +2,16 @@ const Announcement = require('../models/Announcement');
 
 /**
  * ApiAnnouncementController
- * Handles RESTful API requests for Announcements, providing JSON CRUD responses.
+ * Handles RESTful API requests for Announcements, providing JSON CRUD responses
+ * backed by PostgreSQL database persistence.
  */
 class ApiAnnouncementController {
   /**
    * READ ALL: GET /api/announcements
    */
-  static getAll(req, res) {
+  static async getAll(req, res) {
     try {
-      const announcements = Announcement.findAll();
+      const announcements = await Announcement.findAll();
       return res.status(200).json(announcements);
     } catch (error) {
       return res.status(500).json({ error: 'Internal Server Error' });
@@ -20,9 +21,9 @@ class ApiAnnouncementController {
   /**
    * READ ONE: GET /api/announcements/:id
    */
-  static getById(req, res) {
+  static async getById(req, res) {
     try {
-      const announcement = Announcement.findById(req.params.id);
+      const announcement = await Announcement.findById(req.params.id);
       if (!announcement) {
         return res.status(404).json({ error: 'Announcement not found' });
       }
@@ -35,9 +36,9 @@ class ApiAnnouncementController {
   /**
    * CREATE: POST /api/announcements
    */
-  static create(req, res) {
+  static async create(req, res) {
     try {
-      const newAnnouncement = Announcement.create(req.body);
+      const newAnnouncement = await Announcement.create(req.body);
       return res.status(201).json({
         message: 'Announcement created successfully',
         announcement: newAnnouncement
@@ -50,9 +51,9 @@ class ApiAnnouncementController {
   /**
    * UPDATE (Full): PUT /api/announcements/:id
    */
-  static update(req, res) {
+  static async update(req, res) {
     try {
-      const updatedAnnouncement = Announcement.update(req.params.id, req.body);
+      const updatedAnnouncement = await Announcement.update(req.params.id, req.body);
       if (!updatedAnnouncement) {
         return res.status(404).json({ error: 'Announcement not found' });
       }
@@ -68,9 +69,9 @@ class ApiAnnouncementController {
   /**
    * UPDATE (Partial): PATCH /api/announcements/:id
    */
-  static partialUpdate(req, res) {
+  static async partialUpdate(req, res) {
     try {
-      const updatedAnnouncement = Announcement.update(req.params.id, req.body);
+      const updatedAnnouncement = await Announcement.update(req.params.id, req.body);
       if (!updatedAnnouncement) {
         return res.status(404).json({ error: 'Announcement not found' });
       }
@@ -86,9 +87,9 @@ class ApiAnnouncementController {
   /**
    * DELETE: DELETE /api/announcements/:id
    */
-  static delete(req, res) {
+  static async delete(req, res) {
     try {
-      const deletedAnnouncement = Announcement.delete(req.params.id);
+      const deletedAnnouncement = await Announcement.delete(req.params.id);
       if (!deletedAnnouncement) {
         return res.status(404).json({ error: 'Announcement not found' });
       }

@@ -3,16 +3,17 @@ const UserView = require('../views/UserView');
 
 /**
  * UserController
- * Implements complete CRUD operations for User resources with View Layer presentation.
+ * Implements complete CRUD operations for User resources with View Layer presentation,
+ * integrated with database persistence.
  */
 class UserController {
   /**
    * READ ALL: GET /users
    * Renders the Alumni Directory HTML view via the View Layer or returns JSON.
    */
-  static getAll(req, res) {
+  static async getAll(req, res) {
     try {
-      const users = User.findAll();
+      const users = await User.findAll();
 
       // Return HTML view for browser clients using the View Layer
       if (req.accepts('html')) {
@@ -48,9 +49,9 @@ class UserController {
    * READ ONE: GET /users/:id
    * Renders the individual profile HTML view via the View Layer or returns JSON.
    */
-  static getById(req, res) {
+  static async getById(req, res) {
     try {
-      const user = User.findById(req.params.id);
+      const user = await User.findById(req.params.id);
       if (!user) {
         if (req.accepts('html')) {
           return res.status(404).send('<h2>404 - User Not Found</h2><p><a href="/users">← Back to Directory</a></p>');
@@ -75,9 +76,9 @@ class UserController {
    * EDIT FORM: GET /users/:id/edit
    * Renders the HTML edit form via the View Layer for updating an alumni record.
    */
-  static getEditForm(req, res) {
+  static async getEditForm(req, res) {
     try {
-      const user = User.findById(req.params.id);
+      const user = await User.findById(req.params.id);
       if (!user) {
         if (req.accepts('html')) {
           return res.status(404).send('<h2>404 - User Not Found</h2><p><a href="/users">← Back to Directory</a></p>');
@@ -102,9 +103,9 @@ class UserController {
    * CREATE: POST /users
    * Receives form data or JSON, creates a new user, and redirects with View Layer feedback.
    */
-  static create(req, res) {
+  static async create(req, res) {
     try {
-      const newUser = User.create(req.body);
+      const newUser = await User.create(req.body);
       if (req.accepts('html')) {
         return res.redirect('/users?success=1');
       }
@@ -121,9 +122,9 @@ class UserController {
    * UPDATE: PUT /users/:id or POST /users/:id/edit
    * Updates existing alumni record and redirects with View Layer feedback.
    */
-  static update(req, res) {
+  static async update(req, res) {
     try {
-      const updatedUser = User.update(req.params.id, req.body);
+      const updatedUser = await User.update(req.params.id, req.body);
       if (!updatedUser) {
         if (req.accepts('html')) {
           return res.status(404).send('<h2>404 - User Not Found</h2><p><a href="/users">← Back to Directory</a></p>');
@@ -147,7 +148,7 @@ class UserController {
   /**
    * UPDATE (Partial): PATCH /users/:id
    */
-  static partialUpdate(req, res) {
+  static async partialUpdate(req, res) {
     return UserController.update(req, res);
   }
 
@@ -155,9 +156,9 @@ class UserController {
    * DELETE: DELETE /users/:id or POST /users/:id/delete
    * Deletes an alumni record and redirects to /users with View Layer feedback.
    */
-  static delete(req, res) {
+  static async delete(req, res) {
     try {
-      const deletedUser = User.delete(req.params.id);
+      const deletedUser = await User.delete(req.params.id);
       if (!deletedUser) {
         if (req.accepts('html')) {
           return res.status(404).send('<h2>404 - User Not Found</h2><p><a href="/users">← Back to Directory</a></p>');

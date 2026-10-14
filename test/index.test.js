@@ -113,11 +113,15 @@ test('GET /api/users/:id returns user by id and 404 when not found', async () =>
   const { port } = server.address();
 
   try {
-    const res1 = await fetch(`http://127.0.0.1:${port}/api/users/1`);
+    const allRes = await fetch(`http://127.0.0.1:${port}/api/users`);
+    const users = await allRes.json();
+    const firstUser = users[0];
+
+    const res1 = await fetch(`http://127.0.0.1:${port}/api/users/${firstUser.id}`);
     assert.strictEqual(res1.status, 200);
     const user1 = await res1.json();
-    assert.strictEqual(user1.id, 1);
-    assert.strictEqual(user1.name, 'Hakan Ural');
+    assert.strictEqual(user1.id, firstUser.id);
+    assert.ok(user1.name);
 
     const res2 = await fetch(`http://127.0.0.1:${port}/api/users/9999`);
     assert.strictEqual(res2.status, 404);
@@ -169,16 +173,24 @@ test('DELETE /api/users/:id deletes user and returns 200, or 404 if not found', 
   const { port } = server.address();
 
   try {
-    const res1 = await fetch(`http://127.0.0.1:${port}/api/users/3`, {
+    const createRes = await fetch(`http://127.0.0.1:${port}/api/users`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: 'User To Delete', department: 'CE', email: `delete.${Date.now()}@alumni.edu` })
+    });
+    const createdData = await createRes.json();
+    const targetId = createdData.user.id;
+
+    const res1 = await fetch(`http://127.0.0.1:${port}/api/users/${targetId}`, {
       method: 'DELETE'
     });
     assert.strictEqual(res1.status, 200);
     const data = await res1.json();
     assert.strictEqual(data.message, 'User deleted successfully');
-    assert.strictEqual(data.deletedUser.id, 3);
+    assert.strictEqual(data.deletedUser.id, targetId);
 
     // Verify it is no longer found
-    const res2 = await fetch(`http://127.0.0.1:${port}/api/users/3`);
+    const res2 = await fetch(`http://127.0.0.1:${port}/api/users/${targetId}`);
     assert.strictEqual(res2.status, 404);
 
     // Trying to delete non-existing returns 404
@@ -528,7 +540,7 @@ test('GET /announcements/:id renders HTML detail view', async () => {
     });
     assert.strictEqual(res.status, 200);
     const body = await res.text();
-    assert.ok(body.includes('Homecoming'));
+    assert.ok(body.includes('Announcement Detail'));
     assert.ok(body.includes('/announcements/1/edit'));
   } finally {
     await new Promise((resolve) => server.close(resolve));

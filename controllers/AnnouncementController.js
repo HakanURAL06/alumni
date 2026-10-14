@@ -3,16 +3,17 @@ const AnnouncementView = require('../views/AnnouncementView');
 
 /**
  * AnnouncementController
- * Handles web/presentation actions and management interface for announcements using the View Layer.
+ * Handles web/presentation actions and management interface for announcements using the View Layer,
+ * integrated with database persistence.
  */
 class AnnouncementController {
   /**
    * READ ALL: GET /announcements
    * Renders the Announcements management interface HTML view or returns JSON.
    */
-  static getAll(req, res) {
+  static async getAll(req, res) {
     try {
-      const announcements = Announcement.findAll();
+      const announcements = await Announcement.findAll();
 
       if (req.accepts('html')) {
         let message = null;
@@ -47,9 +48,9 @@ class AnnouncementController {
    * READ ONE: GET /announcements/:id
    * Renders the single announcement detail HTML view or returns JSON.
    */
-  static getById(req, res) {
+  static async getById(req, res) {
     try {
-      const announcement = Announcement.findById(req.params.id);
+      const announcement = await Announcement.findById(req.params.id);
       if (!announcement) {
         if (req.accepts('html')) {
           return res.status(404).send('<h2>404 - Announcement Not Found</h2><p><a href="/announcements">← Back to Announcements</a></p>');
@@ -74,9 +75,9 @@ class AnnouncementController {
    * EDIT FORM: GET /announcements/:id/edit
    * Renders the HTML edit form via the View Layer.
    */
-  static getEditForm(req, res) {
+  static async getEditForm(req, res) {
     try {
-      const announcement = Announcement.findById(req.params.id);
+      const announcement = await Announcement.findById(req.params.id);
       if (!announcement) {
         if (req.accepts('html')) {
           return res.status(404).send('<h2>404 - Announcement Not Found</h2><p><a href="/announcements">← Back to Announcements</a></p>');
@@ -101,9 +102,9 @@ class AnnouncementController {
    * CREATE: POST /announcements
    * Receives form data or JSON, publishes a new announcement, and redirects to management view.
    */
-  static create(req, res) {
+  static async create(req, res) {
     try {
-      const newAnnouncement = Announcement.create(req.body);
+      const newAnnouncement = await Announcement.create(req.body);
       if (req.accepts('html')) {
         return res.redirect('/announcements?success=1');
       }
@@ -120,9 +121,9 @@ class AnnouncementController {
    * UPDATE: PUT /announcements/:id or POST /announcements/:id/edit
    * Updates an existing announcement and redirects to management view.
    */
-  static update(req, res) {
+  static async update(req, res) {
     try {
-      const updatedAnnouncement = Announcement.update(req.params.id, req.body);
+      const updatedAnnouncement = await Announcement.update(req.params.id, req.body);
       if (!updatedAnnouncement) {
         if (req.accepts('html')) {
           return res.status(404).send('<h2>404 - Announcement Not Found</h2><p><a href="/announcements">← Back to Announcements</a></p>');
@@ -146,7 +147,7 @@ class AnnouncementController {
   /**
    * UPDATE (Partial): PATCH /announcements/:id
    */
-  static partialUpdate(req, res) {
+  static async partialUpdate(req, res) {
     return AnnouncementController.update(req, res);
   }
 
@@ -154,9 +155,9 @@ class AnnouncementController {
    * DELETE: DELETE /announcements/:id or POST /announcements/:id/delete
    * Removes an announcement and redirects to management view.
    */
-  static delete(req, res) {
+  static async delete(req, res) {
     try {
-      const deletedAnnouncement = Announcement.delete(req.params.id);
+      const deletedAnnouncement = await Announcement.delete(req.params.id);
       if (!deletedAnnouncement) {
         if (req.accepts('html')) {
           return res.status(404).send('<h2>404 - Announcement Not Found</h2><p><a href="/announcements">← Back to Announcements</a></p>');

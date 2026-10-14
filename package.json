@@ -5,7 +5,10 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "test": "node --test"
+    "test": "node --test",
+    "migrate": "node scripts/migrate.js",
+    "seed": "node scripts/seed.js",
+    "db:seed": "node scripts/seed.js"
   },
   "repository": {
     "type": "git",
@@ -21,6 +24,7 @@
   "homepage": "https://github.com/HakanURAL06/alumni#readme",
   "dependencies": {
     "express": "^5.2.1",
+    "pg": "^8.23.1",
     "swagger-ui-express": "^5.0.1"
   }
 }

@@ -2,15 +2,16 @@ const User = require('../models/User');
 
 /**
  * ApiUserController
- * Handles RESTful API requests for Users, providing JSON CRUD responses.
+ * Handles RESTful API requests for Users, providing JSON CRUD responses
+ * backed by PostgreSQL database persistence.
  */
 class ApiUserController {
   /**
    * READ ALL: GET /api/users
    */
-  static getAll(req, res) {
+  static async getAll(req, res) {
     try {
-      const users = User.findAll();
+      const users = await User.findAll();
       return res.status(200).json(users);
     } catch (error) {
       return res.status(500).json({ error: 'Internal Server Error' });
@@ -20,9 +21,9 @@ class ApiUserController {
   /**
    * READ ONE: GET /api/users/:id
    */
-  static getById(req, res) {
+  static async getById(req, res) {
     try {
-      const user = User.findById(req.params.id);
+      const user = await User.findById(req.params.id);
       if (!user) {
         return res.status(404).json({ error: 'User not found' });
       }
@@ -35,9 +36,9 @@ class ApiUserController {
   /**
    * CREATE: POST /api/users
    */
-  static create(req, res) {
+  static async create(req, res) {
     try {
-      const newUser = User.create(req.body);
+      const newUser = await User.create(req.body);
       return res.status(201).json({
         message: 'User created successfully',
         user: newUser
@@ -50,9 +51,9 @@ class ApiUserController {
   /**
    * UPDATE (Full): PUT /api/users/:id
    */
-  static update(req, res) {
+  static async update(req, res) {
     try {
-      const updatedUser = User.update(req.params.id, req.body);
+      const updatedUser = await User.update(req.params.id, req.body);
       if (!updatedUser) {
         return res.status(404).json({ error: 'User not found' });
       }
@@ -68,9 +69,9 @@ class ApiUserController {
   /**
    * UPDATE (Partial): PATCH /api/users/:id
    */
-  static partialUpdate(req, res) {
+  static async partialUpdate(req, res) {
     try {
-      const updatedUser = User.update(req.params.id, req.body);
+      const updatedUser = await User.update(req.params.id, req.body);
       if (!updatedUser) {
         return res.status(404).json({ error: 'User not found' });
       }
@@ -86,9 +87,9 @@ class ApiUserController {
   /**
    * DELETE: DELETE /api/users/:id
    */
-  static delete(req, res) {
+  static async delete(req, res) {
     try {
-      const deletedUser = User.delete(req.params.id);
+      const deletedUser = await User.delete(req.params.id);
       if (!deletedUser) {
         return res.status(404).json({ error: 'User not found' });
       }
