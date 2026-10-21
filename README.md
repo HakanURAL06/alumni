@@ -85,14 +85,14 @@ flowchart TD
     
     subgraph Routing ["Routing Layer (routes/)"]
         AppIndex["Express App (index.js)"]
-        UserRouter["user Router (routes/user.js) -> /user, /users"]
-        ApiUserRouter["apiUser Router (routes/apiUser.js) -> /apiuser, /api/users"]
-        AnnounceRouter["announcement Router (routes/announcement.js) -> /announcements"]
-        ApiAnnounceRouter["apiAnnouncement Router (routes/apiAnnouncement.js) -> /api/announcements"]
-        JobRouter["jobPosting Router (routes/jobPosting.js) -> /jobs"]
-        ApiJobRouter["apiJobPosting Router (routes/apiJobPosting.js) -> /api/jobs"]
-        AppRouter["application Router (routes/application.js) -> /applications"]
-        ApiAppRouter["apiApplication Router (routes/apiApplication.js) -> /api/applications"]
+        UserRouter["user Router (routes/user.js)"]
+        ApiUserRouter["apiUser Router (routes/apiUser.js)"]
+        AnnounceRouter["announcement Router (routes/announcement.js)"]
+        ApiAnnounceRouter["apiAnnouncement Router (routes/apiAnnouncement.js)"]
+        JobRouter["jobPosting Router (routes/jobPosting.js)"]
+        ApiJobRouter["apiJobPosting Router (routes/apiJobPosting.js)"]
+        AppRouter["application Router (routes/application.js)"]
+        ApiAppRouter["apiApplication Router (routes/apiApplication.js)"]
     end
 
     subgraph Controller ["Controller Layer (controllers/)"]
@@ -124,7 +124,7 @@ flowchart TD
         JSONView["JSON API Responses (Content-Type: application/json)"]
     end
 
-    Client -->|HTTP Request| AppIndex
+    Client -->|"HTTP Request"| AppIndex
     AppIndex --> UserRouter
     AppIndex --> ApiUserRouter
     AppIndex --> AnnounceRouter
@@ -142,37 +142,37 @@ flowchart TD
     ApiJobRouter --> ApiJobCtrl
     AppRouter --> AppCtrl
     ApiAppRouter --> ApiAppCtrl
-    UserCtrl -->|Async CRUD Operations| UserModel
-    ApiUserCtrl -->|Async CRUD Operations| UserModel
-    AnnounceCtrl -->|Async CRUD Operations| AnnounceModel
-    ApiAnnounceCtrl -->|Async CRUD Operations| AnnounceModel
-    JobCtrl -->|Async CRUD Operations| JobPostingModel
-    ApiJobCtrl -->|Async CRUD Operations| JobPostingModel
-    AppCtrl -->|Async CRUD Operations| AppModel
-    ApiAppCtrl -->|Async CRUD Operations| AppModel
+    UserCtrl -->|"Async CRUD Operations"| UserModel
+    ApiUserCtrl -->|"Async CRUD Operations"| UserModel
+    AnnounceCtrl -->|"Async CRUD Operations"| AnnounceModel
+    ApiAnnounceCtrl -->|"Async CRUD Operations"| AnnounceModel
+    JobCtrl -->|"Async CRUD Operations"| JobPostingModel
+    ApiJobCtrl -->|"Async CRUD Operations"| JobPostingModel
+    AppCtrl -->|"Async CRUD Operations"| AppModel
+    ApiAppCtrl -->|"Async CRUD Operations"| AppModel
     UserModel --> DBPool
     AnnounceModel --> DBPool
     JobPostingModel --> DBPool
     AppModel --> DBPool
     DBPool --> PostgresDB
-    UserModel -.->|Fallback if DB offline| MemoryStore
-    AnnounceModel -.->|Fallback if DB offline| MemoryStore
-    JobPostingModel -.->|Fallback if DB offline| MemoryStore
-    AppModel -.->|Fallback if DB offline| MemoryStore
-    UserCtrl -->|Render HTML / View Helper| UserViews
-    AnnounceCtrl -->|Render HTML / View Helper| AnnounceViews
-    ApiUserCtrl -->|Render JSON| JSONView
-    ApiAnnounceCtrl -->|Render JSON| JSONView
-    ApiJobCtrl -->|Render JSON| JSONView
-    ApiAppCtrl -->|Render JSON| JSONView
-    JobCtrl -->|Render JSON / Web| JSONView
-    AppCtrl -->|Render JSON / Web| JSONView
+    UserModel -.->|"Fallback if DB offline"| MemoryStore
+    AnnounceModel -.->|"Fallback if DB offline"| MemoryStore
+    JobPostingModel -.->|"Fallback if DB offline"| MemoryStore
+    AppModel -.->|"Fallback if DB offline"| MemoryStore
+    UserCtrl -->|"Render HTML"| UserViews
+    AnnounceCtrl -->|"Render HTML"| AnnounceViews
+    ApiUserCtrl -->|"Render JSON"| JSONView
+    ApiAnnounceCtrl -->|"Render JSON"| JSONView
+    ApiJobCtrl -->|"Render JSON"| JSONView
+    ApiAppCtrl -->|"Render JSON"| JSONView
+    JobCtrl -->|"Render Views"| JSONView
+    AppCtrl -->|"Render Views"| JSONView
     UtilHandlers --> SwaggerView
     UtilHandlers --> JSONView
-    UserViews -->|HTTP Response (HTML)| Client
-    AnnounceViews -->|HTTP Response (HTML)| Client
-    SwaggerView -->|HTTP Response (HTML)| Client
-    JSONView -->|HTTP Response (JSON)| Client
+    UserViews -->|"HTML Response"| Client
+    AnnounceViews -->|"HTML Response"| Client
+    SwaggerView -->|"HTML Response"| Client
+    JSONView -->|"JSON Response"| Client
 ```
 
 ### 1. 🚦 Routing Layer (`routes/`)
