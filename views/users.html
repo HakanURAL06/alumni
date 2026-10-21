@@ -199,9 +199,37 @@
     .nav-links a:hover {
       text-decoration: underline;
     }
+    .top-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #0f172a;
+      color: #fff;
+      padding: 12px 24px;
+      border-radius: 10px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+    }
+    .top-nav .logo { font-weight: 700; font-size: 1.1rem; }
+    .top-nav .nav-menu { display: flex; gap: 18px; }
+    .top-nav a { color: #cbd5e1; text-decoration: none; font-size: 0.9rem; font-weight: 500; }
+    .top-nav a:hover, .top-nav a.active { color: #38bdf8; }
   </style>
 </head>
 <body>
+  <!-- Navigation Bar -->
+  <div class="top-nav">
+    <div class="logo">🎓 Alumni Tracking Portal</div>
+    <div class="nav-menu">
+      <a href="/">Home</a>
+      <a href="/users" class="active">Alumni Directory</a>
+      <a href="/announcements">Announcements</a>
+      <a href="/jobs">Job Board</a>
+      <a href="/applications">Applications</a>
+      <a href="/api/swagger">Swagger Docs</a>
+    </div>
+  </div>
+
   <div class="container">
     <span class="badge">MVC Architecture &bull; Complete CRUD with View Layer</span>
     <h1>🎓 Alumni Directory</h1>

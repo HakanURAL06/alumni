@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Job #{{ID}} - Alumni Portal</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      max-width: 860px;
+      margin: 30px auto;
+      padding: 0 20px;
+      color: #1e293b;
+      background-color: #f8fafc;
+      line-height: 1.5;
+    }
+    .top-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #0f172a;
+      color: #fff;
+      padding: 12px 24px;
+      border-radius: 10px;
+      margin-bottom: 24px;
+    }
+    .top-nav .logo { font-weight: 700; font-size: 1.1rem; }
+    .top-nav .nav-menu { display: flex; gap: 18px; }
+    .top-nav a { color: #cbd5e1; text-decoration: none; font-size: 0.9rem; font-weight: 500; }
+    .top-nav a:hover, .top-nav a.active { color: #38bdf8; }
+    .container {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 32px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    }
+    h1 {
+      color: #0f172a;
+      margin-top: 0;
+      margin-bottom: 6px;
+      font-size: 1.75rem;
+    }
+    p.subtitle { color: #64748b; margin-top: 0; margin-bottom: 24px; }
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 14px;
+    }
+    label {
+      font-size: 0.875rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: #334155;
+    }
+    input, select, textarea {
+      padding: 10px 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      background: #ffffff;
+      font-family: inherit;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+    .actions-bar {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+    }
+    button.btn-primary {
+      background: #2563eb;
+      color: #ffffff;
+      border: none;
+      padding: 10px 24px;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    button.btn-primary:hover { background: #1d4ed8; }
+    .btn-cancel {
+      background: #e2e8f0;
+      color: #334155;
+      padding: 10px 20px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-size: 0.95rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+    }
+    .btn-cancel:hover { background: #cbd5e1; }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <div class="top-nav">
+    <div class="logo">🎓 Alumni Tracking Portal</div>
+    <div class="nav-menu">
+      <a href="/">Home</a>
+      <a href="/users">Alumni Directory</a>
+      <a href="/announcements">Announcements</a>
+      <a href="/jobs" class="active">Job Board</a>
+      <a href="/applications">Applications</a>
+      <a href="/api/swagger">Swagger Docs</a>
+    </div>
+  </div>
+
+  <div class="container">
+    <h1>✏️ Edit Job Posting #{{ID}}</h1>
+    <p class="subtitle">Modify position specifications, compensation, or active application status.</p>
+
+    <form action="/jobs/{{ID}}/edit" method="POST">
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="title">Job Title *</label>
+          <input type="text" id="title" name="title" value="{{TITLE}}" required>
+        </div>
+        <div class="form-group">
+          <label for="company">Company *</label>
+          <input type="text" id="company" name="company" value="{{COMPANY}}" required>
+        </div>
+        <div class="form-group">
+          <label for="location">Location *</label>
+          <input type="text" id="location" name="location" value="{{LOCATION}}" required>
+        </div>
+        <div class="form-group">
+          <label for="jobType">Job Type *</label>
+          <select id="jobType" name="jobType">
+            <option value="Full-time">Full-time</option>
+            <option value="Part-time">Part-time</option>
+            <option value="Contract">Contract</option>
+            <option value="Internship">Internship</option>
+            <option value="Remote">Remote</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="salary">Compensation / Salary</label>
+          <input type="text" id="salary" name="salary" value="{{SALARY}}">
+        </div>
+        <div class="form-group">
+          <label for="contactEmail">Contact Email *</label>
+          <input type="email" id="contactEmail" name="contactEmail" value="{{CONTACT_EMAIL}}" required>
+        </div>
+        <div class="form-group">
+          <label for="status">Posting Status</label>
+          <select id="status" name="status">
+            <option value="Active">Active</option>
+            <option value="Draft">Draft</option>
+            <option value="Closed">Closed</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="applicationDeadline">Application Deadline</label>
+          <input type="date" id="applicationDeadline" name="applicationDeadline" value="{{DEADLINE}}">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="description">Job Description</label>
+        <textarea id="description" name="description" rows="4">{{DESCRIPTION}}</textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="requirements">Key Requirements</label>
+        <textarea id="requirements" name="requirements" rows="3">{{REQUIREMENTS}}</textarea>
+      </div>
+
+      <div class="actions-bar">
+        <button type="submit" class="btn-primary">💾 Save Changes</button>
+        <a href="/jobs/{{ID}}" class="btn-cancel">Cancel</a>
+      </div>
+    </form>
+  </div>
+
+</body>
+</html>

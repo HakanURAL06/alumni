@@ -33,6 +33,22 @@
     {
       "name": "Announcement",
       "description": "Web and Management Interface endpoints handled by AnnouncementController via routes/announcement.js (/announcements)"
+    },
+    {
+      "name": "ApiJobPosting",
+      "description": "RESTful JSON API direct endpoints (/api/jobs) and nested endpoints (/api/users/{userId}/jobs) handled by ApiJobPostingController"
+    },
+    {
+      "name": "JobPosting",
+      "description": "Web and Presentation endpoints handled by JobPostingController (/jobs)"
+    },
+    {
+      "name": "ApiApplication",
+      "description": "RESTful JSON API direct endpoints (/api/applications) and nested endpoints (/api/users/{userId}/applications, /api/jobs/{jobId}/applications) handled by ApiApplicationController"
+    },
+    {
+      "name": "Application",
+      "description": "Web and Presentation endpoints handled by ApplicationController (/applications, /users/{userId}/applications, /jobs/{jobId}/applications)"
     }
   ],
   "servers": [
@@ -1098,6 +1114,426 @@
           "404": { "description": "Announcement not found" }
         }
       }
+    },
+    "/api/jobs": {
+      "get": {
+        "tags": ["ApiJobPosting"],
+        "summary": "List all job postings (Direct RESTful route)",
+        "description": "Retrieves all career and internship postings with optional query filtering.",
+        "parameters": [
+          { "name": "status", "in": "query", "schema": { "type": "string", "enum": ["Active", "Closed", "Draft"] } },
+          { "name": "jobType", "in": "query", "schema": { "type": "string" } },
+          { "name": "company", "in": "query", "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "List of job postings" }
+        }
+      },
+      "post": {
+        "tags": ["ApiJobPosting"],
+        "summary": "Create a new job posting (Direct RESTful route)",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/JobPostingInput" }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Job posting created successfully" }
+        }
+      }
+    },
+    "/api/jobs/{id}": {
+      "get": {
+        "tags": ["ApiJobPosting"],
+        "summary": "Get job posting by ID (Direct route)",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
+        "responses": {
+          "200": { "description": "Job posting details" },
+          "404": { "description": "Job posting not found" }
+        }
+      },
+      "put": {
+        "tags": ["ApiJobPosting"],
+        "summary": "Update job posting (Full update)",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/JobPostingInput" } } } },
+        "responses": { "200": { "description": "Updated job posting" }, "404": { "description": "Not found" } }
+      },
+      "patch": {
+        "tags": ["ApiJobPosting"],
+        "summary": "Partially modify job posting",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object" } } } },
+        "responses": { "200": { "description": "Modified job posting" }, "404": { "description": "Not found" } }
+      },
+      "delete": {
+        "tags": ["ApiJobPosting"],
+        "summary": "Delete job posting",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
+        "responses": { "200": { "description": "Deleted job posting" }, "404": { "description": "Not found" } }
+      }
+    },
+    "/api/jobs/{id}/user": {
+      "get": {
+        "tags": ["ApiJobPosting"],
+        "summary": "Get the alumni profile who posted this job",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
+        "responses": { "200": { "description": "Publisher user profile" }, "404": { "description": "Not found" } }
+      }
+    },
+    "/api/users/{userId}/jobs": {
+      "get": {
+        "tags": ["ApiJobPosting"],
+        "summary": "List all job postings published by an alumni member (Nested route)",
+        "parameters": [{ "name": "userId", "in": "path", "required": true, "schema": { "type": "integer" } }],
+        "responses": { "200": { "description": "List of user's job postings" }, "404": { "description": "User not found" } }
+      },
+      "post": {
+        "tags": ["ApiJobPosting"],
+        "summary": "Create job posting nested under an alumni member",
+        "parameters": [{ "name": "userId", "in": "path", "required": true, "schema": { "type": "integer" } }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/JobPostingInput" } } } },
+        "responses": { "201": { "description": "Job created and bound to user" }, "404": { "description": "User not found" } }
+      }
+    },
+    "/api/users/{userId}/jobs/{id}": {
+      "get": {
+        "tags": ["ApiJobPosting"],
+        "summary": "Get job posting under user (Nested route)",
+        "parameters": [
+          { "name": "userId", "in": "path", "required": true, "schema": { "type": "integer" } },
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": { "200": { "description": "Job posting details" }, "404": { "description": "Not found" } }
+      },
+      "put": {
+        "tags": ["ApiJobPosting"],
+        "summary": "Update job posting under user",
+        "parameters": [
+          { "name": "userId", "in": "path", "required": true, "schema": { "type": "integer" } },
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": { "200": { "description": "Updated job" }, "404": { "description": "Not found" } }
+      },
+      "delete": {
+        "tags": ["ApiJobPosting"],
+        "summary": "Delete job posting under user",
+        "parameters": [
+          { "name": "userId", "in": "path", "required": true, "schema": { "type": "integer" } },
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": { "200": { "description": "Deleted job" }, "404": { "description": "Not found" } }
+      }
+    },
+    "/jobs": {
+      "get": {
+        "tags": ["JobPosting"],
+        "summary": "Direct Web view: Career and Job Postings Dashboard",
+        "responses": { "200": { "description": "Job board view" } }
+      }
+    },
+    "/users/{userId}/jobs": {
+      "get": {
+        "tags": ["JobPosting"],
+        "summary": "Nested Web view: Jobs published by a specific alumni",
+        "parameters": [{ "name": "userId", "in": "path", "required": true, "schema": { "type": "integer" } }],
+        "responses": { "200": { "description": "User's job postings view" } }
+      }
+    },
+    "/api/applications": {
+      "get": {
+        "tags": ["ApiApplication"],
+        "summary": "List all job applications (Direct RESTful route)",
+        "description": "Retrieves all job applications with optional filtering by userId, jobPostingId, and status.",
+        "parameters": [
+          { "name": "userId", "in": "query", "schema": { "type": "integer" } },
+          { "name": "jobPostingId", "in": "query", "schema": { "type": "integer" } },
+          { "name": "status", "in": "query", "schema": { "type": "string", "enum": ["Submitted", "Under Review", "Interviewing", "Accepted", "Rejected", "Withdrawn"] } }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of job applications",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Application" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["ApiApplication"],
+        "summary": "Submit a job application (Direct RESTful route)",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/ApplicationInput" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Application submitted successfully",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ApplicationResponse" }
+              }
+            }
+          },
+          "400": { "description": "userId and jobPostingId required" }
+        }
+      }
+    },
+    "/api/applications/{id}": {
+      "get": {
+        "tags": ["ApiApplication"],
+        "summary": "Get job application by ID (Direct route)",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
+        "responses": {
+          "200": {
+            "description": "Job application details with eager-loaded candidate and job information",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Application" }
+              }
+            }
+          },
+          "404": { "description": "Application not found" }
+        }
+      },
+      "put": {
+        "tags": ["ApiApplication"],
+        "summary": "Update job application (Full update)",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/ApplicationInput" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Updated application" },
+          "404": { "description": "Application not found" }
+        }
+      },
+      "patch": {
+        "tags": ["ApiApplication"],
+        "summary": "Partially modify job application status or details",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/ApplicationPartialInput" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Modified application" },
+          "404": { "description": "Application not found" }
+        }
+      },
+      "delete": {
+        "tags": ["ApiApplication"],
+        "summary": "Delete / withdraw job application",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
+        "responses": {
+          "200": { "description": "Deleted application" },
+          "404": { "description": "Application not found" }
+        }
+      }
+    },
+    "/api/users/{userId}/applications": {
+      "get": {
+        "tags": ["ApiApplication"],
+        "summary": "List all applications submitted by an alumni user (Nested route)",
+        "parameters": [{ "name": "userId", "in": "path", "required": true, "schema": { "type": "integer" } }],
+        "responses": {
+          "200": {
+            "description": "User's job applications",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Application" }
+                }
+              }
+            }
+          },
+          "404": { "description": "User not found" }
+        }
+      },
+      "post": {
+        "tags": ["ApiApplication"],
+        "summary": "Submit application nested under an alumni member",
+        "parameters": [{ "name": "userId", "in": "path", "required": true, "schema": { "type": "integer" } }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["jobPostingId"],
+                "properties": {
+                  "jobPostingId": { "type": "integer", "example": 1 },
+                  "resumeUrl": { "type": "string", "example": "https://storage.example.com/resumes/cv.pdf" },
+                  "coverNote": { "type": "string", "example": "Applying for this position" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Application created and bound to user" },
+          "404": { "description": "User not found" }
+        }
+      }
+    },
+    "/api/users/{userId}/applications/{id}": {
+      "get": {
+        "tags": ["ApiApplication"],
+        "summary": "Get specific application submitted by user (Nested route)",
+        "parameters": [
+          { "name": "userId", "in": "path", "required": true, "schema": { "type": "integer" } },
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": { "description": "Application details" },
+          "404": { "description": "Application not found for this user" }
+        }
+      },
+      "put": {
+        "tags": ["ApiApplication"],
+        "summary": "Update user's application",
+        "parameters": [
+          { "name": "userId", "in": "path", "required": true, "schema": { "type": "integer" } },
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": { "200": { "description": "Updated application" }, "404": { "description": "Not found" } }
+      },
+      "delete": {
+        "tags": ["ApiApplication"],
+        "summary": "Delete user's application",
+        "parameters": [
+          { "name": "userId", "in": "path", "required": true, "schema": { "type": "integer" } },
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": { "200": { "description": "Deleted application" }, "404": { "description": "Not found" } }
+      }
+    },
+    "/api/jobs/{jobId}/applications": {
+      "get": {
+        "tags": ["ApiApplication"],
+        "summary": "List all candidate applications received for a job posting (Nested route)",
+        "parameters": [{ "name": "jobId", "in": "path", "required": true, "schema": { "type": "integer" } }],
+        "responses": {
+          "200": {
+            "description": "Candidate applications for job",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Application" }
+                }
+              }
+            }
+          },
+          "404": { "description": "Job posting not found" }
+        }
+      },
+      "post": {
+        "tags": ["ApiApplication"],
+        "summary": "Submit candidate application nested under a job posting",
+        "parameters": [{ "name": "jobId", "in": "path", "required": true, "schema": { "type": "integer" } }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["userId"],
+                "properties": {
+                  "userId": { "type": "integer", "example": 2 },
+                  "resumeUrl": { "type": "string", "example": "https://storage.example.com/resumes/cv.pdf" },
+                  "coverNote": { "type": "string", "example": "Candidate pitch" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Application created and bound to job posting" },
+          "404": { "description": "Job posting not found" }
+        }
+      }
+    },
+    "/api/jobs/{jobId}/applications/{id}": {
+      "get": {
+        "tags": ["ApiApplication"],
+        "summary": "Get specific candidate application for job (Nested route)",
+        "parameters": [
+          { "name": "jobId", "in": "path", "required": true, "schema": { "type": "integer" } },
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": { "description": "Candidate application details" },
+          "404": { "description": "Application not found for this job" }
+        }
+      },
+      "patch": {
+        "tags": ["ApiApplication"],
+        "summary": "Update application status (e.g., Shortlisted, Accepted, Rejected)",
+        "parameters": [
+          { "name": "jobId", "in": "path", "required": true, "schema": { "type": "integer" } },
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "status": { "type": "string", "enum": ["Submitted", "Under Review", "Interviewing", "Accepted", "Rejected", "Withdrawn"], "example": "Accepted" }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "200": { "description": "Application status updated" }, "404": { "description": "Not found" } }
+      }
+    },
+    "/applications": {
+      "get": {
+        "tags": ["Application"],
+        "summary": "Direct Web view: All applications overview dashboard",
+        "responses": { "200": { "description": "Applications overview view" } }
+      }
+    },
+    "/users/{userId}/applications": {
+      "get": {
+        "tags": ["Application"],
+        "summary": "Nested Web view: Applications submitted by an alumni member ('My Applications')",
+        "parameters": [{ "name": "userId", "in": "path", "required": true, "schema": { "type": "integer" } }],
+        "responses": { "200": { "description": "User's job applications web view" } }
+      }
+    },
+    "/jobs/{jobId}/applications": {
+      "get": {
+        "tags": ["Application"],
+        "summary": "Nested Web view: Candidate applications review for a job posting",
+        "parameters": [{ "name": "jobId", "in": "path", "required": true, "schema": { "type": "integer" } }],
+        "responses": { "200": { "description": "Candidate applications review web view" } }
+      }
     }
   },
   "components": {
@@ -1191,6 +1627,101 @@
         "type": "object",
         "properties": {
           "status": { "type": "string", "example": "ok" }
+        }
+      },
+      "JobPosting": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "example": 1 },
+          "title": { "type": "string", "example": "Senior Backend Engineer" },
+          "company": { "type": "string", "example": "TechCorp Innovations" },
+          "location": { "type": "string", "example": "Istanbul / Hybrid" },
+          "jobType": { "type": "string", "example": "Full-time" },
+          "description": { "type": "string", "example": "Scaling distributed cloud services." },
+          "requirements": { "type": "string", "example": "Node.js, PostgreSQL, Docker." },
+          "salary": { "type": "string", "example": "₺85,000 / month" },
+          "contactEmail": { "type": "string", "example": "careers@techcorp.com" },
+          "postedBy": { "type": "integer", "example": 1 },
+          "status": { "type": "string", "example": "Active" },
+          "applicationDeadline": { "type": "string", "example": "2026-12-31" }
+        }
+      },
+      "JobPostingInput": {
+        "type": "object",
+        "required": ["title", "company", "contactEmail"],
+        "properties": {
+          "title": { "type": "string", "example": "Backend Developer" },
+          "company": { "type": "string", "example": "Acme Corp" },
+          "location": { "type": "string", "example": "Remote" },
+          "jobType": { "type": "string", "example": "Full-time" },
+          "description": { "type": "string", "example": "Node.js microservices developer" },
+          "requirements": { "type": "string", "example": "Express, SQL, Git" },
+          "salary": { "type": "string", "example": "₺70,000 / month" },
+          "contactEmail": { "type": "string", "example": "jobs@acme.com" },
+          "postedBy": { "type": "integer", "example": 1 },
+          "status": { "type": "string", "example": "Active" },
+          "applicationDeadline": { "type": "string", "example": "2026-12-15" }
+        }
+      },
+      "Application": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "example": 1 },
+          "userId": { "type": "integer", "example": 1 },
+          "jobPostingId": { "type": "integer", "example": 1 },
+          "resumeUrl": { "type": "string", "example": "https://storage.example.com/resumes/hakan-resume.pdf" },
+          "coverNote": { "type": "string", "example": "I have extensive experience in distributed systems and Node.js." },
+          "status": {
+            "type": "string",
+            "enum": ["Submitted", "Under Review", "Interviewing", "Accepted", "Rejected", "Withdrawn"],
+            "example": "Submitted"
+          },
+          "appliedAt": { "type": "string", "example": "2026-10-21T09:00:00.000Z" },
+          "createdAt": { "type": "string", "example": "2026-10-21T09:00:00.000Z" },
+          "updatedAt": { "type": "string", "example": "2026-10-21T09:00:00.000Z" },
+          "user": { "$ref": "#/components/schemas/User" },
+          "jobPosting": { "$ref": "#/components/schemas/JobPosting" }
+        }
+      },
+      "ApplicationInput": {
+        "type": "object",
+        "required": ["userId", "jobPostingId"],
+        "properties": {
+          "userId": { "type": "integer", "example": 1 },
+          "jobPostingId": { "type": "integer", "example": 1 },
+          "resumeUrl": { "type": "string", "example": "https://storage.example.com/resumes/hakan-resume.pdf" },
+          "coverNote": { "type": "string", "example": "I am passionate about this role." },
+          "status": {
+            "type": "string",
+            "enum": ["Submitted", "Under Review", "Interviewing", "Accepted", "Rejected", "Withdrawn"],
+            "example": "Submitted"
+          }
+        }
+      },
+      "ApplicationPartialInput": {
+        "type": "object",
+        "properties": {
+          "resumeUrl": { "type": "string", "example": "https://storage.example.com/resumes/updated-resume.pdf" },
+          "coverNote": { "type": "string", "example": "Updated application note." },
+          "status": {
+            "type": "string",
+            "enum": ["Submitted", "Under Review", "Interviewing", "Accepted", "Rejected", "Withdrawn"],
+            "example": "Accepted"
+          }
+        }
+      },
+      "ApplicationResponse": {
+        "type": "object",
+        "properties": {
+          "message": { "type": "string", "example": "Application submitted successfully" },
+          "application": { "$ref": "#/components/schemas/Application" }
+        }
+      },
+      "ApplicationDeleteResponse": {
+        "type": "object",
+        "properties": {
+          "message": { "type": "string", "example": "Application deleted successfully" },
+          "deletedApplication": { "$ref": "#/components/schemas/Application" }
         }
       }
     }

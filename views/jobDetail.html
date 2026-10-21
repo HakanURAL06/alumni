@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{TITLE}} at {{COMPANY}} - Alumni Portal</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      max-width: 900px;
+      margin: 30px auto;
+      padding: 0 20px;
+      color: #1e293b;
+      background-color: #f8fafc;
+      line-height: 1.6;
+    }
+    .top-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #0f172a;
+      color: #fff;
+      padding: 12px 24px;
+      border-radius: 10px;
+      margin-bottom: 24px;
+    }
+    .top-nav .logo { font-weight: 700; font-size: 1.1rem; }
+    .top-nav .nav-menu { display: flex; gap: 18px; }
+    .top-nav a { color: #cbd5e1; text-decoration: none; font-size: 0.9rem; font-weight: 500; }
+    .top-nav a:hover, .top-nav a.active { color: #38bdf8; }
+    .container {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 36px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    }
+    .header-section {
+      border-bottom: 1px solid #e2e8f0;
+      padding-bottom: 20px;
+      margin-bottom: 24px;
+    }
+    .company-name {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #2563eb;
+      margin-bottom: 4px;
+    }
+    h1 {
+      font-size: 2rem;
+      color: #0f172a;
+      margin: 0 0 12px 0;
+    }
+    .meta-pills {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .pill {
+      background: #f1f5f9;
+      color: #334155;
+      padding: 4px 12px;
+      border-radius: 9999px;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+    .pill-green { background: #dcfce7; color: #166534; font-weight: 600; }
+    .section-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #0f172a;
+      margin-top: 24px;
+      margin-bottom: 8px;
+    }
+    .content-box {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 16px;
+      color: #334155;
+      white-space: pre-wrap;
+    }
+    .apply-card {
+      margin-top: 36px;
+      background: #eff6ff;
+      border: 2px solid #bfdbfe;
+      border-radius: 12px;
+      padding: 28px;
+    }
+    .apply-card h2 {
+      margin-top: 0;
+      font-size: 1.35rem;
+      color: #1e40af;
+      margin-bottom: 8px;
+    }
+    .form-group {
+      margin-bottom: 14px;
+      display: flex;
+      flex-direction: column;
+    }
+    label {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #1e3a8a;
+      margin-bottom: 4px;
+    }
+    input, textarea {
+      padding: 10px 12px;
+      border: 1px solid #93c5fd;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      background: #ffffff;
+      font-family: inherit;
+    }
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+    }
+    .btn-apply {
+      background: #2563eb;
+      color: #ffffff;
+      padding: 12px 28px;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .btn-apply:hover { background: #1d4ed8; }
+    .actions-footer {
+      display: flex;
+      gap: 12px;
+      margin-top: 28px;
+      align-items: center;
+    }
+    .btn-secondary {
+      background: #e2e8f0;
+      color: #334155;
+      padding: 8px 16px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+    .btn-secondary:hover { background: #cbd5e1; }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <div class="top-nav">
+    <div class="logo">🎓 Alumni Tracking Portal</div>
+    <div class="nav-menu">
+      <a href="/">Home</a>
+      <a href="/users">Alumni Directory</a>
+      <a href="/announcements">Announcements</a>
+      <a href="/jobs" class="active">Job Board</a>
+      <a href="/applications">Applications</a>
+      <a href="/api/swagger">Swagger Docs</a>
+    </div>
+  </div>
+
+  <div class="container">
+    {{MESSAGE}}
+
+    <div class="header-section">
+      <div class="company-name">🏢 {{COMPANY}}</div>
+      <h1>{{TITLE}}</h1>
+      <div class="meta-pills">
+        <span class="pill">📍 {{LOCATION}}</span>
+        <span class="pill">💼 {{JOB_TYPE}}</span>
+        <span class="pill pill-green">💰 {{SALARY}}</span>
+        <span class="pill">⏳ Deadline: {{DEADLINE}}</span>
+        <span class="pill">👤 Posted by: {{POSTER_NAME}}</span>
+      </div>
+    </div>
+
+    <div class="section-title">Job Description & Responsibilities</div>
+    <div class="content-box">{{DESCRIPTION}}</div>
+
+    <div class="section-title">Requirements & Qualifications</div>
+    <div class="content-box">{{REQUIREMENTS}}</div>
+
+    <div class="section-title">Employer Contact</div>
+    <p>Direct inquiries to: <a href="mailto:{{CONTACT_EMAIL}}" style="color:#2563eb; font-weight:600;">{{CONTACT_EMAIL}}</a></p>
+
+    <!-- Quick Application Form -->
+    <div class="apply-card">
+      <h2>📝 Quick Apply with Alumni Profile</h2>
+      <p style="color:#1e3a8a; margin-top:0; font-size:0.95rem;">Apply directly to this opportunity. Your submission will immediately be available in the candidate review dashboard.</p>
+      
+      <form action="/applications" method="POST">
+        <input type="hidden" name="jobPostingId" value="{{ID}}">
+
+        <div style="display:grid; grid-template-columns: 1fr 2fr; gap:14px;">
+          <div class="form-group">
+            <label for="userId">Your Alumni User ID *</label>
+            <input type="number" id="userId" name="userId" placeholder="e.g. 1" min="1" required>
+          </div>
+          <div class="form-group">
+            <label for="resumeUrl">Resume / CV Link (URL)</label>
+            <input type="url" id="resumeUrl" name="resumeUrl" placeholder="https://linkedin.com/in/... or drive link">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="coverNote">Cover Note / Brief Pitch</label>
+          <textarea id="coverNote" name="coverNote" rows="3" placeholder="Briefly highlight why you are a great match for this position..."></textarea>
+        </div>
+
+        <button type="submit" class="btn-apply">🚀 Submit My Application</button>
+      </form>
+    </div>
+
+    <div class="actions-footer">
+      <a href="/jobs" class="btn-secondary">⬅️ Back to Job Board</a>
+      <a href="/jobs/{{ID}}/edit" class="btn-secondary">✏️ Edit Job</a>
+      <a href="/jobs/{{ID}}/applications" class="btn-secondary">👥 View Candidates ({{ID}})</a>
+    </div>
+  </div>
+
+</body>
+</html>

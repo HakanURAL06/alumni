@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { UserFactory, AnnouncementFactory } = require('../factories');
+const { UserFactory, AnnouncementFactory, JobPostingFactory, ApplicationFactory } = require('../factories');
 
 test('UserFactory - create generates valid default user', () => {
   UserFactory.resetCounter(1);
@@ -70,5 +70,49 @@ test('AnnouncementFactory - createMany generates specified number of announcemen
 
   assert.equal(announcements.length, count);
   const ids = new Set(announcements.map(a => a.id));
+  assert.equal(ids.size, count);
+});
+
+test('JobPostingFactory - create generates valid default job posting', () => {
+  JobPostingFactory.resetCounter(1);
+  const job = JobPostingFactory.create();
+
+  assert.ok(job.id);
+  assert.ok(job.title);
+  assert.ok(job.company);
+  assert.ok(job.jobType);
+  assert.ok(job.location);
+  assert.ok(job.contactEmail.includes('@'));
+  assert.ok(job.postedBy);
+});
+
+test('JobPostingFactory - createMany generates specified number of jobs', () => {
+  JobPostingFactory.resetCounter(1);
+  const count = 5;
+  const jobs = JobPostingFactory.createMany(count);
+
+  assert.equal(jobs.length, count);
+  const ids = new Set(jobs.map(j => j.id));
+  assert.equal(ids.size, count);
+});
+
+test('ApplicationFactory - create generates valid default application', () => {
+  ApplicationFactory.resetCounter(1);
+  const app = ApplicationFactory.create();
+
+  assert.ok(app.id);
+  assert.ok(app.userId);
+  assert.ok(app.jobPostingId);
+  assert.ok(app.resumeUrl);
+  assert.ok(app.status);
+});
+
+test('ApplicationFactory - createMany generates specified number of applications', () => {
+  ApplicationFactory.resetCounter(1);
+  const count = 4;
+  const apps = ApplicationFactory.createMany(count);
+
+  assert.equal(apps.length, count);
+  const ids = new Set(apps.map(a => a.id));
   assert.equal(ids.size, count);
 });

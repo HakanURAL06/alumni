@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const UserController = require('../controllers/UserController');
+const JobPostingController = require('../controllers/JobPostingController');
+const ApplicationController = require('../controllers/ApplicationController');
 
 // ==========================================
 // ALL CRUD OPERATIONS ON USER ROUTE WITH VIEW
@@ -33,5 +35,17 @@ router.post('/:id/delete', UserController.delete);
 router.post('/users/:id/delete', UserController.delete);
 router.delete('/:id', UserController.delete);
 router.delete('/users/:id', UserController.delete);
+
+// ==========================================
+// 6. NESTED ROUTES: User -> Job Postings Web View
+// ==========================================
+router.get('/:userId/jobs', JobPostingController.getByUser);
+router.get('/users/:userId/jobs', JobPostingController.getByUser);
+
+// ==========================================
+// 7. NESTED ROUTES: User -> Applications Web View
+// ==========================================
+router.get('/:userId/applications', ApplicationController.getByUser);
+router.get('/users/:userId/applications', ApplicationController.getByUser);
 
 module.exports = router;

@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Job Applications - Alumni Portal</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      max-width: 1040px;
+      margin: 30px auto;
+      padding: 0 20px;
+      color: #1e293b;
+      background-color: #f8fafc;
+      line-height: 1.5;
+    }
+    .top-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #0f172a;
+      color: #fff;
+      padding: 12px 24px;
+      border-radius: 10px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+    }
+    .top-nav .logo { font-weight: 700; font-size: 1.1rem; }
+    .top-nav .nav-menu { display: flex; gap: 18px; }
+    .top-nav a { color: #cbd5e1; text-decoration: none; font-size: 0.9rem; font-weight: 500; }
+    .top-nav a:hover, .top-nav a.active { color: #38bdf8; }
+    .container {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 32px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    }
+    .badge {
+      display: inline-block;
+      background: #ede9fe;
+      color: #6d28d9;
+      padding: 4px 12px;
+      border-radius: 9999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+    h1 {
+      color: #0f172a;
+      margin-top: 0;
+      margin-bottom: 6px;
+      font-size: 1.85rem;
+    }
+    p.subtitle {
+      color: #64748b;
+      margin-top: 0;
+      margin-bottom: 24px;
+    }
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .metric-card {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 16px;
+      text-align: center;
+    }
+    .metric-card .num {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: #0f172a;
+      line-height: 1.1;
+    }
+    .metric-card .label {
+      font-size: 0.8rem;
+      color: #64748b;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-top: 4px;
+    }
+    .alert-success {
+      background: #dcfce7;
+      border: 1px solid #bbf7d0;
+      color: #166534;
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-bottom: 24px;
+      font-weight: 500;
+    }
+    .alert-info {
+      background: #e0f2fe;
+      border: 1px solid #bae6fd;
+      color: #0369a1;
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-bottom: 24px;
+      font-weight: 500;
+    }
+    .alert-danger {
+      background: #fee2e2;
+      border: 1px solid #fecaca;
+      color: #991b1b;
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-bottom: 24px;
+      font-weight: 500;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 16px;
+      margin-bottom: 32px;
+    }
+    th, td {
+      padding: 12px 14px;
+      text-align: left;
+      border-bottom: 1px solid #e2e8f0;
+      vertical-align: middle;
+      font-size: 0.9rem;
+    }
+    th {
+      background: #f1f5f9;
+      color: #475569;
+      font-weight: 600;
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    tr:hover { background: #f8fafc; }
+    .status-pill {
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 4px 8px;
+      border-radius: 6px;
+      display: inline-block;
+    }
+    .status-Submitted { background: #e0f2fe; color: #0369a1; }
+    .status-UnderReview { background: #fef3c7; color: #92400e; }
+    .status-Interviewing { background: #ede9fe; color: #6d28d9; }
+    .status-Accepted { background: #dcfce7; color: #166534; }
+    .status-Rejected { background: #fee2e2; color: #991b1b; }
+    .status-Withdrawn { background: #f1f5f9; color: #64748b; }
+    .actions-cell {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .btn-sm {
+      padding: 5px 8px;
+      border-radius: 5px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      transition: background 0.15s ease;
+    }
+    .btn-view { background: #e0f2fe; color: #0369a1; }
+    .btn-view:hover { background: #bae6fd; }
+    .btn-resume { background: #ede9fe; color: #6d28d9; }
+    .btn-resume:hover { background: #ddd6fe; }
+    .btn-delete { background: #fee2e2; color: #991b1b; }
+    .btn-delete:hover { background: #fecaca; }
+    .card-form {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 24px;
+      margin-top: 24px;
+    }
+    .card-form h2 {
+      margin-top: 0;
+      font-size: 1.25rem;
+      color: #0f172a;
+      margin-bottom: 16px;
+    }
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+    label {
+      font-size: 0.875rem;
+      font-weight: 500;
+      margin-bottom: 6px;
+      color: #334155;
+    }
+    input, select, textarea {
+      padding: 10px 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      background: #ffffff;
+      font-family: inherit;
+    }
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: #7c3aed;
+      box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15);
+    }
+    button.btn-primary {
+      background: #7c3aed;
+      color: #ffffff;
+      border: none;
+      padding: 10px 24px;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    button.btn-primary:hover { background: #6d28d9; }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <div class="top-nav">
+    <div class="logo">🎓 Alumni Tracking Portal</div>
+    <div class="nav-menu">
+      <a href="/">Home</a>
+      <a href="/users">Alumni Directory</a>
+      <a href="/announcements">Announcements</a>
+      <a href="/jobs">Job Board</a>
+      <a href="/applications" class="active">Applications</a>
+      <a href="/api/swagger">Swagger Docs</a>
+    </div>
+  </div>
+
+  <div class="container">
+    <span class="badge">Candidate Action Table</span>
+    <h1>📝 Job Applications & Candidate Submissions</h1>
+    <p class="subtitle">{{SUBTITLE}}</p>
+
+    <!-- Metrics Cards -->
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <div class="num">{{TOTAL_COUNT}}</div>
+        <div class="label">Total Applications</div>
+      </div>
+      <div class="metric-card">
+        <div class="num" style="color:#0369a1;">{{SUBMITTED_COUNT}}</div>
+        <div class="label">Submitted</div>
+      </div>
+      <div class="metric-card">
+        <div class="num" style="color:#b45309;">{{REVIEW_COUNT}}</div>
+        <div class="label">In Review</div>
+      </div>
+      <div class="metric-card">
+        <div class="num" style="color:#15803d;">{{ACCEPTED_COUNT}}</div>
+        <div class="label">Accepted</div>
+      </div>
+    </div>
+
+    {{MESSAGE}}
+
+    <table>
+      <thead>
+        <tr>
+          <th>App #</th>
+          <th>Candidate</th>
+          <th>Applied Job</th>
+          <th>Resume</th>
+          <th>Pitch / Note</th>
+          <th>Status</th>
+          <th>Date</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{APPLICATION_ROWS}}
+      </tbody>
+    </table>
+
+    <!-- Direct Submit Form -->
+    <div class="card-form">
+      <h2>🚀 Submit a New Application</h2>
+      <form action="/applications" method="POST">
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="userId">Alumni User ID *</label>
+            <input type="number" id="userId" name="userId" placeholder="e.g. 1" min="1" required>
+          </div>
+          <div class="form-group">
+            <label for="jobPostingId">Job Posting ID *</label>
+            <input type="number" id="jobPostingId" name="jobPostingId" placeholder="e.g. 1" min="1" required>
+          </div>
+          <div class="form-group">
+            <label for="resumeUrl">Resume / CV Link (URL)</label>
+            <input type="url" id="resumeUrl" name="resumeUrl" placeholder="https://storage.example.com/resumes/cv.pdf">
+          </div>
+          <div class="form-group">
+            <label for="status">Initial Status</label>
+            <select id="status" name="status">
+              <option value="Submitted" selected>Submitted</option>
+              <option value="Under Review">Under Review</option>
+              <option value="Interviewing">Interviewing</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom:16px;">
+          <label for="coverNote">Cover Note / Remarks</label>
+          <textarea id="coverNote" name="coverNote" rows="2" placeholder="Brief note about the candidate or motivation..."></textarea>
+        </div>
+
+        <button type="submit" class="btn-primary">📨 Submit Application</button>
+      </form>
+    </div>
+  </div>
+
+</body>
+</html>

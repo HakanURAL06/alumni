@@ -19,6 +19,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 // View Engine Configuration (MVC View Layer)
 const UserView = require('./views/UserView');
 const AnnouncementView = require('./views/AnnouncementView');
+const JobPostingView = require('./views/JobPostingView');
+const ApplicationView = require('./views/ApplicationView');
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'html');
 app.engine('html', (filePath, options, callback) => {
@@ -45,6 +47,26 @@ app.engine('html', (filePath, options, callback) => {
     }
     if (filePath.endsWith('announcementEdit.html')) {
       const output = AnnouncementView.renderAnnouncementEdit(options.announcement || {});
+      return callback(null, output);
+    }
+    if (filePath.endsWith('jobs.html')) {
+      const output = JobPostingView.renderJobs(options.jobs || [], options);
+      return callback(null, output);
+    }
+    if (filePath.endsWith('jobDetail.html')) {
+      const output = JobPostingView.renderJobDetail(options.job || {}, options);
+      return callback(null, output);
+    }
+    if (filePath.endsWith('jobEdit.html')) {
+      const output = JobPostingView.renderJobEdit(options.job || {});
+      return callback(null, output);
+    }
+    if (filePath.endsWith('applications.html')) {
+      const output = ApplicationView.renderApplications(options.applications || [], options);
+      return callback(null, output);
+    }
+    if (filePath.endsWith('applicationDetail.html')) {
+      const output = ApplicationView.renderApplicationDetail(options.application || {}, options);
       return callback(null, output);
     }
     const fs = require('fs');
@@ -83,6 +105,32 @@ app.use('/api/announcement', apiAnnouncementRoutes);
 // Announcement routes -> AnnouncementController (Web & Management Interface)
 app.use('/announcement', announcementRoutes);
 app.use('/announcements', announcementRoutes);
+
+// ApiJobPosting routes -> ApiJobPostingController (Direct RESTful API & Nested under users)
+const apiJobPostingRoutes = require('./routes/apiJobPosting');
+const jobPostingRoutes = require('./routes/jobPosting');
+
+app.use('/apijob', apiJobPostingRoutes);
+app.use('/apijobs', apiJobPostingRoutes);
+app.use('/api/jobs', apiJobPostingRoutes);
+app.use('/api/job-postings', apiJobPostingRoutes);
+
+// JobPosting routes -> JobPostingController (Direct Web Presentation)
+app.use('/jobs', jobPostingRoutes);
+app.use('/job-postings', jobPostingRoutes);
+
+// ApiApplication routes -> ApiApplicationController (Direct RESTful API & Nested under users/jobs)
+const apiApplicationRoutes = require('./routes/apiApplication');
+const applicationRoutes = require('./routes/application');
+
+app.use('/apiapplication', apiApplicationRoutes);
+app.use('/apiapplications', apiApplicationRoutes);
+app.use('/api/applications', apiApplicationRoutes);
+app.use('/api/application', apiApplicationRoutes);
+
+// Application routes -> ApplicationController (Direct Web Presentation)
+app.use('/applications', applicationRoutes);
+app.use('/application', applicationRoutes);
 
 app.all('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
