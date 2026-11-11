@@ -1,5 +1,12 @@
 const Announcement = require('../models/Announcement');
 const AnnouncementView = require('../views/AnnouncementView');
+const { sendResourceNotFound, sendServerError } = require('../middleware');
+
+const ANNOUNCEMENT_NOT_FOUND_OPTS = {
+  resourceName: 'Announcement',
+  backHref: '/announcements',
+  backLabel: '← Back to Announcements'
+};
 
 /**
  * AnnouncementController
@@ -40,7 +47,11 @@ class AnnouncementController {
 
       return res.status(200).json(announcements);
     } catch (error) {
-      return res.status(500).json({ error: 'Internal Server Error' });
+      return sendServerError(req, res, error, {
+        operation: 'Announcements operation',
+        backHref: '/announcements',
+        backLabel: '← Back to Announcements'
+      });
     }
   }
 
@@ -52,10 +63,7 @@ class AnnouncementController {
     try {
       const announcement = await Announcement.findById(req.params.id);
       if (!announcement) {
-        if (req.accepts('html')) {
-          return res.status(404).send('<h2>404 - Announcement Not Found</h2><p><a href="/announcements">← Back to Announcements</a></p>');
-        }
-        return res.status(404).json({ error: 'Announcement not found' });
+        return sendResourceNotFound(req, res, { ...ANNOUNCEMENT_NOT_FOUND_OPTS, id: req.params.id });
       }
 
       if (req.accepts('html')) {
@@ -67,7 +75,11 @@ class AnnouncementController {
 
       return res.status(200).json(announcement);
     } catch (error) {
-      return res.status(500).json({ error: 'Internal Server Error' });
+      return sendServerError(req, res, error, {
+        operation: 'Announcements operation',
+        backHref: '/announcements',
+        backLabel: '← Back to Announcements'
+      });
     }
   }
 
@@ -79,10 +91,7 @@ class AnnouncementController {
     try {
       const announcement = await Announcement.findById(req.params.id);
       if (!announcement) {
-        if (req.accepts('html')) {
-          return res.status(404).send('<h2>404 - Announcement Not Found</h2><p><a href="/announcements">← Back to Announcements</a></p>');
-        }
-        return res.status(404).json({ error: 'Announcement not found' });
+        return sendResourceNotFound(req, res, { ...ANNOUNCEMENT_NOT_FOUND_OPTS, id: req.params.id });
       }
 
       if (req.accepts('html')) {
@@ -94,7 +103,11 @@ class AnnouncementController {
 
       return res.status(200).json(announcement);
     } catch (error) {
-      return res.status(500).json({ error: 'Internal Server Error' });
+      return sendServerError(req, res, error, {
+        operation: 'Announcements operation',
+        backHref: '/announcements',
+        backLabel: '← Back to Announcements'
+      });
     }
   }
 
@@ -113,7 +126,11 @@ class AnnouncementController {
         announcement: newAnnouncement
       });
     } catch (error) {
-      return res.status(500).json({ error: 'Internal Server Error' });
+      return sendServerError(req, res, error, {
+        operation: 'Announcements operation',
+        backHref: '/announcements',
+        backLabel: '← Back to Announcements'
+      });
     }
   }
 
@@ -125,10 +142,7 @@ class AnnouncementController {
     try {
       const updatedAnnouncement = await Announcement.update(req.params.id, req.body);
       if (!updatedAnnouncement) {
-        if (req.accepts('html')) {
-          return res.status(404).send('<h2>404 - Announcement Not Found</h2><p><a href="/announcements">← Back to Announcements</a></p>');
-        }
-        return res.status(404).json({ error: 'Announcement not found' });
+        return sendResourceNotFound(req, res, { ...ANNOUNCEMENT_NOT_FOUND_OPTS, id: req.params.id });
       }
 
       if (req.accepts('html')) {
@@ -140,7 +154,11 @@ class AnnouncementController {
         announcement: updatedAnnouncement
       });
     } catch (error) {
-      return res.status(500).json({ error: 'Internal Server Error' });
+      return sendServerError(req, res, error, {
+        operation: 'Announcements operation',
+        backHref: '/announcements',
+        backLabel: '← Back to Announcements'
+      });
     }
   }
 
@@ -159,10 +177,7 @@ class AnnouncementController {
     try {
       const deletedAnnouncement = await Announcement.delete(req.params.id);
       if (!deletedAnnouncement) {
-        if (req.accepts('html')) {
-          return res.status(404).send('<h2>404 - Announcement Not Found</h2><p><a href="/announcements">← Back to Announcements</a></p>');
-        }
-        return res.status(404).json({ error: 'Announcement not found' });
+        return sendResourceNotFound(req, res, { ...ANNOUNCEMENT_NOT_FOUND_OPTS, id: req.params.id });
       }
 
       if (req.accepts('html')) {
@@ -174,7 +189,11 @@ class AnnouncementController {
         deletedAnnouncement
       });
     } catch (error) {
-      return res.status(500).json({ error: 'Internal Server Error' });
+      return sendServerError(req, res, error, {
+        operation: 'Announcements operation',
+        backHref: '/announcements',
+        backLabel: '← Back to Announcements'
+      });
     }
   }
 }

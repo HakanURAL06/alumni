@@ -20,6 +20,7 @@ A modular, production-ready alumni tracking and management web application desig
   - [2. ⚙️ Controller Layer (`controllers/`)](#2-️-controller-layer-controllers)
   - [3. 📦 Model Layer (`models/`)](#3--model-layer-models)
   - [4. 🖥️ View Layer (`views/` & Presentation)](#4-️-view-layer-views--presentation)
+- [🛡️ Middleware, Logging & Error Guardian Pipeline (`middleware/`)](#️-middleware-logging--error-guardian-pipeline-middleware)
 - [🧠 The Forgetting Test (Data Volatility Demonstration)](#-the-forgetting-test-data-volatility-demonstration)
 - [🗄️ Database, Migrations & Seeding Layer](#-database-migrations--seeding-layer)
   - [Environment Variables & Configuration](#environment-variables--configuration)
@@ -68,10 +69,10 @@ A dedicated, comprehensive data architecture specification is maintained in **[`
 3. **In-Memory Store Architecture & Lifecycle:** Heap allocation, singleton pattern, and concurrency characteristics.
 4. **The Forgetting Test Analysis:** Comprehensive technical evaluation of data volatility during container recreation.
 5. **Model CRUD Contracts:** TypeScript-style signatures for all data access methods (`create`, `findAll`, `findById`, `update`, `delete`).
-6. **MVC Veri Akışı (Sequence Diagrams):** Visualized lifecycles for RESTful JSON API requests and Server-Side HTML Form submissions.
+6. **MVC Data Flow (Sequence Diagrams):** Visualized lifecycles for RESTful JSON API requests and Server-Side HTML Form submissions.
 7. **PostgreSQL Migration Blueprint:** Complete SQL DDL schemas (`CREATE TABLE users`, `CREATE TABLE announcements`, `CREATE TABLE job_postings`, `CREATE TABLE applications`), composite unique index strategies, automated `updated_at` triggers, and Docker Compose persistent volume (`pgdata`) setup.
-8. **Validation, Sanitization & Security Rules:** Form sanitization, regex patterns, XSS prevention, and error status mappings.
-9. **AI Agent Query & Reference Matrix:** Rapid lookup table for machine agents mapping domain actions to routes, controllers, and models.
+8. **Validation, Business Rules & Observability Contracts:** Entity validation matrix, formalized domain rules (`JP-R1`–`JP-R7`, `APP-R1`–`APP-R6`, `USR-R1`–`USR-R2`, `ANN-R1`–`ANN-R2`), `/404` generic redirect & 5xx Incident ID error contract, and `logs/error.logs` audit persistence rules.
+9. **AI Agent Query & Reference Matrix:** Rapid lookup table mapping domain CRUD actions, generic `/404` handling, and health endpoints to routes, controllers, views, and models.
 
 ---
 
@@ -82,7 +83,15 @@ The application strictly implements the **Model-View-Controller (MVC)** design p
 ```mermaid
 flowchart TD
     Client["Client (Browser / Postman / cURL)"]
-    
+
+    subgraph Middleware ["Middleware & Observability Pipeline (middleware/)"]
+        ReqLogger["Request Logger (middleware/logger.js)"]
+        NotFoundGuard["404 Guardian Middleware (middleware/notFoundGuardian.js)"]
+        ServerGuard["5xx Server Guardian (middleware/serverErrorGuardian.js)"]
+        LogWriter["Dual Log Writer (middleware/logWriter.js)"]
+        ErrorLogFile[("logs/error.logs")]
+    end
+
     subgraph Routing ["Routing Layer (routes/)"]
         AppIndex["Express App (index.js)"]
         UserRouter["user Router (routes/user.js)"]
@@ -93,6 +102,7 @@ flowchart TD
         ApiJobRouter["apiJobPosting Router (routes/apiJobPosting.js)"]
         AppRouter["application Router (routes/application.js)"]
         ApiAppRouter["apiApplication Router (routes/apiApplication.js)"]
+        Generic404Route["Generic 404 Route (/404, /404.html)"]
     end
 
     subgraph Controller ["Controller Layer (controllers/)"]
@@ -104,27 +114,32 @@ flowchart TD
         ApiJobCtrl["ApiJobPostingController (RESTful JSON API)"]
         AppCtrl["ApplicationController (Web View)"]
         ApiAppCtrl["ApiApplicationController (RESTful JSON API)"]
-        UtilHandlers["Utility Handlers (/health, /hello, /sum)"]
+        UtilHandlers["Utility Handlers (/api/health, /hello, /sum)"]
     end
-    
+
     subgraph Model ["Model Layer (models/)"]
-        UserModel["UserModel (models/User.js - DB & In-Memory CRUD)"]
-        AnnounceModel["AnnouncementModel (models/Announcement.js - DB & In-Memory CRUD)"]
-        JobPostingModel["JobPostingModel (models/JobPosting.js - DB & In-Memory CRUD)"]
-        AppModel["ApplicationModel (models/Application.js - DB & In-Memory CRUD)"]
+        UserModel["UserModel (models/User.js)"]
+        AnnounceModel["AnnouncementModel (models/Announcement.js)"]
+        JobPostingModel["JobPostingModel (models/JobPosting.js)"]
+        AppModel["ApplicationModel (models/Application.js)"]
         DBPool["Database Connection Pool (models/db.js - pg.Pool)"]
         PostgresDB[("PostgreSQL 16 (Docker pgdata Volume)")]
         MemoryStore[("In-Memory Mock Store (Fallback)")]
     end
-    
+
     subgraph View ["View Layer (Presentation)"]
-        UserViews["User Views (views/users.html, userDetail.html, userEdit.html)"]
+        UserViews["User Views (views/users.html, detail, edit)"]
         AnnounceViews["Announcement Views (views/announcements.html, detail, edit)"]
+        JobViews["Job Views (views/jobs.html, jobDetail.html, jobEdit.html)"]
+        AppViews["Application Views (views/applications.html, applicationDetail.html)"]
+        NotFoundView["NotFoundView (views/404.html)"]
         SwaggerView["Interactive Swagger UI (/api/swagger)"]
-        JSONView["JSON API Responses (Content-Type: application/json)"]
+        JSONView["JSON API Responses (application/json)"]
     end
 
-    Client -->|"HTTP Request"| AppIndex
+    Client -->|"HTTP Request"| ReqLogger
+    ReqLogger --> AppIndex
+    ReqLogger --> LogWriter
     AppIndex --> UserRouter
     AppIndex --> ApiUserRouter
     AppIndex --> AnnounceRouter
@@ -134,6 +149,8 @@ flowchart TD
     AppIndex --> AppRouter
     AppIndex --> ApiAppRouter
     AppIndex --> UtilHandlers
+    AppIndex --> Generic404Route
+    AppIndex -.->|"Unmatched Route"| NotFoundGuard
     UserRouter --> UserCtrl
     ApiUserRouter --> ApiUserCtrl
     AnnounceRouter --> AnnounceCtrl
@@ -142,14 +159,14 @@ flowchart TD
     ApiJobRouter --> ApiJobCtrl
     AppRouter --> AppCtrl
     ApiAppRouter --> ApiAppCtrl
-    UserCtrl -->|"Async CRUD Operations"| UserModel
-    ApiUserCtrl -->|"Async CRUD Operations"| UserModel
-    AnnounceCtrl -->|"Async CRUD Operations"| AnnounceModel
-    ApiAnnounceCtrl -->|"Async CRUD Operations"| AnnounceModel
-    JobCtrl -->|"Async CRUD Operations"| JobPostingModel
-    ApiJobCtrl -->|"Async CRUD Operations"| JobPostingModel
-    AppCtrl -->|"Async CRUD Operations"| AppModel
-    ApiAppCtrl -->|"Async CRUD Operations"| AppModel
+    UserCtrl -->|"Async CRUD"| UserModel
+    ApiUserCtrl -->|"Async CRUD"| UserModel
+    AnnounceCtrl -->|"Async CRUD"| AnnounceModel
+    ApiAnnounceCtrl -->|"Async CRUD"| AnnounceModel
+    JobCtrl -->|"Async CRUD"| JobPostingModel
+    ApiJobCtrl -->|"Async CRUD"| JobPostingModel
+    AppCtrl -->|"Async CRUD"| AppModel
+    ApiAppCtrl -->|"Async CRUD"| AppModel
     UserModel --> DBPool
     AnnounceModel --> DBPool
     JobPostingModel --> DBPool
@@ -161,16 +178,29 @@ flowchart TD
     AppModel -.->|"Fallback if DB offline"| MemoryStore
     UserCtrl -->|"Render HTML"| UserViews
     AnnounceCtrl -->|"Render HTML"| AnnounceViews
-    ApiUserCtrl -->|"Render JSON"| JSONView
-    ApiAnnounceCtrl -->|"Render JSON"| JSONView
-    ApiJobCtrl -->|"Render JSON"| JSONView
-    ApiAppCtrl -->|"Render JSON"| JSONView
-    JobCtrl -->|"Render Views"| JSONView
-    AppCtrl -->|"Render Views"| JSONView
+    JobCtrl -->|"Render HTML"| JobViews
+    AppCtrl -->|"Render HTML"| AppViews
+    Generic404Route -->|"Render Generic 404"| NotFoundView
+    NotFoundGuard -->|"302 Redirect Web to /404"| Generic404Route
+    NotFoundGuard -->|"API 404 JSON"| JSONView
+    NotFoundGuard --> LogWriter
+    UserCtrl -.->|"5xx Exception"| ServerGuard
+    ApiUserCtrl -.->|"5xx Exception"| ServerGuard
+    JobCtrl -.->|"5xx Exception"| ServerGuard
+    AppCtrl -.->|"5xx Exception"| ServerGuard
+    ServerGuard --> LogWriter
+    LogWriter --> ErrorLogFile
+    ApiUserCtrl --> JSONView
+    ApiAnnounceCtrl --> JSONView
+    ApiJobCtrl --> JSONView
+    ApiAppCtrl --> JSONView
     UtilHandlers --> SwaggerView
     UtilHandlers --> JSONView
     UserViews -->|"HTML Response"| Client
     AnnounceViews -->|"HTML Response"| Client
+    JobViews -->|"HTML Response"| Client
+    AppViews -->|"HTML Response"| Client
+    NotFoundView -->|"404 HTML Response"| Client
     SwaggerView -->|"HTML Response"| Client
     JSONView -->|"JSON Response"| Client
 ```
@@ -188,16 +218,16 @@ Routes decouple URLs and HTTP methods from controller execution, supporting both
 - **`routes/index.js`**: Central router aggregation module.
 
 ### 2. ⚙️ Controller Layer (`controllers/`)
-Controllers handle request parsing, invoke model domain logic asynchronously (`await`), format responses, and route output to views:
-- **[`controllers/UserController.js`](./controllers/UserController.js)**: Asynchronous web controller for alumni directory, profile detail views, edit forms, creation, and redirection with flash query params.
-- **[`controllers/ApiUserController.js`](./controllers/ApiUserController.js)**: Asynchronous RESTful controller returning semantic HTTP status codes (`200 OK`, `201 Created`, `400 Bad Request`, `404 Not Found`, `500 Internal Server Error`).
-- **[`controllers/AnnouncementController.js`](./controllers/AnnouncementController.js)**: Asynchronous controller for web dashboard, detail cards, edit views, creation, updates, and deletion redirects.
-- **[`controllers/ApiAnnouncementController.js`](./controllers/ApiAnnouncementController.js)**: Asynchronous RESTful controller for announcements (`GET`, `POST`, `PUT`, `PATCH`, `DELETE`).
-- **[`controllers/JobPostingController.js`](./controllers/JobPostingController.js)**: Asynchronous web controller for career opportunities and alumni-nested job views.
-- **[`controllers/ApiJobPostingController.js`](./controllers/ApiJobPostingController.js)**: Asynchronous RESTful controller handling direct (`/api/jobs`) and nested (`/api/users/:userId/jobs`) job operations with foreign key integrity.
-- **[`controllers/ApplicationController.js`](./controllers/ApplicationController.js)**: Asynchronous web controller for direct job applications (`/applications`), candidate submissions review (`/jobs/:jobId/applications`), and alumni submissions (`/users/:userId/applications`).
-- **[`controllers/ApiApplicationController.js`](./controllers/ApiApplicationController.js)**: Asynchronous RESTful controller handling direct applications (`/api/applications`) and nested user/job application lifecycles with foreign key and status checks.
-- **Utility Controllers (in `index.js`)**: Handles `/api/health`, greetings (`/hello`), and arithmetic (`/sum`).
+Controllers handle request parsing, invoke model domain logic asynchronously (`await`), format responses, integrate structured 404/5xx guardian helpers (`sendResourceNotFound` and `sendServerError`), and route output to views:
+- **[`controllers/UserController.js`](./controllers/UserController.js)**: Asynchronous web controller for alumni directory, profile detail views, edit forms, creation, and redirection with flash query params; integrates `sendResourceNotFound` and `sendServerError`.
+- **[`controllers/ApiUserController.js`](./controllers/ApiUserController.js)**: Asynchronous RESTful controller returning semantic HTTP status codes (`200 OK`, `201 Created`, `400 Bad Request`, `404 Not Found`, and `500`–`504` via `sendServerError`).
+- **[`controllers/AnnouncementController.js`](./controllers/AnnouncementController.js)**: Asynchronous controller for web dashboard, detail cards, edit views, creation, updates, and deletion redirects; integrates `sendResourceNotFound` and `sendServerError`.
+- **[`controllers/ApiAnnouncementController.js`](./controllers/ApiAnnouncementController.js)**: Asynchronous RESTful controller for announcements (`GET`, `POST`, `PUT`, `PATCH`, `DELETE`) with `sendServerError` incident tracking.
+- **[`controllers/JobPostingController.js`](./controllers/JobPostingController.js)**: Asynchronous web controller for career opportunities and alumni-nested job views; integrates `sendResourceNotFound` and `sendServerError`.
+- **[`controllers/ApiJobPostingController.js`](./controllers/ApiJobPostingController.js)**: Asynchronous RESTful controller handling direct (`/api/jobs`) and nested (`/api/users/:userId/jobs`) job operations with foreign key integrity and `sendServerError`.
+- **[`controllers/ApplicationController.js`](./controllers/ApplicationController.js)**: Asynchronous web controller for direct job applications (`/applications`), candidate submissions review (`/jobs/:jobId/applications`), and alumni submissions (`/users/:userId/applications`); integrates `sendResourceNotFound` and `sendServerError`.
+- **[`controllers/ApiApplicationController.js`](./controllers/ApiApplicationController.js)**: Asynchronous RESTful controller handling direct applications (`/api/applications`) and nested user/job application lifecycles with foreign key/status checks and `sendServerError`.
+- **Utility & Fallback Controllers (in `index.js`)**: Handles `/api/health`, `/health`, greetings (`/hello`, `/hello/:name`), arithmetic (`/sum/:number1/:number2`), generic 404 rendering (`/404`, `/404.html`), and guardian middleware error orchestration.
 
 ### 3. 📦 Model Layer (`models/`)
 The **Model** encapsulates all domain state, validation, and data mutations with asynchronous interfaces connected to PostgreSQL and resilient in-memory fallback:
@@ -231,8 +261,51 @@ The presentation layer separates visual structure from application control:
   - `views/applications.html`: Candidate submissions dashboard, metric cards, status filters, and creation form.
   - `views/applicationDetail.html`: Single candidate review card with evaluation status update form.
   - `views/ApplicationView.js`: HTML rendering engine helper for application templates.
+- **Generic Error Views (404 Guardian):**
+  - `views/404.html`: Diagnostic HTML template for unmatched routes and missing resources.
+  - `views/NotFoundView.js`: Helper rendering generic `/404` diagnostics (`NotFoundView.renderNotFound`, `NotFoundView.buildViewModel`, `sanitizeLocalHref`).
 - **Static Pages:** Stored in `public/` ([`index.html`](./public/index.html) - unified portal dashboard, [`about.html`](./public/about.html)).
 - **API Documentation:** Interactive Swagger UI rendered at `/api/swagger`.
+
+---
+
+## 🛡️ Middleware, Logging & Error Guardian Pipeline (`middleware/`)
+
+Express 5 mounts a centralized observability and fault-handling pipeline via [`middleware/index.js`](./middleware/index.js) and [`index.js`](./index.js) so every request is traced and every `404` or `5xx` error produces structured diagnostics instead of bare stack traces or default Express text:
+
+### Request Execution & Fallback Flow
+
+1. **Global Request Telemetry ([`middleware/logger.js`](./middleware/logger.js))** — mounted first in `index.js` via `app.use(logger)`:
+   - Measures high-resolution request duration and hooks `finish` / `close` events (tagging premature disconnects with `ABORTED(...)`).
+   - Emits formatted single-line telemetry:
+     `[ISO] METHOD route | status | mime | duration | size | ip`
+   - Strips CRLF/ANSI control characters from user-controlled fields and forwards output via [`middleware/logWriter.js`](./middleware/logWriter.js).
+   - Exported helpers: `logger`, `createLogger`, `formatLogEntry`, `extractResponseType`, `extractContentLength`, `extractClientIp`.
+
+2. **Dual-Sink Log Writer ([`middleware/logWriter.js`](./middleware/logWriter.js))**:
+   - Writes sanitized log lines to terminal (`stdout`/`stderr`) **and** persists them to disk (`DEFAULT_LOG_FILE_PATH = logs/error.logs`, configurable via `ERROR_LOG_PATH`).
+   - Strips ANSI escape sequences (`stripAnsi`), creates missing parent directories automatically, and ignores disk write failures gracefully so logging never breaks request handling.
+   - Exported helpers: `DEFAULT_LOG_FILE_PATH`, `stripAnsi`, `formatFileLogLine`, `appendLogLine`, `writeDualLog`, `emitLogEvent`.
+
+3. **Generic `/404` Page & 404 Guardian ([`middleware/notFoundGuardian.js`](./middleware/notFoundGuardian.js))**:
+   - **Redirect-on-Invalid-Web-Request:** Unmatched non-API web requests reaching `notFoundGuardian` receive a `302 Found` redirect to `/404?from=...` (constructed by `buildNotFoundRedirectUrl` and `sanitizeFromPath` to prevent open redirects or protocol-relative targets).
+   - **Generic `/404` & `/404.html` Route:** Mounted before `notFoundGuardian` in `index.js` using `genericNotFoundPageHandler`, rendering [`views/404.html`](./views/404.html) via [`views/NotFoundView.js`](./views/NotFoundView.js) with HTTP `404` status, probable-cause diagnosis (`diagnoseNotFound`), safe `from` backlink sanitization (`sanitizeLocalHref`), known route hints (`KNOWN_ROUTES`), and quick navigation cards.
+   - **REST API & Explicit Missing Resource 404s:** Unmatched `/api/*` paths (or JSON-negotiated requests) bypass the redirect and return structured diagnostic JSON (`sendGuardian404`). Missing entity lookups inside web controllers (`UserController`, `AnnouncementController`, `JobPostingController`, `ApplicationController`) invoke `sendResourceNotFound` to render rich HTML 404 diagnostics directly without losing context. `guardian404ErrorHandler` also intercepts errors explicitly thrown with status `404`.
+
+4. **5xx Server Error Guardian ([`middleware/serverErrorGuardian.js`](./middleware/serverErrorGuardian.js))**:
+   - Classifies unexpected `5xx` errors from controllers (`sendServerError`) or Express middleware (`serverErrorGuardian`) into structured diagnostic categories:
+     - `DB_CONNECTION_ERROR` (`503`)
+     - `DB_SCHEMA_ERROR` (`500`)
+     - `DB_QUERY_FAILURE` (`500`)
+     - `VIEW_TEMPLATE_ERROR` (`500`)
+     - `BAD_GATEWAY` (`502`)
+     - `SERVICE_UNAVAILABLE` (`503`)
+     - `GATEWAY_TIMEOUT` (`504`)
+     - `INTERNAL_SERVER_ERROR` (`500`)
+   - Generates unique per-incident identifiers (`ERR-<base36>-<rand>`), suppresses raw stack traces in HTTP responses when `NODE_ENV=production`, negotiates HTML vs. JSON output via `shouldRenderHtml`, and writes `[5XX GUARDIAN]` / `[5XX STACK]` entries to both console and `logs/error.logs`.
+
+5. **Shared Guardian Utilities ([`middleware/guardianShared.js`](./middleware/guardianShared.js))**:
+   - Centralizes `KNOWN_ROUTES`, `QUICK_NAV_LINKS`, `escapeHtml`, `normalizePath`, `shouldRenderHtml`, and `renderGuardianScreen` across both 404 and 5xx screens.
 
 ---
 
@@ -365,12 +438,22 @@ Database operations utilize the PostgreSQL client pool (`pg.Pool`):
 | `/announcements` | `POST` | `AnnouncementController.create` | Publishes announcement, redirects to `/announcements` | Flash redirect |
 | `/announcements/:id/edit` | `POST` | `AnnouncementController.update` | Updates announcement, redirects to `/announcements` | Flash redirect |
 | `/announcements/:id/delete` | `POST` | `AnnouncementController.delete` | Deletes announcement, redirects to `/announcements` | Flash redirect |
-| `/jobs` | `GET` | `JobPostingController.getAll` | Career board dashboard | JSON / Web View |
-| `/jobs/:id` | `GET` | `JobPostingController.getById` | Career opportunity detail view with publisher | JSON / Web View |
-| `/users/:userId/jobs` | `GET` | `JobPostingController.getByUser` | Nested web view of all jobs by specific alumni | JSON / Web View |
-| `/applications` | `GET` | `ApplicationController.getAll` | Job applications overview dashboard | JSON / Web View |
-| `/users/:userId/applications` | `GET` | `ApplicationController.getByUser` | Nested web view: applications submitted by user ("My Applications") | JSON / Web View |
-| `/jobs/:jobId/applications` | `GET` | `ApplicationController.getByJob` | Nested web view: candidate review for job posting | JSON / Web View |
+| `/jobs` | `GET` | `JobPostingController.getAll` | Career board dashboard | `views/jobs.html` |
+| `/jobs/:id` | `GET` | `JobPostingController.getById` | Career opportunity detail view with publisher | `views/jobDetail.html` |
+| `/jobs/:id/edit` | `GET` | `JobPostingController.getEditForm` | Job posting edit form view | `views/jobEdit.html` |
+| `/jobs` | `POST` | `JobPostingController.create` | Creates job posting, redirects to `/jobs` | Flash redirect |
+| `/jobs/:id/edit` | `POST` | `JobPostingController.update` | Updates job posting, redirects to `/jobs` | Flash redirect |
+| `/jobs/:id/delete` | `POST` | `JobPostingController.delete` | Deletes job posting, redirects to `/jobs` | Flash redirect |
+| `/users/:userId/jobs` | `GET` | `JobPostingController.getByUser` | Nested web view of all jobs by specific alumni | `views/jobs.html` |
+| `/applications` | `GET` | `ApplicationController.getAll` | Job applications overview dashboard | `views/applications.html` |
+| `/applications/:id` | `GET` | `ApplicationController.getById` | Single candidate application review card | `views/applicationDetail.html` |
+| `/applications` | `POST` | `ApplicationController.create` | Submits new job application, redirects with flash status | Flash redirect |
+| `/applications/:id/status` | `POST` | `ApplicationController.updateStatus` | Updates application review status | Flash redirect |
+| `/applications/:id/delete` | `POST` | `ApplicationController.delete` | Deletes application record | Flash redirect |
+| `/users/:userId/applications` | `GET` | `ApplicationController.getByUser` | Nested web view: applications submitted by user ("My Applications") | `views/applications.html` |
+| `/jobs/:jobId/applications` | `GET` | `ApplicationController.getByJob` | Nested web view: candidate review for job posting | `views/applications.html` |
+| `/404`, `/404.html` | `ALL` | `genericNotFoundPageHandler` | Generic diagnostic 404 screen (`from` sanitized, quick nav, probable cause) | `views/404.html` |
+| `*` *(unmatched web)* | `ALL` | `notFoundGuardian` | Redirects invalid browser routes (`302`) to `/404?from=...` (JSON 404 for `/api/*`) | Redirect / Guardian JSON |
 
 ### ⚡ RESTful JSON API Routes
 
@@ -487,8 +570,12 @@ Database operations utilize the PostgreSQL client pool (`pg.Pool`):
    ```
 
 4. **Access web interfaces in your browser:**
+   - **Unified Portal Landing:** [http://localhost:3000/](http://localhost:3000/)
    - **Alumni Directory:** [http://localhost:3000/users](http://localhost:3000/users)
    - **Announcements Dashboard:** [http://localhost:3000/announcements](http://localhost:3000/announcements)
+   - **Career & Job Postings Board:** [http://localhost:3000/jobs](http://localhost:3000/jobs)
+   - **Applications Dashboard:** [http://localhost:3000/applications](http://localhost:3000/applications)
+   - **Generic 404 Diagnostic Screen:** [http://localhost:3000/404](http://localhost:3000/404)
    - **Interactive Swagger Docs:** [http://localhost:3000/api/swagger](http://localhost:3000/api/swagger)
 
 ### Running with Docker Compose
@@ -498,9 +585,11 @@ Database operations utilize the PostgreSQL client pool (`pg.Pool`):
    docker compose up -d --build
    ```
 
-2. **View running container logs:**
+2. **View running container logs (and persistent `logs/error.logs`):**
    ```bash
    docker compose logs -f web
+   # Local / container persistent request & guardian log file:
+   tail -f logs/error.logs
    ```
 
 3. **Stop and remove containers:**
@@ -524,17 +613,27 @@ npm test
 # Model & Factory Unit Tests
 node --test test/user.model.test.js
 node --test test/announcement.model.test.js
+node --test test/jobPosting.model.test.js
+node --test test/application.model.test.js
 node --test test/factories.test.js
 
-# Controller Tests
+# Controller & View Tests
 node --test test/controllers.test.js
 node --test test/announcement.controller.test.js
+node --test test/views.test.js
+
+# Middleware, Logging & Error Guardian Tests
+node --test test/logger.middleware.test.js
+node --test test/logWriter.middleware.test.js
+node --test test/notFoundGuardian.middleware.test.js
+node --test test/serverErrorGuardian.middleware.test.js
 
 # Route & Integration Tests
 node --test test/routes.test.js
 node --test test/announcement.routes.test.js
+node --test test/jobPosting.routes.test.js
+node --test test/application.routes.test.js
 node --test test/index.test.js
-node --test test/views.test.js
 ```
 
 ---
@@ -570,6 +669,15 @@ alumni/
 │   ├── JobPostingFactory.js         # Generates career and job posting mock records
 │   ├── UserFactory.js               # Generates alumni user mock records
 │   └── index.js                     # Factory module aggregator
+├── logs/                            # Persistent runtime & error telemetry logs
+│   └── error.logs                   # Dual-sink request telemetry, 404 & 5xx logs
+├── middleware/                      # Observability & Error Guardian Middleware Pipeline
+│   ├── guardianShared.js            # Shared route hints, HTML escaping, content negotiation
+│   ├── index.js                     # Middleware barrel exports
+│   ├── logWriter.js                 # Dual-sink terminal + logs/error.logs writer
+│   ├── logger.js                    # Request telemetry middleware ([ISO] METHOD route ...)
+│   ├── notFoundGuardian.js          # Generic /404 handler, invalid-web redirect & API 404 JSON
+│   └── serverErrorGuardian.js       # Structured 5xx diagnosis & Incident ID tracking
 ├── migrations/                      # Database Migration Layer (PostgreSQL SQL DDL/DML)
 │   ├── 001_create_tables.sql        # Creates users, announcements, indexes, triggers
 │   ├── 002_seed_data.sql            # Seeds initial users and announcements
@@ -617,13 +725,19 @@ alumni/
 │   ├── index.test.js
 │   ├── jobPosting.model.test.js
 │   ├── jobPosting.routes.test.js
+│   ├── logWriter.middleware.test.js
+│   ├── logger.middleware.test.js
+│   ├── notFoundGuardian.middleware.test.js
 │   ├── routes.test.js
+│   ├── serverErrorGuardian.middleware.test.js
 │   ├── user.model.test.js
 │   └── views.test.js
 ├── views/                           # View Layer (HTML templates & View helpers)
+│   ├── 404.html                     # Generic diagnostic 404 HTML template
 │   ├── AnnouncementView.js          # Helper rendering announcement templates
 │   ├── ApplicationView.js           # Helper rendering application templates
 │   ├── JobPostingView.js            # Helper rendering job posting templates
+│   ├── NotFoundView.js              # Helper rendering /404 generic error template
 │   ├── UserView.js                  # Helper rendering user templates
 │   ├── announcementDetail.html      # Announcement detail card template
 │   ├── announcementEdit.html        # Announcement edit form template

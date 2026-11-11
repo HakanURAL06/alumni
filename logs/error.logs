@@ -1,0 +1,113 @@
+[2026-11-11T08:06:52.803Z] [404 GUARDIAN] ANNOUNCEMENT_NOT_FOUND | 404 | GET / | No announcement record could be found with ID #9999. It may have been deleted or the URL identifier is invalid. | suggestion=/announcements | ip=-
+[2026-11-11T08:06:52.808Z] [404 GUARDIAN] ANNOUNCEMENT_NOT_FOUND | 404 | GET / | No announcement record could be found with ID #9999. It may have been deleted or the URL identifier is invalid. | suggestion=/announcements | ip=-
+[2026-11-11T08:06:52.809Z] [404 GUARDIAN] USER_NOT_FOUND | 404 | GET / | No user record could be found with ID #9999. It may have been deleted or the URL identifier is invalid. | suggestion=/users | ip=-
+[2026-11-11T08:06:52.813Z] [404 GUARDIAN] USER_NOT_FOUND | 404 | GET / | No user record could be found with ID #9999. It may have been deleted or the URL identifier is invalid. | suggestion=/users | ip=-
+[2026-11-11T08:06:52.816Z] [404 GUARDIAN] ANNOUNCEMENT_NOT_FOUND | 404 | GET / | No announcement record could be found with ID #9999. It may have been deleted or the URL identifier is invalid. | suggestion=/announcements | ip=-
+[2026-11-11T08:06:52.821Z] [404 GUARDIAN] USER_NOT_FOUND | 404 | GET / | No user record could be found with ID #9999. It may have been deleted or the URL identifier is invalid. | suggestion=/users | ip=-
+[2026-11-11T08:06:52.823Z] [404 GUARDIAN] ANNOUNCEMENT_NOT_FOUND | 404 | GET / | No announcement record could be found with ID #9999. It may have been deleted or the URL identifier is invalid. | suggestion=/announcements | ip=-
+[2026-11-11T08:06:52.823Z] GET    / | 200 | text/html | 6.90ms | 6667B | 127.0.0.1
+[2026-11-11T08:06:52.828Z] [404 GUARDIAN] USER_NOT_FOUND | 404 | GET / | No user record could be found with ID #9999. It may have been deleted or the URL identifier is invalid. | suggestion=/users | ip=-
+[2026-11-11T08:06:52.840Z] GET    /about | 200 | text/html | 6.86ms | 3414B | 127.0.0.1
+[2026-11-11T08:06:52.845Z] GET    /api/health | 200 | application/json | 3.72ms | 15B | 127.0.0.1
+[2026-11-11T08:06:52.847Z] POST   /api/health | 200 | application/json | 0.22ms | 15B | 127.0.0.1
+[2026-11-11T08:06:52.853Z] GET    /api/applications | 200 | application/json | 44.24ms | 624B | 127.0.0.1
+[2026-11-11T08:06:52.878Z] GET    /api/users | 200 | application/json | 29.13ms | 2560B | 127.0.0.1
+[2026-11-11T08:06:52.881Z] POST   /api/applications | 201 | application/json | 13.74ms | 272B | 127.0.0.1
+[2026-11-11T08:06:52.890Z] POST   /api/users | 201 | application/json | 7.23ms | 242B | 127.0.0.1
+[2026-11-11T08:06:52.895Z] GET    /api/users | 200 | application/json | 2.51ms | 2560B | 127.0.0.1
+[2026-11-11T08:06:52.901Z] GET    /api/users/1 | 200 | application/json | 3.44ms | 183B | 127.0.0.1
+[2026-11-11T08:06:52.904Z] GET    /api/users/9999 | 404 | application/json | 2.13ms | 26B | 127.0.0.1
+[2026-11-11T08:06:52.909Z] PUT    /api/users/1 | 200 | application/json | 2.66ms | 258B | 127.0.0.1
+[2026-11-11T08:06:52.913Z] GET    /api/applications/1 | 200 | application/json | 30.19ms | 431B | 127.0.0.1
+[2026-11-11T08:06:52.913Z] PATCH  /api/users/2 | 200 | application/json | 2.94ms | 255B | 127.0.0.1
+[2026-11-11T08:06:52.917Z] POST   /api/users | 201 | application/json | 2.20ms | 243B | 127.0.0.1
+[2026-11-11T08:06:52.923Z] DELETE /api/users/143 | 200 | application/json | 2.20ms | 170B | 127.0.0.1
+[2026-11-11T08:06:52.926Z] GET    /api/users/143 | 404 | application/json | 1.25ms | 26B | 127.0.0.1
+[2026-11-11T08:06:52.928Z] DELETE /api/users/9999 | 404 | application/json | 1.28ms | 26B | 127.0.0.1
+[2026-11-11T08:06:52.934Z] GET    /hello | 200 | text/html | 1.83ms | 11B | 127.0.0.1
+[2026-11-11T08:06:52.939Z] PUT    /api/applications/1 | 200 | application/json | 24.68ms | 275B | 127.0.0.1
+[2026-11-11T08:06:52.941Z] GET    /hello/hakan | 200 | text/html | 3.21ms | 12B | 127.0.0.1
+[2026-11-11T08:06:52.947Z] GET    /api/jobs | 200 | application/json | 32.56ms | 1219B | 127.0.0.1
+[2026-11-11T08:06:52.949Z] GET    /api/health | 200 | application/json | 15.33ms | 15B | 127.0.0.1
+[2026-11-11T08:06:52.959Z] GET    /hello/ahmet | 200 | text/html | 5.73ms | 12B | 127.0.0.1
+[2026-11-11T08:06:52.966Z] [404 GUARDIAN] CUSTOM_MISSING | 404 | GET /jobs/42 | Record missing here | suggestion=/ | ip=-
+[2026-11-11T08:06:52.966Z] [404 GUARDIAN] USER_NOT_FOUND | 404 | GET /users/999 | No user record could be found with ID #999. It may have been deleted or the URL identifier is invalid. | suggestion=/users | ip=-
+[2026-11-11T08:06:52.966Z] [404 GUARDIAN] USER_NOT_FOUND | 404 | GET /users/999 | No user record could be found with ID #999. It may have been deleted or the URL identifier is invalid. | suggestion=/users | ip=-
+[2026-11-11T08:06:52.968Z] PATCH  /api/applications/1 | 200 | application/json | 27.58ms | 284B | 127.0.0.1
+[2026-11-11T08:06:52.967Z] GET    /sum/3/5 | 200 | text/html | 5.08ms | 9B | 127.0.0.1
+[2026-11-11T08:06:52.979Z] GET    /sum/10/20 | 200 | text/html | 0.78ms | 10B | 127.0.0.1
+[2026-11-11T08:06:52.980Z] [404 GUARDIAN] ROUTE_TYPO_DETECTED | 404 | GET /usres | No route matched "GET /usres". The URL closely resembles "/users" (Alumni Directory). | suggestion=/users | redirect=/404?from=%2Fusres | ip=127.0.0.1
+[2026-11-11T08:06:52.982Z] GET    /api/users/1/applications | 200 | application/json | 11.61ms | 209B | 127.0.0.1
+[2026-11-11T08:06:52.986Z] POST   /api/jobs | 201 | application/json | 24.32ms | 307B | 127.0.0.1
+[2026-11-11T08:06:52.989Z] GET    /usres | 302 | text/html | 10.59ms | 47B | 127.0.0.1
+[2026-11-11T08:06:52.989Z] GET    /api/health | 200 | application/json | 5.63ms | 15B | 127.0.0.1
+[2026-11-11T08:06:52.990Z] GET    /sum/abc/5 | 400 | text/html | 10.43ms | 33B | 127.0.0.1
+[2026-11-11T08:06:53.000Z] [404 GUARDIAN] ROUTE_NOT_FOUND | 404 | GET /non-existent-route-check | No registered page, API route, or static asset matched "GET /non-existent-route-check". The address may contain a typo or refer to a removed resource. | suggestion=/ | redirect=/404?from=%2Fnon-existent-route-check | ip=127.0.0.1
+[2026-11-11T08:06:53.000Z] GET    /api/swagger/ | 200 | text/html | 8.50ms | 3106B | 127.0.0.1
+[2026-11-11T08:06:53.001Z] GET    /non-existent-route-check | 302 | text/plain | 4.92ms | 59B | 127.0.0.1
+[2026-11-11T08:06:53.006Z] GET    /404?from=%2Fusres | 404 | text/html | 10.00ms | 7086B | 127.0.0.1
+[2026-11-11T08:06:53.007Z] GET    /404?from=%2Fnon-existent-route-check | 404 | text/html | 1.72ms | 7099B | 127.0.0.1
+[2026-11-11T08:06:53.008Z] GET    /api/swagger.json | 200 | application/json | 5.39ms | 38627B | 127.0.0.1
+[2026-11-11T08:06:53.015Z] GET    /api/jobs/1 | 200 | application/json | 24.75ms | 418B | 127.0.0.1
+[2026-11-11T08:06:53.021Z] GET    /apiuser | 200 | application/json | 1.55ms | 2582B | 127.0.0.1
+[2026-11-11T08:06:53.026Z] GET    /users | 200 | text/html | 3.36ms | 16166B | 127.0.0.1
+[2026-11-11T08:06:53.031Z] POST   /users | 302 | text/html | 3.28ms | 45B | 127.0.0.1
+[2026-11-11T08:06:53.037Z] GET    /users/1 | 200 | text/html | 4.52ms | 2950B | 127.0.0.1
+[2026-11-11T08:06:53.040Z] GET    /api/users/9999/applications | 404 | application/json | 54.60ms | 26B | 127.0.0.1
+[2026-11-11T08:06:53.042Z] GET    /users/1/edit | 200 | text/html | 2.46ms | 3690B | 127.0.0.1
+[2026-11-11T08:06:53.048Z] POST   /users/1/edit | 302 | text/html | 2.77ms | 45B | 127.0.0.1
+[2026-11-11T08:06:53.050Z] POST   /api/users | 201 | application/json | 1.49ms | 229B | 127.0.0.1
+[2026-11-11T08:06:53.052Z] POST   /api/users/3/applications | 404 | application/json | 8.66ms | 26B | 127.0.0.1
+[2026-11-11T08:06:53.053Z] POST   /users/145/delete | 302 | text/html | 1.73ms | 45B | 127.0.0.1
+[2026-11-11T08:06:53.055Z] [404 GUARDIAN] ROUTE_TYPO_DETECTED | 404 | GET /usres | No route matched "GET /usres". The URL closely resembles "/users" (Alumni Directory). | suggestion=/users | redirect=/404?from=%2Fusres | ip=127.0.0.1
+[2026-11-11T08:06:53.057Z] GET    /api/announcements | 200 | application/json | 3.00ms | 19113B | 127.0.0.1
+[2026-11-11T08:06:53.058Z] PUT    /api/jobs/1 | 200 | application/json | 37.72ms | 482B | 127.0.0.1
+[2026-11-11T08:06:53.058Z] GET    /usres | 302 | text/html | 4.79ms | 47B | 127.0.0.1
+[2026-11-11T08:06:53.065Z] POST   /api/announcements | 201 | application/json | 4.67ms | 307B | 127.0.0.1
+[2026-11-11T08:06:53.069Z] GET    /announcements | 200 | text/html | 2.39ms | 68424B | 127.0.0.1
+[2026-11-11T08:06:53.069Z] GET    /404?from=%2Fusres | 404 | text/html | 3.46ms | 7086B | 127.0.0.1
+[2026-11-11T08:06:53.072Z] [404 GUARDIAN] METHOD_NOT_SUPPORTED | 404 | DELETE /users | The route "/users" (Alumni Directory) exists, but does not handle HTTP DELETE requests. Allowed methods on this endpoint: GET, POST. | suggestion=/users | redirect=/404?from=%2Fusers&method=DELETE | ip=127.0.0.1
+[2026-11-11T08:06:53.072Z] DELETE /users | 302 | text/html | 0.62ms | 65B | 127.0.0.1
+[2026-11-11T08:06:53.073Z] DELETE /404?from=%2Fusers&method=DELETE | 404 | text/html | 0.30ms | 7129B | 127.0.0.1
+[2026-11-11T08:06:53.074Z] POST   /announcements | 302 | text/html | 3.12ms | 53B | 127.0.0.1
+[2026-11-11T08:06:53.074Z] [404 GUARDIAN] API_ENDPOINT_NOT_FOUND | 404 | GET /api/unknown-endpoint | No REST API handler is registered for "GET /api/unknown-endpoint". Verify the endpoint name, resource ID, or HTTP method. | suggestion=/api/swagger | ip=127.0.0.1
+[2026-11-11T08:06:53.075Z] GET    /api/jobs/1/applications | 200 | application/json | 17.57ms | 417B | 127.0.0.1
+[2026-11-11T08:06:53.075Z] GET    /api/unknown-endpoint | 404 | application/json | 2.07ms | 1536B | 127.0.0.1
+[2026-11-11T08:06:53.081Z] GET    /announcements/1 | 200 | text/html | 5.52ms | 2883B | 127.0.0.1
+[2026-11-11T08:06:53.086Z] GET    /announcements/1/edit | 200 | text/html | 2.26ms | 3884B | 127.0.0.1
+[2026-11-11T08:06:53.089Z] PATCH  /api/jobs/1 | 200 | application/json | 30.11ms | 472B | 127.0.0.1
+[2026-11-11T08:06:53.090Z] GET    /api/jobs/9999/applications | 404 | application/json | 11.72ms | 33B | 127.0.0.1
+[2026-11-11T08:06:53.097Z] POST   /announcements/1/edit | 302 | text/html | 8.29ms | 53B | 127.0.0.1
+[2026-11-11T08:06:53.103Z] POST   /api/announcements | 201 | application/json | 3.27ms | 274B | 127.0.0.1
+[2026-11-11T08:06:53.106Z] [404 GUARDIAN] JOB_POSTING_NOT_FOUND | 404 | GET /jobs/99999 | No job posting record could be found with ID #99999. It may have been deleted or the URL identifier is invalid. | suggestion=/jobs | ip=127.0.0.1
+[2026-11-11T08:06:53.106Z] POST   /announcements/128/delete | 302 | text/html | 2.68ms | 53B | 127.0.0.1
+[2026-11-11T08:06:53.107Z] GET    /jobs/99999 | 404 | text/html | 30.71ms | 7028B | 127.0.0.1
+[2026-11-11T08:06:53.109Z] [404 GUARDIAN] ROUTE_NOT_FOUND | 404 | GET /%3Cscript%3Ealert(1)%3C/script%3E | No registered page, API route, or static asset matched "GET /%3Cscript%3Ealert(1)%3C/script%3E". The address may contain a typo or refer to a removed resource. | suggestion=/ | redirect=/404?from=%2F%253Cscript%253Ealert%281%29%253C%2Fscript%253E | ip=127.0.0.1
+[2026-11-11T08:06:53.109Z] GET    /%3Cscript%3Ealert(1)%3C/script%3E | 302 | text/html | 1.03ms | 89B | 127.0.0.1
+[2026-11-11T08:06:53.111Z] POST   /api/jobs/3/applications | 201 | application/json | 19.41ms | 215B | 127.0.0.1
+[2026-11-11T08:06:53.112Z] GET    /404?from=%2F%253Cscript%253Ealert%281%29%253C%2Fscript%253E | 404 | text/html | 1.02ms | 7117B | 127.0.0.1
+[2026-11-11T08:06:53.114Z] GET    /api/jobs/1/user | 200 | application/json | 23.56ms | 203B | 127.0.0.1
+[2026-11-11T08:06:53.115Z] [404 GUARDIAN] ARCHIVED_RESOURCE | 404 | GET /trigger-404 | Alumni record archived | suggestion=/ | ip=127.0.0.1
+[2026-11-11T08:06:53.117Z] [404 GUARDIAN] PAGE_NOT_FOUND | 404 | GET /404 | The page or endpoint you requested could not be found. It may have been moved, deleted, or the URL may be incorrect. | suggestion=/ | ip=127.0.0.1
+[2026-11-11T08:06:53.117Z] GET    /404 | 404 | text/html | 0.62ms | 7009B | 127.0.0.1
+[2026-11-11T08:06:53.118Z] [404 GUARDIAN] PAGE_NOT_FOUND | 404 | GET /404.html | The page or endpoint you requested could not be found. It may have been moved, deleted, or the URL may be incorrect. | suggestion=/ | ip=127.0.0.1
+[2026-11-11T08:06:53.119Z] GET    /api/users/1/jobs | 200 | application/json | 2.57ms | 1045B | 127.0.0.1
+[2026-11-11T08:06:53.119Z] GET    /404.html | 404 | text/html | 0.42ms | 7014B | 127.0.0.1
+[2026-11-11T08:06:53.120Z] [404 GUARDIAN] ROUTE_NOT_FOUND | 404 | GET /invalid-random-path | No registered page, API route, or static asset matched "GET /invalid-random-path". The address may contain a typo or refer to a removed resource. | suggestion=/ | redirect=/404?from=%2Finvalid-random-path | ip=127.0.0.1
+[2026-11-11T08:06:53.120Z] GET    /invalid-random-path | 302 | text/html | 0.72ms | 61B | 127.0.0.1
+[2026-11-11T08:06:53.120Z] [404 GUARDIAN] ROUTE_NOT_FOUND | 404 | GET /invalid-random-path | No registered page, API route, or static asset matched "GET /invalid-random-path". The address may contain a typo or refer to a removed resource. | suggestion=/ | redirect=/404?from=%2Finvalid-random-path | ip=127.0.0.1
+[2026-11-11T08:06:53.121Z] GET    /applications | 200 | text/html | 7.78ms | 19909B | 127.0.0.1
+[2026-11-11T08:06:53.121Z] GET    /invalid-random-path | 302 | text/html | 0.55ms | 61B | 127.0.0.1
+[2026-11-11T08:06:53.122Z] GET    /404?from=%2Finvalid-random-path | 404 | text/html | 0.49ms | 7089B | 127.0.0.1
+[2026-11-11T08:06:53.122Z] [404 GUARDIAN] PAGE_NOT_FOUND | 404 | GET /404 | The page or endpoint you requested could not be found. It may have been moved, deleted, or the URL may be incorrect. | suggestion=/ | ip=127.0.0.1
+[2026-11-11T08:06:53.123Z] GET    /404?from=//evil.com | 404 | text/html | 0.39ms | 7009B | 127.0.0.1
+[2026-11-11T08:06:53.123Z] [404 GUARDIAN] PAGE_NOT_FOUND | 404 | GET /404 | The page or endpoint you requested could not be found. It may have been moved, deleted, or the URL may be incorrect. | suggestion=/ | ip=127.0.0.1
+[2026-11-11T08:06:53.123Z] GET    /404 | 404 | application/json | 0.40ms | 1482B | 127.0.0.1
+[2026-11-11T08:06:53.125Z] GET    /api/users/9999/jobs | 404 | application/json | 5.47ms | 26B | 127.0.0.1
+[2026-11-11T08:06:53.127Z] GET    /users/1/applications | 200 | text/html | 5.42ms | 13445B | 127.0.0.1
+[2026-11-11T08:06:53.129Z] POST   /api/users/2/jobs | 201 | application/json | 1.24ms | 296B | 127.0.0.1
+[2026-11-11T08:06:53.134Z] GET    /api/users/1/jobs/1 | 200 | application/json | 3.21ms | 403B | 127.0.0.1
+[2026-11-11T08:06:53.135Z] GET    /jobs/1/applications | 200 | text/html | 7.41ms | 13525B | 127.0.0.1
+[2026-11-11T08:06:53.138Z] GET    /api/users/2/jobs/1 | 404 | application/json | 3.12ms | 47B | 127.0.0.1
+[2026-11-11T08:06:53.143Z] GET    /jobs | 200 | text/html | 4.42ms | 14690B | 127.0.0.1
+[2026-11-11T08:06:53.148Z] GET    /users/1/jobs | 200 | text/html | 4.04ms | 12660B | 127.0.0.1

@@ -1,5 +1,12 @@
 const User = require('../models/User');
 const UserView = require('../views/UserView');
+const { sendResourceNotFound, sendServerError } = require('../middleware');
+
+const USER_NOT_FOUND_OPTS = {
+  resourceName: 'User',
+  backHref: '/users',
+  backLabel: '← Back to Alumni Directory'
+};
 
 /**
  * UserController
@@ -41,7 +48,11 @@ class UserController {
 
       return res.status(200).json(users);
     } catch (error) {
-      return res.status(500).json({ error: 'Internal Server Error' });
+      return sendServerError(req, res, error, {
+        operation: 'Alumni Directory operation',
+        backHref: '/users',
+        backLabel: '← Back to Alumni Directory'
+      });
     }
   }
 
@@ -53,10 +64,7 @@ class UserController {
     try {
       const user = await User.findById(req.params.id);
       if (!user) {
-        if (req.accepts('html')) {
-          return res.status(404).send('<h2>404 - User Not Found</h2><p><a href="/users">← Back to Directory</a></p>');
-        }
-        return res.status(404).json({ error: 'User not found' });
+        return sendResourceNotFound(req, res, { ...USER_NOT_FOUND_OPTS, id: req.params.id });
       }
 
       if (req.accepts('html')) {
@@ -68,7 +76,11 @@ class UserController {
 
       return res.status(200).json(user);
     } catch (error) {
-      return res.status(500).json({ error: 'Internal Server Error' });
+      return sendServerError(req, res, error, {
+        operation: 'Alumni Directory operation',
+        backHref: '/users',
+        backLabel: '← Back to Alumni Directory'
+      });
     }
   }
 
@@ -80,10 +92,7 @@ class UserController {
     try {
       const user = await User.findById(req.params.id);
       if (!user) {
-        if (req.accepts('html')) {
-          return res.status(404).send('<h2>404 - User Not Found</h2><p><a href="/users">← Back to Directory</a></p>');
-        }
-        return res.status(404).json({ error: 'User not found' });
+        return sendResourceNotFound(req, res, { ...USER_NOT_FOUND_OPTS, id: req.params.id });
       }
 
       if (req.accepts('html')) {
@@ -95,7 +104,11 @@ class UserController {
 
       return res.status(200).json(user);
     } catch (error) {
-      return res.status(500).json({ error: 'Internal Server Error' });
+      return sendServerError(req, res, error, {
+        operation: 'Alumni Directory operation',
+        backHref: '/users',
+        backLabel: '← Back to Alumni Directory'
+      });
     }
   }
 
@@ -114,7 +127,11 @@ class UserController {
         user: newUser
       });
     } catch (error) {
-      return res.status(500).json({ error: 'Internal Server Error' });
+      return sendServerError(req, res, error, {
+        operation: 'Alumni Directory operation',
+        backHref: '/users',
+        backLabel: '← Back to Alumni Directory'
+      });
     }
   }
 
@@ -126,10 +143,7 @@ class UserController {
     try {
       const updatedUser = await User.update(req.params.id, req.body);
       if (!updatedUser) {
-        if (req.accepts('html')) {
-          return res.status(404).send('<h2>404 - User Not Found</h2><p><a href="/users">← Back to Directory</a></p>');
-        }
-        return res.status(404).json({ error: 'User not found' });
+        return sendResourceNotFound(req, res, { ...USER_NOT_FOUND_OPTS, id: req.params.id });
       }
 
       if (req.accepts('html')) {
@@ -141,7 +155,11 @@ class UserController {
         user: updatedUser
       });
     } catch (error) {
-      return res.status(500).json({ error: 'Internal Server Error' });
+      return sendServerError(req, res, error, {
+        operation: 'Alumni Directory operation',
+        backHref: '/users',
+        backLabel: '← Back to Alumni Directory'
+      });
     }
   }
 
@@ -160,10 +178,7 @@ class UserController {
     try {
       const deletedUser = await User.delete(req.params.id);
       if (!deletedUser) {
-        if (req.accepts('html')) {
-          return res.status(404).send('<h2>404 - User Not Found</h2><p><a href="/users">← Back to Directory</a></p>');
-        }
-        return res.status(404).json({ error: 'User not found' });
+        return sendResourceNotFound(req, res, { ...USER_NOT_FOUND_OPTS, id: req.params.id });
       }
 
       if (req.accepts('html')) {
@@ -175,7 +190,11 @@ class UserController {
         deletedUser
       });
     } catch (error) {
-      return res.status(500).json({ error: 'Internal Server Error' });
+      return sendServerError(req, res, error, {
+        operation: 'Alumni Directory operation',
+        backHref: '/users',
+        backLabel: '← Back to Alumni Directory'
+      });
     }
   }
 }

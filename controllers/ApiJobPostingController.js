@@ -1,5 +1,6 @@
 const JobPosting = require('../models/JobPosting');
 const User = require('../models/User');
+const { sendServerError } = require('../middleware');
 
 /**
  * ApiJobPostingController
@@ -28,7 +29,11 @@ class ApiJobPostingController {
       const jobs = await JobPosting.findAll(filters);
       return res.status(200).json(jobs);
     } catch (error) {
-      return res.status(500).json({ error: 'Internal Server Error' });
+      return sendServerError(req, res, error, {
+        operation: 'Job Postings REST API operation',
+        backHref: '/api/swagger',
+        backLabel: '📖 Open Swagger Docs'
+      });
     }
   }
 
@@ -53,7 +58,11 @@ class ApiJobPostingController {
 
       return res.status(200).json(job);
     } catch (error) {
-      return res.status(500).json({ error: 'Internal Server Error' });
+      return sendServerError(req, res, error, {
+        operation: 'Job Postings REST API operation',
+        backHref: '/api/swagger',
+        backLabel: '📖 Open Swagger Docs'
+      });
     }
   }
 
@@ -81,7 +90,11 @@ class ApiJobPostingController {
         jobPosting: newJob
       });
     } catch (error) {
-      return res.status(500).json({ error: 'Internal Server Error' });
+      return sendServerError(req, res, error, {
+        operation: 'Job Postings REST API operation',
+        backHref: '/api/swagger',
+        backLabel: '📖 Open Swagger Docs'
+      });
     }
   }
 
@@ -112,7 +125,11 @@ class ApiJobPostingController {
         jobPosting: updated
       });
     } catch (error) {
-      return res.status(500).json({ error: 'Internal Server Error' });
+      return sendServerError(req, res, error, {
+        operation: 'Job Postings REST API operation',
+        backHref: '/api/swagger',
+        backLabel: '📖 Open Swagger Docs'
+      });
     }
   }
 
@@ -143,7 +160,11 @@ class ApiJobPostingController {
         jobPosting: updated
       });
     } catch (error) {
-      return res.status(500).json({ error: 'Internal Server Error' });
+      return sendServerError(req, res, error, {
+        operation: 'Job Postings REST API operation',
+        backHref: '/api/swagger',
+        backLabel: '📖 Open Swagger Docs'
+      });
     }
   }
 
@@ -174,7 +195,11 @@ class ApiJobPostingController {
         deletedJobPosting: deleted
       });
     } catch (error) {
-      return res.status(500).json({ error: 'Internal Server Error' });
+      return sendServerError(req, res, error, {
+        operation: 'Job Postings REST API operation',
+        backHref: '/api/swagger',
+        backLabel: '📖 Open Swagger Docs'
+      });
     }
   }
 
@@ -190,7 +215,11 @@ class ApiJobPostingController {
       }
       return res.status(200).json(user);
     } catch (error) {
-      return res.status(500).json({ error: 'Internal Server Error' });
+      return sendServerError(req, res, error, {
+        operation: 'Job Postings REST API operation',
+        backHref: '/api/swagger',
+        backLabel: '📖 Open Swagger Docs'
+      });
     }
   }
 }

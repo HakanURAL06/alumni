@@ -1,7 +1,7 @@
 # 📊 Data Design Documentation (DDD)
 > **Alumni Tracking System**  
-> *Version:* 1.0.0  
-> *Scope:* Data Architecture, Domain Models, In-Memory Storage, and Relational Database Transition Blueprint  
+> *Version:* 2.0.0  
+> *Scope:* Data Architecture, Domain Models, Validation Rules, Observability/Error Contracts, In-Memory Storage, and Relational Database Transition Blueprint  
 > *Target Audience:* Software Engineers, Architects, Course Evaluators, and Autonomous AI Agents  
 > 🔗 **System Overview & MVC Manual:** [README.md](./README.md)
 
@@ -33,13 +33,17 @@
    - [Docker Compose PostgreSQL Service Configuration](#64-docker-compose-postgresql-service-configuration)
    - [Data Factories & Database Seeding Architecture (`factories/` & `scripts/seed.js`)](#65-data-factories--database-seeding-architecture-factories--scriptsseedjs)
 7. [Validation, Sanitization & Data Integrity Rules](#7-validation-sanitization--data-integrity-rules)
+   - [Entity Field Validation & Sanitization Matrix](#71-entity-field-validation--sanitization-matrix)
+   - [Domain Business Rules & Lifecycle Policies](#72-domain-business-rules--lifecycle-policies)
+   - [Security, Input Normalization & Error Contract](#73-security-input-normalization--error-contract)
+   - [Middleware Observability and Guardian Error Contract](#74-middleware-observability-and-guardian-error-contract)
 8. [AI Agent Quick Reference & Query Matrix](#8-ai-agent-quick-reference--query-matrix)
 
 ---
 
 ## 1. Overview & Architectural Context
 
-The **Alumni Tracking System** is built on a clean **Model-View-Controller (MVC)** pattern. Within this architecture, the **Model Layer** ([`models/User.js`](file:///Users/hakanural06/alumni/models/User.js) and [`models/Announcement.js`](file:///Users/hakanural06/alumni/models/Announcement.js)) encapsulates all domain knowledge, validation, entity definitions, and data mutations.
+The **Alumni Tracking System** is built on a clean **Model-View-Controller (MVC)** pattern. Within this architecture, the **Model Layer** ([`models/User.js`](file:///Users/hakanural06/alumni/models/User.js), [`models/Announcement.js`](file:///Users/hakanural06/alumni/models/Announcement.js), [`models/JobPosting.js`](file:///Users/hakanural06/alumni/models/JobPosting.js), and [`models/Application.js`](file:///Users/hakanural06/alumni/models/Application.js)) encapsulates all domain knowledge, validation, entity definitions, and data mutations.
 
 ### Key Design Principles:
 - **Decoupled Persistence:** Business logic inside Controllers communicates strictly with Model class methods (`findAll`, `findById`, `create`, `update`, `delete`). Controllers remain agnostic to whether data originates from local process memory, a mock store, or a relational database (PostgreSQL).
@@ -59,10 +63,10 @@ Represents an individual graduate of the institution.
 | Attribute | Data Type | Constraint | Default Value | Description |
 | :--- | :--- | :--- | :--- | :--- |
 | `id` | `Integer` | Primary Key, Auto-increment, Unique | Dynamic (`max(id) + 1`) | Unique identifier for the alumni member. |
-| `name` | `String` | Required, Min 1, Max 100 chars | `'Yeni Mezun'` | Full name of the alumni member. |
-| `department` | `String` | Required, Enum / Standard string | `'Computer Engineering'` | Academic department from which the user graduated. |
-| `graduationYear` | `Integer` | Required, Range: 1900–2100 | `2024` | Calendar year of graduation. Cast to `Number`. |
-| `email` | `String` | Required, Email format | `[name]@alumni.edu` (slugified) | Primary email address for contact and notifications. |
+| `name` | `String` | Required, Min 2, Max 120 chars (non-whitespace) | `'Yeni Mezun'` | Full name of the alumni member. |
+| `department` | `String` | Required, Min 2, Max 150 chars (non-whitespace) | `'Computer Engineering'` | Academic department from which the user graduated. |
+| `graduationYear` | `Integer` | Required, Integer, Range: 1900–2100 | `2024` | Calendar year of graduation. Cast to `Number`. |
+| `email` | `String` | Required, Unique (case-insensitive), RFC 5322 Email format, Max 255 chars | `[name]@alumni.edu` (slugified) | Primary email address for contact and notifications (stored trimmed & lowercased). |
 
 #### JSON Representation
 ```json
@@ -84,11 +88,11 @@ Represents institutional notices, alumni homecoming invitations, career opportun
 | Attribute | Data Type | Constraint | Default Value | Description |
 | :--- | :--- | :--- | :--- | :--- |
 | `id` | `Integer` | Primary Key, Auto-increment, Unique | Dynamic (`max(id) + 1`) | Unique identifier for the announcement. |
-| `title` | `String` | Required, Min 3, Max 200 chars | `'New Announcement'` | Headline / title of the posting. |
-| `content` | `String` | Optional / Text | `""` | Detailed description or body of the notice. |
-| `category` | `String` | Required, Categorical | `'General'` | Category tag: `Event`, `Career`, `Academic`, `General`. |
-| `author` | `String` | Required, Min 2 chars | `'Alumni Office'` | Publishing entity, office, or individual. |
-| `date` | `String` | ISO 8601 Date format (`YYYY-MM-DD`) | Today (`new Date().toISOString().split('T')[0]`) | Effective publication or event date. |
+| `title` | `String` | Required, Min 3, Max 200 chars (non-whitespace) | `'New Announcement'` | Headline / title of the posting. |
+| `content` | `String` | Optional / Text, Max 5000 chars | `""` | Detailed description or body of the notice (trimmed & sanitized). |
+| `category` | `String` | Required, Enum: `Event`, `Career`, `Academic`, `General` | `'General'` | Category tag: `Event`, `Career`, `Academic`, `General`. |
+| `author` | `String` | Required, Min 2, Max 100 chars (non-whitespace) | `'Alumni Office'` | Publishing entity, office, or individual. |
+| `date` | `String` | Required, Valid ISO 8601 Date (`YYYY-MM-DD`) | Today (`new Date().toISOString().split('T')[0]`) | Effective publication or event date. |
 
 #### JSON Representation
 ```json
@@ -111,17 +115,17 @@ Represents career opportunities, internships, and professional roles shared with
 | Attribute | Data Type | Constraint | Default Value | Description |
 | :--- | :--- | :--- | :--- | :--- |
 | `id` | `Integer` | Primary Key, Auto-increment, Unique | Dynamic (`max(id) + 1`) | Unique identifier for the job posting. |
-| `title` | `String` | Required, Min 3, Max 200 chars | `'Software Engineer'` | Title or headline of the job opportunity. |
-| `company` | `String` | Required, Min 2, Max 150 chars | `'Partner Company'` | Name of the hiring company or institution. |
-| `location` | `String` | Required, Max 150 chars | `'Remote'` | Workplace location (e.g., `'Istanbul, Turkey'`, `'Remote'`, `'Hybrid'`). |
+| `title` | `String` | Required, Min 3, Max 120 chars (non-whitespace) | `'Software Engineer'` | Title or headline of the job opportunity. |
+| `company` | `String` | Required, Min 2, Max 150 chars (non-whitespace) | `'Partner Company'` | Name of the hiring company or institution. |
+| `location` | `String` | Required, Min 2, Max 150 chars (non-whitespace) | `'Remote'` | City / workplace location (e.g., `'Istanbul'`, `'Ankara / Hybrid'`, `'Remote'`). |
 | `jobType` | `String` | Required, Enum: `Full-time`, `Part-time`, `Contract`, `Internship`, `Remote` | `'Full-time'` | Employment type classification. |
-| `description` | `String` | Optional / Text | `""` | In-depth description of responsibilities and scope. |
-| `requirements` | `String` | Optional / Text | `""` | Required qualifications, skills, and experience criteria. |
-| `salary` | `String` | Optional, Max 100 chars | `null` | Disclosed compensation or range (e.g., `'$90,000 - $120,000'`). |
-| `contactEmail` | `String` | Required, RFC 5322 Email format | `'careers@company.com'` | Contact or submission email for applications. |
-| `postedBy` | `Integer` | Foreign Key referencing `users(id)`, Nullable | `null` | Identifier of the alumni member or administrator posting the role. |
+| `description` | `String` | Required when `status = 'Active'` (Optional for `'Draft'`), Min 20 when Active, Max 5000 chars | `""` | In-depth description of responsibilities and scope. |
+| `requirements` | `String` | Optional / Text, Max 3000 chars | `""` | Required qualifications, skills, and experience criteria. |
+| `salary` | `String` | Optional, Max 100 chars (non-empty if provided) | `null` | Disclosed compensation or range (e.g., `'$90,000 - $120,000'`). |
+| `contactEmail` | `String` | Required, RFC 5322 Email format, Max 255 chars | `'careers@company.com'` | Contact or submission email for applications (stored trimmed & lowercased). |
+| `postedBy` | `Integer` | Positive Integer FK referencing `users(id)`, Nullable (Mandatory on `/api/users/:userId/jobs`) | `null` | Identifier of the alumni member or administrator posting the role. |
 | `status` | `String` | Required, Enum: `Active`, `Closed`, `Draft` | `'Active'` | Operational state of the job listing. |
-| `applicationDeadline` | `String` | Optional, ISO 8601 Date (`YYYY-MM-DD`) | `null` | Cutoff date for receiving applications. |
+| `applicationDeadline` | `String` | Optional, Valid ISO 8601 Date (`YYYY-MM-DD`); must be `>= CURRENT_DATE` when Active | `null` | Cutoff date for receiving applications. |
 | `createdAt` | `String` | ISO 8601 Timestamp | Current Timestamp | Record creation timestamp. |
 | `updatedAt` | `String` | ISO 8601 Timestamp | Current Timestamp | Record last update timestamp. |
 
@@ -145,8 +149,6 @@ Represents career opportunities, internships, and professional roles shared with
 
 ---
 
----
-
 ### 2.4 Application Action Entity (User-Job Action Table)
 
 Represents the concrete action of an alumni member applying to a published job posting. Acts as an action/junction table governing the Many-to-Many relationship between `users` and `job_postings` with transactional status tracking.
@@ -156,8 +158,8 @@ Represents the concrete action of an alumni member applying to a published job p
 | `id` | `Integer` | Primary Key, Auto-increment, Unique | Dynamic (`max(id) + 1`) | Unique identifier for the application record. |
 | `userId` / `user_id` | `Integer` | Foreign Key referencing `users(id)`, Cascade Delete | Required | ID of the alumni candidate submitting the application. |
 | `jobPostingId` / `job_posting_id`| `Integer` | Foreign Key referencing `job_postings(id)`, Cascade Delete | Required | ID of the target job posting. |
-| `resumeUrl` / `resume_url` | `String` | Optional, URL or document path, Max 500 chars | `null` | Link or storage location of candidate resume. |
-| `coverNote` / `cover_note` | `String` | Optional / Text | `""` | Accompanying cover note, bio, or message. |
+| `resumeUrl` / `resume_url` | `String` | Optional, HTTP(S) URL or safe relative path, Max 500 chars | `null` | Link or storage location of candidate resume (reject unsafe schemes such as `javascript:`/`data:`). |
+| `coverNote` / `cover_note` | `String` | Optional / Text, Max 2000 chars | `""` | Accompanying cover note, bio, or message (trimmed & XSS-sanitized). |
 | `status` | `String` | Required, Enum: `Submitted`, `Pending`, `Under Review`, `Reviewed`, `Interviewing`, `Accepted`, `Rejected`, `Withdrawn` | `'Submitted'` | Lifecycle evaluation status of application. |
 | `appliedAt` / `applied_at` | `String` | ISO 8601 Timestamp | Current Timestamp | Submission date and time. |
 | `createdAt` | `String` | ISO 8601 Timestamp | Current Timestamp | Record creation timestamp. |
@@ -173,7 +175,7 @@ Represents the concrete action of an alumni member applying to a published job p
   "jobPostingId": 1,
   "resumeUrl": "https://storage.alumni.edu/resumes/ayse_yilmaz_cv.pdf",
   "coverNote": "I have 3 years of hands-on experience in backend microservices and would love to contribute to TechCorp.",
-  "status": "Pending",
+  "status": "Submitted",
   "appliedAt": "2026-10-21T09:30:00.000Z"
 }
 ```
@@ -418,7 +420,7 @@ interface ApplicationModelContract {
     jobPostingId: number | string;
     resumeUrl?: string | null;
     coverNote?: string;
-    status?: 'Pending' | 'Reviewed' | 'Accepted' | 'Rejected' | 'Withdrawn';
+    status?: 'Submitted' | 'Pending' | 'Under Review' | 'Reviewed' | 'Interviewing' | 'Accepted' | 'Rejected' | 'Withdrawn';
   }): Promise<Application>;
 
   findAll(filters?: {
@@ -561,17 +563,17 @@ CREATE TRIGGER trg_announcements_update
 -- Table: job_postings (Career & Internship Listings)
 CREATE TABLE IF NOT EXISTS job_postings (
     id SERIAL PRIMARY KEY,
-    title VARCHAR(200) NOT NULL,
-    company VARCHAR(150) NOT NULL,
-    location VARCHAR(150) NOT NULL DEFAULT 'Remote',
+    title VARCHAR(120) NOT NULL CHECK (char_length(trim(title)) BETWEEN 3 AND 120),
+    company VARCHAR(150) NOT NULL CHECK (char_length(trim(company)) BETWEEN 2 AND 150),
+    location VARCHAR(150) NOT NULL DEFAULT 'Remote' CHECK (char_length(trim(location)) BETWEEN 2 AND 150),
     job_type VARCHAR(50) NOT NULL DEFAULT 'Full-time' CHECK (job_type IN ('Full-time', 'Part-time', 'Contract', 'Internship', 'Remote')),
-    description TEXT DEFAULT '',
-    requirements TEXT DEFAULT '',
-    salary VARCHAR(100) DEFAULT NULL,
-    contact_email VARCHAR(255) NOT NULL,
+    description TEXT NOT NULL DEFAULT '' CHECK (char_length(description) <= 5000 AND (status <> 'Active' OR char_length(trim(description)) >= 20)),
+    requirements TEXT NOT NULL DEFAULT '' CHECK (char_length(requirements) <= 3000),
+    salary VARCHAR(100) DEFAULT NULL CHECK (salary IS NULL OR char_length(trim(salary)) >= 1),
+    contact_email VARCHAR(255) NOT NULL CHECK (contact_email ~* '^[^\s@]+@[^\s@]+\.[^\s@]{2,}$'),
     posted_by INTEGER REFERENCES users(id) ON DELETE SET NULL,
     status VARCHAR(20) NOT NULL DEFAULT 'Active' CHECK (status IN ('Active', 'Closed', 'Draft')),
-    application_deadline DATE DEFAULT NULL,
+    application_deadline DATE DEFAULT NULL CHECK (application_deadline IS NULL OR application_deadline >= created_at::date), -- >= CURRENT_DATE enforced on create/activation
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
@@ -689,6 +691,7 @@ factories/
 ├── UserFactory.js          # Generates single / bulk valid alumni records
 ├── AnnouncementFactory.js  # Generates single / bulk valid announcement records
 ├── JobPostingFactory.js    # Generates single / bulk valid job postings
+├── ApplicationFactory.js   # Generates single / bulk valid user-to-job application records
 └── index.js                # Aggregates and exports all factories
 ```
 
@@ -699,42 +702,108 @@ factories/
 - **`AnnouncementFactory.create(overrides = {})`**: Generates a mock `Announcement` object with category, content, author, and date.
 - **`AnnouncementFactory.createMany(count, overrides = {})`**: Generates `count` unique announcement objects.
 - **`AnnouncementFactory.createInDb(client, overrides = {})`**: Persists the generated announcement directly into PostgreSQL.
-- **`JobPostingFactory.create(overrides = {})`**: Generates a mock `JobPosting` object with title, company, location, jobType, description, requirements, salary, contactEmail, status, and deadline.
+- **`JobPostingFactory.create(overrides = {})`**: Generates a mock `JobPosting` object with title (max 120 chars), company, city/location, jobType, description, requirements, salary, contactEmail, status, and deadline.
 - **`JobPostingFactory.createMany(count, overrides = {})`**: Generates `count` unique job postings.
 - **`JobPostingFactory.createInDb(client, overrides = {})`**: Persists the generated job posting directly into PostgreSQL.
+- **`ApplicationFactory.create(overrides = {})`**: Generates a mock `Application` object linking a valid `userId` and `jobPostingId` with resumeUrl, coverNote, and status.
+- **`ApplicationFactory.createMany(count, overrides = {})`**: Generates `count` unique application objects respecting `(userId, jobPostingId)` uniqueness.
+- **`ApplicationFactory.createInDb(client, overrides = {})`**: Persists the generated application directly into PostgreSQL with `ON CONFLICT (user_id, job_posting_id)` safety.
 
 #### Database Seeding Lifecycle (`npm run seed` / `scripts/seed.js`):
 1. **Connect:** Establishes connection to PostgreSQL using `DATABASE_URL`.
-2. **Seed Users:** Invokes `UserFactory.createInDb()` in a loop to populate 5 realistic alumni records.
-3. **Seed Announcements:** Invokes `AnnouncementFactory.createInDb()` to populate 5 varied announcements across categories (`Event`, `Career`, `Academic`, `General`).
-4. **Seed Job Postings:** Invokes `JobPostingFactory.createInDb()` to populate initial career opportunities linked to alumni.
-5. **Synchronize In-Memory Stores:** Synchronizes `UserModel.users`, `AnnouncementModel.announcements`, and `JobPostingModel.jobPostings` if running within an active Node process.
-6. **Idempotency:** Safe to run repeatedly; duplicate emails are handled gracefully via `ON CONFLICT` clauses.
+2. **Seed Users:** Invokes `UserFactory.createInDb()` in a loop to populate realistic alumni records.
+3. **Seed Announcements:** Invokes `AnnouncementFactory.createInDb()` to populate varied announcements across categories (`Event`, `Career`, `Academic`, `General`).
+4. **Seed Job Postings:** Invokes `JobPostingFactory.createInDb()` to populate initial career opportunities linked to alumni (`posted_by`).
+5. **Seed Applications:** Invokes `ApplicationFactory.createInDb()` to populate valid `(user_id, job_posting_id)` junction records.
+6. **Synchronize In-Memory Stores:** Synchronizes `UserModel.users`, `AnnouncementModel.announcements`, `JobPostingModel.jobPostings`, and `ApplicationModel.applications` if running within an active Node process.
+7. **Idempotency:** Safe to run repeatedly; duplicate emails and duplicate `(user_id, job_posting_id)` pairs are handled gracefully via `ON CONFLICT` clauses.
 
 ---
 
 ## 7. Validation, Sanitization & Data Integrity Rules
 
+This section defines the canonical validation, business, normalization, and error-handling contract across both PostgreSQL persistence and the Node.js Domain/API layers.
+
+### 7.1 Entity Field Validation & Sanitization Matrix
+
 | Field | Validation Rule | Error Response Code | Sanitization Handling |
 | :--- | :--- | :--- | :--- |
-| `user.name` | Required, string, trimmed length >= 1 | `400 Bad Request` | Trim whitespace, escape `<>&"` in HTML views. |
-| `user.email` | RFC 5322 regex validation, unique | `400 Bad Request` | Lowercase conversion (`trim().toLowerCase()`). |
-| `user.graduationYear` | Integer, 1900 <= year <= 2100 | `400 Bad Request` | Coerce via `Number(val)`. |
-| `announcement.title` | Required, string, trimmed length >= 3 | `400 Bad Request` | Trim whitespace, strip malicious HTML tags. |
-| `announcement.category`| Must match: `Event`, `Career`, `Academic`, `General` | `400 Bad Request` | Default to `'General'` if omitted. |
-| `announcement.date` | ISO Date format `YYYY-MM-DD` | `400 Bad Request` | Default to `new Date().toISOString().split('T')[0]`. |
-| `job_posting.title` | Required, string, trimmed length >= 3, max 200 | `400 Bad Request` | Trim whitespace, escape `<>&"` in HTML views. |
-| `job_posting.company` | Required, string, trimmed length >= 2, max 150 | `400 Bad Request` | Trim whitespace. |
-| `job_posting.location` | Required, string, max 150 | `400 Bad Request` | Default to `'Remote'` if omitted. |
-| `job_posting.jobType` | Must match: `Full-time`, `Part-time`, `Contract`, `Internship`, `Remote` | `400 Bad Request` | Default to `'Full-time'`. |
-| `job_posting.contactEmail` | RFC 5322 regex validation, valid email | `400 Bad Request` | Lowercase conversion (`trim().toLowerCase()`). |
-| `job_posting.status` | Must match: `Active`, `Closed`, `Draft` | `400 Bad Request` | Default to `'Active'`. |
-| `job_posting.applicationDeadline` | Optional, ISO Date format `YYYY-MM-DD` | `400 Bad Request` | Coerce to `YYYY-MM-DD` or `null`. |
-| `application.userId` | Required, integer, references valid alumni user | `400 Bad Request` | Numeric casting. |
-| `application.jobPostingId` | Required, integer, references valid job posting | `400 Bad Request` | Numeric casting. |
-| `application.resumeUrl` | Optional string, URL/path format, max 500 chars | `400 Bad Request` | Trim whitespace. |
-| `application.coverNote` | Optional text, max 2000 chars | `400 Bad Request` | Trim whitespace, escape HTML. |
-| `application.status` | Must match: `Pending`, `Reviewed`, `Accepted`, `Rejected`, `Withdrawn` | `400 Bad Request` | Default to `'Pending'`. |
+| `user.name` | Required, non-whitespace string, trimmed length 2–120 chars | `400 Bad Request` | Trim whitespace, collapse internal excess spaces, escape `<>&"` in HTML views. |
+| `user.department` | Required, non-whitespace string, trimmed length 2–150 chars | `400 Bad Request` | Trim whitespace, escape `<>&"` in HTML views. |
+| `user.graduationYear` | Required, integer, `1900 <= year <= 2100` | `400 Bad Request` | Coerce via `Number(val)`; reject `NaN` or decimals. |
+| `user.email` | Required, RFC 5322 regex validation, max 255 chars, unique (case-insensitive) | `400 Bad Request` / `409 Conflict` | `trim().toLowerCase()`. |
+| `announcement.title` | Required, non-whitespace string, trimmed length 3–200 chars | `400 Bad Request` | Trim whitespace, strip malicious HTML tags. |
+| `announcement.content` | Optional text, max 5000 chars | `400 Bad Request` | Default to `""`; trim whitespace, strip `<script>`/event markup. |
+| `announcement.category` | Required enum: `Event`, `Career`, `Academic`, `General` | `400 Bad Request` | Trim; default to `'General'` if omitted (reject unknown values). |
+| `announcement.author` | Required, non-whitespace string, trimmed length 2–100 chars | `400 Bad Request` | Trim whitespace; default to `'Alumni Office'` only if omitted. |
+| `announcement.date` | Required, valid calendar ISO Date `YYYY-MM-DD` | `400 Bad Request` | Default to `new Date().toISOString().split('T')[0]` if omitted. |
+| `job_posting.title` | Required, non-whitespace string, trimmed length 3–120 chars | `400 Bad Request` | Trim whitespace, escape `<>&"` in HTML views (never silently truncate). |
+| `job_posting.company` | Required, non-whitespace string, trimmed length 2–150 chars | `400 Bad Request` | Trim whitespace, escape `<>&"` in HTML views. |
+| `job_posting.location` | Required *(City / Workplace Location)*, non-whitespace string, trimmed length 2–150 chars (city name, `'City / Mode'`, or `'Remote'`) | `400 Bad Request` | Trim whitespace, escape `<>&"` in HTML views; DB/seed fallback is `'Remote'` when omitted. |
+| `job_posting.jobType` | Required enum: `Full-time`, `Part-time`, `Contract`, `Internship`, `Remote` | `400 Bad Request` | Default to `'Full-time'` if omitted; reject unknown values. |
+| `job_posting.description` | Required when `status = 'Active'` (optional when `'Draft'`), trimmed length 20–5000 chars (`0–5000` when `'Draft'`) | `400 Bad Request` | Trim whitespace, strip unsafe HTML / `<script>` tags. |
+| `job_posting.requirements` | Optional text, max 3000 chars | `400 Bad Request` | Default to `""`; trim whitespace, strip unsafe HTML tags. |
+| `job_posting.salary` | Optional string, max 100 chars (must have `>= 1` non-whitespace char if set, or `null`) | `400 Bad Request` | Trim whitespace; normalize blank string `""` to `null`. |
+| `job_posting.contactEmail` | Required, RFC 5322 regex validation, max 255 chars | `400 Bad Request` | `trim().toLowerCase()`. |
+| `job_posting.postedBy` | Optional positive integer referencing existing `users(id)`; required and verified on `/api/users/:userId/jobs` | `400 Bad Request` / `404 Not Found` | Positive integer casting (`Number(val)`), `null` if unassigned on top-level route. |
+| `job_posting.status` | Required enum: `Active`, `Closed`, `Draft` | `400 Bad Request` | Default to `'Active'` if omitted; reject unknown statuses. |
+| `job_posting.applicationDeadline` | Optional, valid calendar ISO Date `YYYY-MM-DD`; must be `>= CURRENT_DATE` when creating or activating to `'Active'` | `400 Bad Request` | Coerce empty string to `null`; validate calendar date (`YYYY-MM-DD`). |
+| `application.userId` | Required, positive integer referencing existing `users(id)` | `400 Bad Request` / `404 Not Found` | Positive integer casting (`Number(val)`). |
+| `application.jobPostingId` | Required, positive integer referencing existing `job_postings(id)`; unique pair `(userId, jobPostingId)` | `400 Bad Request` / `404 Not Found` / `409 Conflict` | Positive integer casting (`Number(val)`). |
+| `application.resumeUrl` | Optional string, valid `http://`, `https://`, or safe relative document path, max 500 chars | `400 Bad Request` | Trim whitespace; coerce empty string to `null`; reject `javascript:`/`data:` URIs. |
+| `application.coverNote` | Optional text, max 2000 chars | `400 Bad Request` | Default to `""`; trim whitespace, escape HTML entities. |
+| `application.status` | Required enum: `Submitted`, `Pending`, `Under Review`, `Reviewed`, `Interviewing`, `Accepted`, `Rejected`, `Withdrawn` | `400 Bad Request` | Default to `'Submitted'` if omitted; reject unknown values. |
+
+### 7.2 Domain Business Rules & Lifecycle Policies
+
+#### Job Posting Rules (`JobPosting`)
+- **`JP-R1` Mandatory Title & Max 120-Character Limit:** Every `JobPosting` MUST have a non-whitespace `title` between **3 and 120 characters** (inclusive) and a non-whitespace `company` between **2 and 150 characters**. Payloads violating these bounds MUST be rejected with `400 Bad Request` rather than silently truncated.
+- **`JP-R2` City / Workplace Location (`location`):** Every job posting MUST identify a target city or workplace mode in `location` (e.g., `'Istanbul'`, `'Ankara / Hybrid'`, `'Remote'`, 2–150 trimmed characters). Submitting empty or whitespace-only city/location strings on create or update MUST fail with `400 Bad Request`.
+- **`JP-R3` Description & Publication Readiness:** Postings created or edited in `'Draft'` status may carry a partial or empty `description`, whereas publishing or creating an `'Active'` job posting requires a substantive `description` of **at least 20 characters** (max **5000 characters**) plus a valid `contactEmail`.
+- **`JP-R4` Deadline Integrity:** Whenever `applicationDeadline` is present, it MUST parse as a valid calendar date (`YYYY-MM-DD`, rejecting impossible dates such as `2026-02-30`). Creating an `'Active'` posting or transitioning a `'Draft'`/`'Closed'` posting to `'Active'` with `applicationDeadline < CURRENT_DATE` MUST be rejected with `400 Bad Request`.
+- **`JP-R5` Posting Status Lifecycle:** Allowed states are `Draft`, `Active`, and `Closed`. Moving a posting to `'Closed'` stops new candidate applications (`APP-R3`) while retaining existing `applications` records for auditability and history.
+- **`JP-R6` Optional Qualifications & Salary:** `requirements` (max 3000 chars) and `salary` (max 100 chars) are optional; empty `salary` values MUST normalize to `null` instead of persisting blank strings.
+- **`JP-R7` Publisher Ownership (`postedBy`):** Whenever `postedBy` is supplied, it MUST reference an existing alumni user in `users(id)` (`404 Not Found` if absent). On nested routes (`/api/users/:userId/jobs` and `/api/users/:userId/jobs/:id`), `:userId` is bound automatically as `postedBy` and ownership (`jobPosting.postedBy === Number(userId)`) MUST be verified on reads, updates, and deletions.
+
+#### Application Rules (`Application`)
+- **`APP-R1` Referential Integrity:** Every application links an existing `User` (`userId`) and an existing `JobPosting` (`jobPostingId`). Non-numeric IDs return `400 Bad Request`, missing target users or job postings return `404 Not Found`, and parent deletion cascades (`ON DELETE CASCADE`).
+- **`APP-R2` Duplicate Application Prevention:** An alumni user may hold at most one application per job posting, enforced via `uq_user_job_application UNIQUE (user_id, job_posting_id)`. Duplicate submissions return `409 Conflict` (HTTP `409`).
+- **`APP-R3` Eligible Target Posting:** Applications may only be created (`POST`) against a `JobPosting` whose `status` is `'Active'` and whose `applicationDeadline` is either `null` or `>= CURRENT_DATE`. Applying to `'Draft'`, `'Closed'`, or expired postings MUST return `400 Bad Request`.
+- **`APP-R4` Self-Application Restriction:** An alumni publisher SHOULD NOT submit a candidate application to a posting where `application.userId === jobPosting.postedBy` (`400 Bad Request`). *(Existing legacy test/seed fixtures must align with distinct poster vs. applicant IDs when enforced in runtime code.)*
+- **`APP-R5` Status Lifecycle & Transitions:** Allowed lifecycle values are `Submitted` (initial default), `Pending`, `Under Review`, `Reviewed`, `Interviewing`, `Accepted`, `Rejected`, and `Withdrawn`. Terminal outcomes (`Accepted`, `Rejected`, `Withdrawn`) MUST NOT regress silently back to `Submitted` or `Pending`; applicants may transition an open application to `'Withdrawn'` prior to `'Accepted'`.
+- **`APP-R6` Safe Resume URI & Cover Note:** `resumeUrl` only accepts `http://`, `https://`, or safe relative document paths (max 500 chars) and MUST reject dangerous schemes (`javascript:`, `data:`, `vbscript:`). `coverNote` is capped at 2000 characters.
+
+#### User & Announcement Rules (`User`, `Announcement`)
+- **`USR-R1` Email Normalization & Uniqueness:** `user.email` is trimmed and lowercased (`trim().toLowerCase()`) prior to RFC 5322 validation and uniqueness verification; duplicate emails return `409 Conflict`.
+- **`USR-R2` Graduation Cohort Bounds:** `user.graduationYear` MUST be an integer within `1900..2100`.
+- **`ANN-R1` Announcement Completeness:** `announcement.title` (3–200 chars), `announcement.author` (2–100 chars), and `announcement.category` (`Event | Career | Academic | General`) are mandatory; `content` may be empty up to 5000 characters.
+- **`ANN-R2` Calendar Date Accuracy:** `announcement.date` MUST be a valid calendar date formatted as `YYYY-MM-DD`.
+
+### 7.3 Security, Input Normalization & Error Contract
+
+- **String Normalization:** Trim leading/trailing whitespace on all string inputs prior to length validation. Required strings composed solely of whitespace (`"   "`) MUST fail with `400 Bad Request`.
+- **Route Parameter Integrity:** Path parameters (`:id`, `:userId`, `:jobId`) MUST parse strictly as positive integers (`/^[1-9]\d*$/`); invalid formats return `400 Bad Request` immediately before querying storage.
+- **XSS & Script Mitigation:** Escape HTML special characters (`<`, `>`, `&`, `"`, `'`) in server-rendered views and strip `<script>` tags or inline event handlers from free-text attributes (`job_posting.description`, `job_posting.requirements`, `announcement.content`, `application.coverNote`).
+- **SQL Injection Prevention:** All PostgreSQL queries MUST use parameterized queries (`$1, $2, ...`) via the `pg` driver rather than interpolated SQL strings.
+- **Standardized Error Mapping:**
+  - `400 Bad Request`: Validation failures (missing required attributes, length overflow such as `job_posting.title > 120`, invalid enums/emails/dates/URLs, malformed IDs, invalid state transitions).
+  - `404 Not Found`: Target entity or nested parent (`:userId` / `:jobId`) not found (`sendResourceNotFound` in web controllers, diagnostic JSON in REST/API routes, or `302` redirect to `/404?from=...` for unmatched web paths via `notFoundGuardian`).
+  - `409 Conflict`: Uniqueness constraint violations (`users.email` or `(applications.user_id, applications.job_posting_id)`).
+  - `500`–`504` (`5xx`): Classified by `serverErrorGuardian` / `sendServerError` (`DB_CONNECTION_ERROR` -> `503`, `BAD_GATEWAY` -> `502`, `SERVICE_UNAVAILABLE` -> `503`, `GATEWAY_TIMEOUT` -> `504`, `DB_SCHEMA_ERROR` / `DB_QUERY_FAILURE` / `VIEW_TEMPLATE_ERROR` / `INTERNAL_SERVER_ERROR` -> `500`).
+
+### 7.4 Middleware Observability and Guardian Error Contract
+
+- **Request Telemetry Contract ([`middleware/logger.js`](./middleware/logger.js) & [`middleware/logWriter.js`](./middleware/logWriter.js)):**
+  - Every inbound HTTP request logs one structured telemetry line on completion/abort: `[ISO] METHOD route | status | mime | duration | size | ip` (with `ABORTED(...)` on client disconnect).
+  - Control characters (`CR`, `LF`) and ANSI escape sequences (`stripAnsi`) are stripped before printing to stdout/stderr or persisting to `logs/error.logs` (`DEFAULT_LOG_FILE_PATH`, overridable via `ERROR_LOG_PATH`).
+  - Disk write failures (`appendLogLine` / `writeDualLog`) are caught gracefully so persistence errors never terminate or fail an active HTTP response.
+- **404 Guardian & Safe Generic `/404` Redirect Contract ([`middleware/notFoundGuardian.js`](./middleware/notFoundGuardian.js), [`views/NotFoundView.js`](./views/NotFoundView.js), [`views/404.html`](./views/404.html)):**
+  - **Open-Redirect Prevention:** `sanitizeFromPath` and `sanitizeLocalHref` accept only local single-slash paths (`/...`) and reject external URLs (`https://...`), protocol-relative targets (`//...`), or backslash obfuscation when constructing `/404?from=...` redirects (`buildNotFoundRedirectUrl`) or rendering backlinks.
+  - **Redirect Loop Prevention:** `app.all(['/404', '/404.html'], genericNotFoundPageHandler)` is registered in `index.js` *before* `notFoundGuardian` and responds with HTTP `404` and diagnostic context (`KNOWN_ROUTES`, probable cause via `diagnoseNotFound`).
+  - **Content Negotiation:** Unmatched `/api/*` paths or JSON-accepting requests receive structured diagnostic JSON 404 payloads without HTML redirection.
+- **5xx Guardian & Incident Tracking Contract ([`middleware/serverErrorGuardian.js`](./middleware/serverErrorGuardian.js)):**
+  - Each 5xx failure generates an incident token (`ERR-<base36>-<rand>`) logged alongside `[5XX GUARDIAN]` and `[5XX STACK]` diagnostics in terminal output and `logs/error.logs`.
+  - When `NODE_ENV=production`, internal stack traces and sensitive database internals are suppressed from external HTTP HTML/JSON responses while remaining captured in server logs.
 
 ---
 
@@ -793,6 +862,9 @@ This matrix provides AI agents with instant mappings between business actions, e
 | **Application (Web View)** | Applications Board | `GET` | `/applications` | `ApplicationController.getAll` | `Application.findAll()` |
 | **Application (Nested Web)** | My Applications View | `GET` | `/users/:userId/applications` | `ApplicationController.getByUser` | `Application.findByUser(userId)` |
 | **Application (Nested Web)** | Candidates View | `GET` | `/jobs/:jobId/applications` | `ApplicationController.getByJob` | `Application.findByJob(jobId)` |
+| **Health & Observability** | Liveness Check | `GET` | `/api/health`, `/health` | `index.js` Inline Handler | `pool.query('SELECT 1')` / Fallback |
+| **Error Fallback (Generic)** | Generic 404 View | `ALL` | `/404`, `/404.html` | `genericNotFoundPageHandler` | `NotFoundView.renderNotFound(...)` |
+| **Error Fallback (Catch-All)**| Unmatched Route Handling | `ALL` | `*` | `notFoundGuardian` | `302 -> /404?from=...` (Web) / JSON 404 (API) |
 
 ---
 *Document automatically maintained and indexed for AI agents and developer tooling.*

@@ -1,6 +1,7 @@
 const Application = require('../models/Application');
 const User = require('../models/User');
 const JobPosting = require('../models/JobPosting');
+const { sendServerError } = require('../middleware');
 
 /**
  * ApiApplicationController
@@ -40,7 +41,11 @@ class ApiApplicationController {
       const applications = await Application.findAll(filters);
       return res.status(200).json(applications);
     } catch (error) {
-      return res.status(500).json({ error: 'Internal Server Error' });
+      return sendServerError(req, res, error, {
+        operation: 'Applications REST API operation',
+        backHref: '/api/swagger',
+        backLabel: '📖 Open Swagger Docs'
+      });
     }
   }
 
@@ -71,7 +76,11 @@ class ApiApplicationController {
 
       return res.status(200).json(application);
     } catch (error) {
-      return res.status(500).json({ error: 'Internal Server Error' });
+      return sendServerError(req, res, error, {
+        operation: 'Applications REST API operation',
+        backHref: '/api/swagger',
+        backLabel: '📖 Open Swagger Docs'
+      });
     }
   }
 
@@ -113,7 +122,11 @@ class ApiApplicationController {
         application: newApp
       });
     } catch (error) {
-      return res.status(500).json({ error: 'Internal Server Error' });
+      return sendServerError(req, res, error, {
+        operation: 'Applications REST API operation',
+        backHref: '/api/swagger',
+        backLabel: '📖 Open Swagger Docs'
+      });
     }
   }
 
@@ -134,7 +147,11 @@ class ApiApplicationController {
         application: updated
       });
     } catch (error) {
-      return res.status(500).json({ error: 'Internal Server Error' });
+      return sendServerError(req, res, error, {
+        operation: 'Applications REST API operation',
+        backHref: '/api/swagger',
+        backLabel: '📖 Open Swagger Docs'
+      });
     }
   }
 
@@ -165,7 +182,11 @@ class ApiApplicationController {
         application: updated
       });
     } catch (error) {
-      return res.status(500).json({ error: 'Internal Server Error' });
+      return sendServerError(req, res, error, {
+        operation: 'Applications REST API operation',
+        backHref: '/api/swagger',
+        backLabel: '📖 Open Swagger Docs'
+      });
     }
   }
 
@@ -196,7 +217,11 @@ class ApiApplicationController {
         deletedApplication: deleted
       });
     } catch (error) {
-      return res.status(500).json({ error: 'Internal Server Error' });
+      return sendServerError(req, res, error, {
+        operation: 'Applications REST API operation',
+        backHref: '/api/swagger',
+        backLabel: '📖 Open Swagger Docs'
+      });
     }
   }
 }

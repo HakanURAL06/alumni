@@ -1,4 +1,5 @@
 const Announcement = require('../models/Announcement');
+const { sendServerError } = require('../middleware');
 
 /**
  * ApiAnnouncementController
@@ -14,7 +15,11 @@ class ApiAnnouncementController {
       const announcements = await Announcement.findAll();
       return res.status(200).json(announcements);
     } catch (error) {
-      return res.status(500).json({ error: 'Internal Server Error' });
+      return sendServerError(req, res, error, {
+        operation: 'Announcements REST API operation',
+        backHref: '/api/swagger',
+        backLabel: '📖 Open Swagger Docs'
+      });
     }
   }
 
@@ -29,7 +34,11 @@ class ApiAnnouncementController {
       }
       return res.status(200).json(announcement);
     } catch (error) {
-      return res.status(500).json({ error: 'Internal Server Error' });
+      return sendServerError(req, res, error, {
+        operation: 'Announcements REST API operation',
+        backHref: '/api/swagger',
+        backLabel: '📖 Open Swagger Docs'
+      });
     }
   }
 
@@ -44,7 +53,11 @@ class ApiAnnouncementController {
         announcement: newAnnouncement
       });
     } catch (error) {
-      return res.status(500).json({ error: 'Internal Server Error' });
+      return sendServerError(req, res, error, {
+        operation: 'Announcements REST API operation',
+        backHref: '/api/swagger',
+        backLabel: '📖 Open Swagger Docs'
+      });
     }
   }
 
@@ -62,7 +75,11 @@ class ApiAnnouncementController {
         announcement: updatedAnnouncement
       });
     } catch (error) {
-      return res.status(500).json({ error: 'Internal Server Error' });
+      return sendServerError(req, res, error, {
+        operation: 'Announcements REST API operation',
+        backHref: '/api/swagger',
+        backLabel: '📖 Open Swagger Docs'
+      });
     }
   }
 
@@ -80,7 +97,11 @@ class ApiAnnouncementController {
         announcement: updatedAnnouncement
       });
     } catch (error) {
-      return res.status(500).json({ error: 'Internal Server Error' });
+      return sendServerError(req, res, error, {
+        operation: 'Announcements REST API operation',
+        backHref: '/api/swagger',
+        backLabel: '📖 Open Swagger Docs'
+      });
     }
   }
 
@@ -98,7 +119,11 @@ class ApiAnnouncementController {
         deletedAnnouncement
       });
     } catch (error) {
-      return res.status(500).json({ error: 'Internal Server Error' });
+      return sendServerError(req, res, error, {
+        operation: 'Announcements REST API operation',
+        backHref: '/api/swagger',
+        backLabel: '📖 Open Swagger Docs'
+      });
     }
   }
 }

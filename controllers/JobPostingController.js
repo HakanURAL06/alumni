@@ -1,6 +1,13 @@
 const JobPosting = require('../models/JobPosting');
 const User = require('../models/User');
 const JobPostingView = require('../views/JobPostingView');
+const { sendResourceNotFound, sendServerError } = require('../middleware');
+
+const JOB_NOT_FOUND_OPTS = {
+  resourceName: 'Job posting',
+  backHref: '/jobs',
+  backLabel: '← Back to Job Board'
+};
 
 /**
  * JobPostingController
@@ -40,7 +47,11 @@ class JobPostingController {
 
       return res.status(200).json(jobs);
     } catch (error) {
-      return res.status(500).send('Error loading job postings');
+      return sendServerError(req, res, error, {
+        operation: 'Loading job postings',
+        backHref: '/jobs',
+        backLabel: '← Back to Job Board'
+      });
     }
   }
 
@@ -51,10 +62,7 @@ class JobPostingController {
     try {
       const job = await JobPosting.findByIdWithUser(req.params.id);
       if (!job) {
-        if (req.accepts('html')) {
-          return res.status(404).send('Job posting not found');
-        }
-        return res.status(404).json({ error: 'Job posting not found' });
+        return sendResourceNotFound(req, res, { ...JOB_NOT_FOUND_OPTS, id: req.params.id });
       }
 
       if (req.accepts('html')) {
@@ -79,7 +87,11 @@ class JobPostingController {
 
       return res.status(200).json(job);
     } catch (error) {
-      return res.status(500).send('Error loading job posting');
+      return sendServerError(req, res, error, {
+        operation: 'Loading job posting details',
+        backHref: '/jobs',
+        backLabel: '← Back to Job Board'
+      });
     }
   }
 
@@ -90,7 +102,7 @@ class JobPostingController {
     try {
       const job = await JobPosting.findById(req.params.id);
       if (!job) {
-        return res.status(404).send('Job posting not found');
+        return sendResourceNotFound(req, res, { ...JOB_NOT_FOUND_OPTS, id: req.params.id });
       }
 
       if (req.accepts('html')) {
@@ -102,7 +114,11 @@ class JobPostingController {
 
       return res.status(200).json(job);
     } catch (error) {
-      return res.status(500).send('Error loading edit form');
+      return sendServerError(req, res, error, {
+        operation: 'Loading job edit form',
+        backHref: '/jobs',
+        backLabel: '← Back to Job Board'
+      });
     }
   }
 
@@ -136,7 +152,11 @@ class JobPostingController {
         jobPosting: newJob
       });
     } catch (error) {
-      return res.status(500).send('Error creating job posting');
+      return sendServerError(req, res, error, {
+        operation: 'Creating job posting',
+        backHref: '/jobs',
+        backLabel: '← Back to Job Board'
+      });
     }
   }
 
@@ -148,7 +168,7 @@ class JobPostingController {
       const id = req.params.id;
       const updated = await JobPosting.update(id, req.body);
       if (!updated) {
-        return res.status(404).send('Job posting not found');
+        return sendResourceNotFound(req, res, { ...JOB_NOT_FOUND_OPTS, id: req.params.id });
       }
 
       if (req.accepts('html')) {
@@ -160,7 +180,11 @@ class JobPostingController {
         jobPosting: updated
       });
     } catch (error) {
-      return res.status(500).send('Error updating job posting');
+      return sendServerError(req, res, error, {
+        operation: 'Updating job posting',
+        backHref: '/jobs',
+        backLabel: '← Back to Job Board'
+      });
     }
   }
 
@@ -172,7 +196,7 @@ class JobPostingController {
       const id = req.params.id;
       const deleted = await JobPosting.delete(id);
       if (!deleted) {
-        return res.status(404).send('Job posting not found');
+        return sendResourceNotFound(req, res, { ...JOB_NOT_FOUND_OPTS, id: req.params.id });
       }
 
       if (req.accepts('html')) {
@@ -184,7 +208,11 @@ class JobPostingController {
         deletedJob: deleted
       });
     } catch (error) {
-      return res.status(500).send('Error deleting job posting');
+      return sendServerError(req, res, error, {
+        operation: 'Deleting job posting',
+        backHref: '/jobs',
+        backLabel: '← Back to Job Board'
+      });
     }
   }
 
@@ -196,7 +224,12 @@ class JobPostingController {
       const userId = req.params.userId || req.params.id;
       const user = await User.findById(userId);
       if (!user) {
-        return res.status(404).send('User not found');
+        return sendResourceNotFound(req, res, {
+          resourceName: 'User',
+          id: userId,
+          backHref: '/users',
+          backLabel: '← Back to Alumni Directory'
+        });
       }
       const jobs = await JobPosting.findByPostedBy(userId);
 
@@ -210,7 +243,11 @@ class JobPostingController {
 
       return res.status(200).json({ user, jobs });
     } catch (error) {
-      return res.status(500).send('Error loading user job postings');
+      return sendServerError(req, res, error, {
+        operation: 'Loading user job postings',
+        backHref: '/jobs',
+        backLabel: '← Back to Job Board'
+      });
     }
   }
 }

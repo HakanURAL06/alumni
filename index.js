@@ -2,14 +2,18 @@ const express = require('express');
 const path = require('path');
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./swagger.json');
+const {
+  logger,
+  genericNotFoundPageHandler,
+  notFoundGuardian,
+  guardian404ErrorHandler,
+  serverErrorGuardian
+} = require('./middleware');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use((req, res, next) => {
-  console.log(`[REQUEST] ${req.method} ${req.url}`);
-  next();
-});
+app.use(logger);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -21,6 +25,7 @@ const UserView = require('./views/UserView');
 const AnnouncementView = require('./views/AnnouncementView');
 const JobPostingView = require('./views/JobPostingView');
 const ApplicationView = require('./views/ApplicationView');
+const NotFoundView = require('./views/NotFoundView');
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'html');
 app.engine('html', (filePath, options, callback) => {
@@ -67,6 +72,10 @@ app.engine('html', (filePath, options, callback) => {
     }
     if (filePath.endsWith('applicationDetail.html')) {
       const output = ApplicationView.renderApplicationDetail(options.application || {}, options);
+      return callback(null, output);
+    }
+    if (filePath.endsWith('404.html')) {
+      const output = NotFoundView.renderNotFound(options);
       return callback(null, output);
     }
     const fs = require('fs');
@@ -165,6 +174,12 @@ app.all('/sum/:number1/:number2', (req, res) => {
   const sum = num1 + num2;
   res.send(`toplam= ${sum}`);
 });
+
+// Generic 404 Page & Guardian Middleware Pipeline
+app.all(['/404', '/404.html'], genericNotFoundPageHandler);
+app.use(notFoundGuardian);
+app.use(guardian404ErrorHandler);
+app.use(serverErrorGuardian);
 
 if (require.main === module) {
   app.listen(PORT, () => {

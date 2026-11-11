@@ -2,6 +2,13 @@ const Application = require('../models/Application');
 const User = require('../models/User');
 const JobPosting = require('../models/JobPosting');
 const ApplicationView = require('../views/ApplicationView');
+const { sendResourceNotFound, sendServerError } = require('../middleware');
+
+const APP_NOT_FOUND_OPTS = {
+  resourceName: 'Application',
+  backHref: '/applications',
+  backLabel: '← Back to Applications'
+};
 
 /**
  * ApplicationController
@@ -43,7 +50,11 @@ class ApplicationController {
 
       return res.status(200).json(applications);
     } catch (error) {
-      return res.status(500).send('Error loading applications');
+      return sendServerError(req, res, error, {
+        operation: 'Loading applications',
+        backHref: '/applications',
+        backLabel: '← Back to Applications'
+      });
     }
   }
 
@@ -54,10 +65,7 @@ class ApplicationController {
     try {
       const application = await Application.findByIdWithDetails(req.params.id);
       if (!application) {
-        if (req.accepts('html')) {
-          return res.status(404).send('Application not found');
-        }
-        return res.status(404).json({ error: 'Application not found' });
+        return sendResourceNotFound(req, res, { ...APP_NOT_FOUND_OPTS, id: req.params.id });
       }
 
       if (req.accepts('html')) {
@@ -77,7 +85,11 @@ class ApplicationController {
 
       return res.status(200).json(application);
     } catch (error) {
-      return res.status(500).send('Error loading application');
+      return sendServerError(req, res, error, {
+        operation: 'Loading application details',
+        backHref: '/applications',
+        backLabel: '← Back to Applications'
+      });
     }
   }
 
@@ -109,7 +121,11 @@ class ApplicationController {
         application: newApp
       });
     } catch (error) {
-      return res.status(500).send('Error submitting application');
+      return sendServerError(req, res, error, {
+        operation: 'Submitting job application',
+        backHref: '/applications',
+        backLabel: '← Back to Applications'
+      });
     }
   }
 
@@ -123,7 +139,7 @@ class ApplicationController {
       const updated = await Application.update(id, { status });
 
       if (!updated) {
-        return res.status(404).send('Application not found');
+        return sendResourceNotFound(req, res, { ...APP_NOT_FOUND_OPTS, id: req.params.id });
       }
 
       if (req.accepts('html')) {
@@ -135,7 +151,11 @@ class ApplicationController {
         application: updated
       });
     } catch (error) {
-      return res.status(500).send('Error updating application status');
+      return sendServerError(req, res, error, {
+        operation: 'Updating application status',
+        backHref: '/applications',
+        backLabel: '← Back to Applications'
+      });
     }
   }
 
@@ -147,7 +167,7 @@ class ApplicationController {
       const id = req.params.id;
       const deleted = await Application.delete(id);
       if (!deleted) {
-        return res.status(404).send('Application not found');
+        return sendResourceNotFound(req, res, { ...APP_NOT_FOUND_OPTS, id: req.params.id });
       }
 
       if (req.accepts('html')) {
@@ -159,7 +179,11 @@ class ApplicationController {
         deletedApplication: deleted
       });
     } catch (error) {
-      return res.status(500).send('Error deleting application');
+      return sendServerError(req, res, error, {
+        operation: 'Deleting application',
+        backHref: '/applications',
+        backLabel: '← Back to Applications'
+      });
     }
   }
 
@@ -171,7 +195,12 @@ class ApplicationController {
       const userId = req.params.userId || req.params.id;
       const user = await User.findById(userId);
       if (!user) {
-        return res.status(404).send('User not found');
+        return sendResourceNotFound(req, res, {
+          resourceName: 'User',
+          id: userId,
+          backHref: '/users',
+          backLabel: '← Back to Alumni Directory'
+        });
       }
       const applications = await Application.findByUser(userId);
 
@@ -185,7 +214,11 @@ class ApplicationController {
 
       return res.status(200).json({ user, applications });
     } catch (error) {
-      return res.status(500).send('Error loading user applications');
+      return sendServerError(req, res, error, {
+        operation: 'Loading user applications',
+        backHref: '/applications',
+        backLabel: '← Back to Applications'
+      });
     }
   }
 
@@ -197,7 +230,12 @@ class ApplicationController {
       const jobId = req.params.jobId || req.params.id;
       const job = await JobPosting.findById(jobId);
       if (!job) {
-        return res.status(404).send('Job posting not found');
+        return sendResourceNotFound(req, res, {
+          resourceName: 'Job posting',
+          id: jobId,
+          backHref: '/jobs',
+          backLabel: '← Back to Job Board'
+        });
       }
       const applications = await Application.findByJob(jobId);
 
@@ -211,7 +249,11 @@ class ApplicationController {
 
       return res.status(200).json({ job, applications });
     } catch (error) {
-      return res.status(500).send('Error loading job applications');
+      return sendServerError(req, res, error, {
+        operation: 'Loading job applications',
+        backHref: '/applications',
+        backLabel: '← Back to Applications'
+      });
     }
   }
 }

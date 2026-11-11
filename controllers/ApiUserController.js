@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const { sendServerError } = require('../middleware');
 
 /**
  * ApiUserController
@@ -14,7 +15,11 @@ class ApiUserController {
       const users = await User.findAll();
       return res.status(200).json(users);
     } catch (error) {
-      return res.status(500).json({ error: 'Internal Server Error' });
+      return sendServerError(req, res, error, {
+        operation: 'Users REST API operation',
+        backHref: '/api/swagger',
+        backLabel: '📖 Open Swagger Docs'
+      });
     }
   }
 
@@ -29,7 +34,11 @@ class ApiUserController {
       }
       return res.status(200).json(user);
     } catch (error) {
-      return res.status(500).json({ error: 'Internal Server Error' });
+      return sendServerError(req, res, error, {
+        operation: 'Users REST API operation',
+        backHref: '/api/swagger',
+        backLabel: '📖 Open Swagger Docs'
+      });
     }
   }
 
@@ -44,7 +53,11 @@ class ApiUserController {
         user: newUser
       });
     } catch (error) {
-      return res.status(500).json({ error: 'Internal Server Error' });
+      return sendServerError(req, res, error, {
+        operation: 'Users REST API operation',
+        backHref: '/api/swagger',
+        backLabel: '📖 Open Swagger Docs'
+      });
     }
   }
 
@@ -62,7 +75,11 @@ class ApiUserController {
         user: updatedUser
       });
     } catch (error) {
-      return res.status(500).json({ error: 'Internal Server Error' });
+      return sendServerError(req, res, error, {
+        operation: 'Users REST API operation',
+        backHref: '/api/swagger',
+        backLabel: '📖 Open Swagger Docs'
+      });
     }
   }
 
@@ -80,7 +97,11 @@ class ApiUserController {
         user: updatedUser
       });
     } catch (error) {
-      return res.status(500).json({ error: 'Internal Server Error' });
+      return sendServerError(req, res, error, {
+        operation: 'Users REST API operation',
+        backHref: '/api/swagger',
+        backLabel: '📖 Open Swagger Docs'
+      });
     }
   }
 
@@ -98,7 +119,11 @@ class ApiUserController {
         deletedUser
       });
     } catch (error) {
-      return res.status(500).json({ error: 'Internal Server Error' });
+      return sendServerError(req, res, error, {
+        operation: 'Users REST API operation',
+        backHref: '/api/swagger',
+        backLabel: '📖 Open Swagger Docs'
+      });
     }
   }
 }
