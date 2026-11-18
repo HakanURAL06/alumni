@@ -24,6 +24,7 @@
 7. [Visual Identity & Design System](#7-visual-identity--design-system)
 8. [Ethical Data Governance & Privacy](#8-ethical-data-governance--privacy)
 9. [Platform Roadmap & Future Horizons](#9-platform-roadmap--future-horizons)
+10. [Complete Front-End Experience & Page Ecosystem (14 Screens)](#10-complete-front-end-experience--page-ecosystem-14-screens)
 
 ---
 
@@ -192,4 +193,27 @@ The current release (**v2.0.0**) establishes the core MVC architecture, persiste
 
 ---
 
-*This document serves as the official brand, purpose, and platform vision specification for the Istanbul University Alumni Tracking System. For architectural implementation details, see [README.md](./README.md); for domain models, see [ddd.md](./ddd.md).*
+## 10. Complete Front-End Experience & Page Ecosystem (14 Screens)
+
+Every screen across the Istanbul University Alumni Tracking System shares a unified brand header (`İstanbul Üniversitesi • Mezun Portalı`), a real-time service status bar, semantic color coding aligned with its community pillar, and responsive accessibility:
+
+| Screen / Route | Template / Source | Brand Pillar & Color Accent | Institutional Experience & User Journey |
+| :--- | :--- | :--- | :--- |
+| **Home Portal** (`/`) | [`public/index.html`](./public/index.html) | **Unified Hub** &bull; *IU Navy & Bosphorus Cobalt* | Hero showcase honoring 1453 heritage, live KPI counters, instant module search, 4 pillar cards, Guardian banner, and live API health probe. |
+| **About & Heritage** (`/about`) | [`public/about.html`](./public/about.html) | **Institutional Legacy** &bull; *IU Golden Amber & Cobalt* | Celebrates the 1453 Beyazıt heritage, explains platform purpose across faculties, and documents the full MVC + PostgreSQL 16 + Guardian tech stack. |
+| **Alumni Directory** (`/users`) | [`views/users.html`](./views/users.html) | **Pillar 1: Directory** &bull; *Bosphorus Cobalt (`#2563eb`)* | Live client-side cohort/faculty search toolbar, verified graduate table, and `USR-R1`–`USR-R2` compliant graduate enrollment form. |
+| **Alumni Profile Card** (`/users/:id`) | [`views/userDetail.html`](./views/userDetail.html) | **Pillar 1: Directory** &bull; *Bosphorus Cobalt (`#2563eb`)* | Graduate dossier card with avatar emblem, academic metadata, and nested relational cards linking to published jobs (`/users/:id/jobs`) and applications (`/users/:id/applications`). |
+| **Edit Alumni Profile** (`/users/:id/edit`) | [`views/userEdit.html`](./views/userEdit.html) | **Pillar 1: Directory** &bull; *Golden Amber & Cobalt* | Breadcrumb-guided profile update form with pre-populated cohort and faculty fields. |
+| **Announcements Board** (`/announcements`) | [`views/announcements.html`](./views/announcements.html) | **Pillar 2: Traditions** &bull; *IU Golden Amber (`#d97706`)* | Beyazıt Homecoming (*Mezunlar Günü*) & campus bulletin board with category filter chips (*Event, Career, Academic, General*), live search, and publishing form. |
+| **Bulletin Detail** (`/announcements/:id`) | [`views/announcementDetail.html`](./views/announcementDetail.html) | **Pillar 2: Traditions** &bull; *IU Golden Amber (`#d97706`)* | Editorial article layout with category badge, publishing department metadata, formatted bulletin prose, and management actions. |
+| **Edit Announcement** (`/announcements/:id/edit`) | [`views/announcementEdit.html`](./views/announcementEdit.html) | **Pillar 2: Traditions** &bull; *IU Golden Amber (`#d97706`)* | Structured bulletin editor enforcing `ANN-R1`–`ANN-R2` calendar and content rules. |
+| **Career & Job Board** (`/jobs`, `/users/:userId/jobs`) | [`views/jobs.html`](./views/jobs.html) | **Pillar 3: Career Market** &bull; *Emerald Green (`#059669`)* | Alumni-for-alumni job exchange with employment-type filter chips (*Full-time, Remote, Internship, Contract*), live search, and `JP-R1`–`JP-R7` job publishing form. |
+| **Job Opportunity Detail** (`/jobs/:id`) | [`views/jobDetail.html`](./views/jobDetail.html) | **Pillar 3: Career Market** &bull; *Emerald & Cobalt* | Comprehensive role specification with compensation badge, publisher profile link, and embedded **Quick Apply with Alumni Profile** form. |
+| **Edit Job Posting** (`/jobs/:id/edit`) | [`views/jobEdit.html`](./views/jobEdit.html) | **Pillar 3: Career Market** &bull; *Emerald Green (`#059669`)* | Role editor for updating compensation, status (*Active, Draft, Closed*), deadline, and requirements. |
+| **Applications Dashboard (ATS)** (`/applications`) | [`views/applications.html`](./views/applications.html) | **Pillar 4: ATS & Mentorship** &bull; *Royal Purple (`#7c3aed`)* | 4 KPI metric cards (*Total, Submitted, In Review, Accepted*), status filter chips, inline evaluation status switcher, and direct application form. |
+| **Candidate Review Dossier** (`/applications/:id`) | [`views/applicationDetail.html`](./views/applicationDetail.html) | **Pillar 4: ATS & Mentorship** &bull; *Royal Purple (`#7c3aed`)* | Side-by-side candidate academic dossier and target job card, CV document link, cover pitch, and evaluation status updater (`APP-R1`–`APP-R6`). |
+| **404 & 5xx Guardian Screens** (`/404`, fallbacks) | [`views/404.html`](./views/404.html) & [`guardianShared.js`](./middleware/guardianShared.js) | **Pillar 5: Observability** &bull; *Crimson Rose (`#e11d48`)* | Branded diagnostic screens presenting probable cause, route typo suggestions, `ERR-*` Incident IDs, request telemetry, and safe quick-navigation pills. |
+
+---
+
+*This document serves as the official brand, purpose, and platform vision specification for the Istanbul University Alumni Tracking System. For architectural implementation details, see [README.md](./README.md); for UI design tokens, see [design.md](./design.md); for domain models, see [ddd.md](./ddd.md).*

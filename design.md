@@ -28,6 +28,7 @@
 5. [Responsive Breakpoints & Layout Adaptability](#5-responsive-breakpoints--layout-adaptability)
 6. [Accessibility (a11y) & Performance Guidelines](#6-accessibility-a11y--performance-guidelines)
 7. [Refero & Awesome-Design-MD Best Practices: Do's & Don'ts](#7-refero--awesome-design-md-best-practices-dos--donts)
+8. [Complete Page-by-Page Design Specification (All 14 Front-End Screens)](#8-complete-page-by-page-design-specification-all-14-front-end-screens)
 
 ---
 
@@ -230,4 +231,55 @@ Layered box-shadow tokens provide realistic physical depth without muddying dark
 
 ---
 
-*This document is indexed as the master visual design specification for the Istanbul University Alumni Tracking System. For domain rules, refer to [ddd.md](./ddd.md); for brand purpose, refer to [brand.md](./brand.md).*
+## 8. Complete Page-by-Page Design Specification (All 14 Front-End Screens)
+
+All 14 front-end screens across `public/`, `views/`, and `middleware/guardianShared.js` implement the Refero Styles & `VoltAgent/awesome-design-md` token architecture with zero external CDN dependencies:
+
+### 8.1 Static Portal & Heritage Screens (`public/`)
+- **[`public/index.html`](./public/index.html) (`GET /`) — Unified Portal Homepage:**
+  - **Layout:** Top utility status bar + sticky backdrop-blur navbar + 3-stop gradient hero + 4-column KPI counter strip + debounced module search & quick-jump chip card + 4-column core module grid + dark Guardian observability banner + live `/api/health` latency playground with terminal cURL emulator + 4-column enterprise footer.
+- **[`public/about.html`](./public/about.html) (`GET /about`) — Institutional Heritage & Tech Stack:**
+  - **Layout:** Top utility bar + sticky navbar + Golden-Amber accented hero + 2-column 1453 Beyazıt Heritage banner with 4 stat tiles (`1453`, `MVC`, `v2.0`, `100%`) + 2-column Purpose & Tech Stack cards + quick-action button bar + footer.
+
+### 8.2 Alumni Directory & Profile Screens (`views/users*.html` & `views/UserView.js`)
+- **[`views/users.html`](./views/users.html) (`GET /users`, `/user`) — Alumni Directory & Enrollment:**
+  - **Accent Theme:** Bosphorus Cobalt (`--iu-cobalt-600: #2563eb`).
+  - **Interactive UX:** Client-side real-time search input (`#directory-search`) filtering `tbody tr` rows by name, faculty/department, cohort year, or email with live counter (`#directory-count`), responsive data table, and cobalt-accented `POST /users` enrollment card (`#enroll-form`).
+- **[`views/userDetail.html`](./views/userDetail.html) (`GET /users/:id`) — Single Alumni Profile Dossier:**
+  - **Layout:** Breadcrumb trail + dark gradient profile hero with circular avatar emblem + 2-column layout pairing the Academic & Contact Dossier card (`#{{ID}}`, `{{DEPARTMENT}}`, `{{GRADUATION_YEAR}}`, `mailto:{{EMAIL}}`) with Nested Alumni Activity cards (`/users/{{ID}}/jobs` & `/users/{{ID}}/applications`).
+- **[`views/userEdit.html`](./views/userEdit.html) (`GET /users/:id/edit`) — Edit Alumni Profile Form:**
+  - **Layout:** Breadcrumb trail + Golden-Amber top-bordered card + 2-column responsive form grid (`POST /users/{{ID}}/edit`) + action bar.
+
+### 8.3 Campus Announcements & Bulletin Screens (`views/announcement*.html` & `views/AnnouncementView.js`)
+- **[`views/announcements.html`](./views/announcements.html) (`GET /announcements`) — Announcements Management Board:**
+  - **Accent Theme:** IU Golden Amber (`--iu-gold-600: #d97706`).
+  - **Interactive UX:** Combined instant text search (`#ann-search`) and interactive category filter chips (*All, Event, Career, Academic, General*), semantic `.category-badge` pills, and amber-accented `POST /announcements` publishing form (`#publish-form`).
+- **[`views/announcementDetail.html`](./views/announcementDetail.html) (`GET /announcements/:id`) — Bulletin Article View:**
+  - **Layout:** Breadcrumb trail + editorial article card with category pill, metadata strip (`Published by {{AUTHOR}}`, `{{DATE}}`, `#{{ID}}`), pre-wrapped `.content-box`, and edit/delete action bar.
+- **[`views/announcementEdit.html`](./views/announcementEdit.html) (`GET /announcements/:id/edit`) — Edit Announcement Form:**
+  - **Layout:** Breadcrumb trail + amber-accented editor card (`POST /announcements/{{ID}}/edit`) with 2-column metadata grid and full-width content textarea.
+
+### 8.4 Career Board & Opportunity Screens (`views/job*.html` & `views/JobPostingView.js`)
+- **[`views/jobs.html`](./views/jobs.html) (`GET /jobs`, `/users/:userId/jobs`) — Career & Job Board:**
+  - **Accent Theme:** Emerald Green (`--iu-emerald-600: #059669`).
+  - **Interactive UX:** Instant role search (`#job-search`) + job-type filter chips (*All Roles, Full-time, Remote, Internship, Contract*), `.location-badge` / `.type-badge` / `.status-badge` pills, and emerald-accented `POST /jobs` creation form (`#post-job-form`) enforcing `JP-R1` (max 120-char title) through `JP-R7`.
+- **[`views/jobDetail.html`](./views/jobDetail.html) (`GET /jobs/:id`) — Opportunity Detail & Quick Apply:**
+  - **Layout:** Breadcrumb trail + role header with metadata pills (`📍 {{LOCATION}}`, `💼 {{JOB_TYPE}}`, `💰 {{SALARY}}`, `⏳ Deadline`, `👤 Posted by {{POSTER_NAME}}`) + description/requirements boxes + cobalt-accented **Quick Apply with Alumni Profile** card (`POST /applications` with hidden `jobPostingId`) + candidate review footer link (`/jobs/{{ID}}/applications`).
+- **[`views/jobEdit.html`](./views/jobEdit.html) (`GET /jobs/:id/edit`) — Edit Job Posting Form:**
+  - **Layout:** Breadcrumb trail + emerald-accented 2-column specification editor (`POST /jobs/{{ID}}/edit`).
+
+### 8.5 Applicant Tracking System (ATS) Screens (`views/application*.html` & `views/ApplicationView.js`)
+- **[`views/applications.html`](./views/applications.html) (`GET /applications`, `/users/:userId/applications`, `/jobs/:jobId/applications`) — ATS Dashboard:**
+  - **Accent Theme:** Royal Purple (`--iu-purple-600: #7c3aed`).
+  - **Interactive UX:** 4 KPI metric cards (*Total Applications, Submitted, In Review, Accepted*) + instant candidate/job search (`#app-search`) + status filter chips (*All, Submitted, Under Review, Interviewing, Accepted, Rejected*) + inline status dropdown (`POST /applications/:id/status`) + direct submission form (`#submit-app-form`).
+- **[`views/applicationDetail.html`](./views/applicationDetail.html) (`GET /applications/:id`) — Candidate Review Dossier:**
+  - **Layout:** Breadcrumb trail + dossier header with dynamic `.status-pill` + 2-column Candidate Profile & Applied Career Opportunity cards + CV document button + cover pitch box + purple-accented evaluation status updater (`POST /applications/{{ID}}/status`).
+
+### 8.6 Guardian Diagnostic Screens (`views/404.html`, `views/NotFoundView.js` & `middleware/guardianShared.js`)
+- **[`views/404.html`](./views/404.html) & [`middleware/guardianShared.js`](./middleware/guardianShared.js) (`/404`, `/404.html`, 404 & 5xx Fallbacks):**
+  - **Accent Theme:** Crimson Rose (`--iu-rose-600: #e11d48`) with dynamic theme overrides for 5xx server faults.
+  - **Layout:** Unified Istanbul University top bar & sticky navbar + `.guardian-card` with `.guardian-badge` and monospace `.code-badge` + orange diagnostic `.reason-box` + cobalt `.suggestion-box` CTA + 4-item telemetry `.diag-grid` (*HTTP Status, Method & Route, Client IP, Timestamp UTC*, plus `ERR-*` Incident ID on 5xx) + quick destination `.route-pills`.
+
+---
+
+*This document is indexed as the master visual design specification for the Istanbul University Alumni Tracking System. For domain rules, refer to [ddd.md](./ddd.md); for brand purpose, refer to [brand.md](./brand.md); for system architecture, refer to [README.md](./README.md).*

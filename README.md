@@ -80,6 +80,7 @@ A dedicated, comprehensive brand vision, institutional mission, and community sp
 3. **5 Core Platform Pillars:** Living Alumni Directory (`/users`), Campus Announcements & Homecoming Days (`/announcements`), Career & Job Board (`/jobs`), Candidate Tracking ATS (`/applications`), and Guardian Fault Observability (`/404` & `logs/error.logs`).
 4. **Target Audience Personas:** Tailored workflows for recent graduates, senior alumni recruiters, current students seeking internships, and university administrators.
 5. **Brand Tone & Visual System:** Prestige, warmth, clarity, and an IU Navy & Bosphorus Cobalt design language.
+6. **Complete 14-Screen Page Ecosystem:** Full institutional mapping of every front-end view across the portal ([see Section 10 in `brand.md`](./brand.md#10-complete-front-end-experience--page-ecosystem-14-screens)).
 
 ---
 
@@ -93,11 +94,12 @@ A comprehensive, production-grade UI design specification inspired by **[Refero 
 👉 **[Read the Full Design System Specification (design.md)](./design.md)**
 
 ### Key Highlights Covered in `design.md`:
-1. **Design Tokens:** Strict CSS variables for Istanbul University Navy (`#0f172a`), Bosphorus Cobalt (`#2563eb`), Golden Amber (`#d97706`), Emerald Green (`#059669`), surface canvases, and border tokens.
+1. **Design Tokens:** Strict CSS variables for Istanbul University Navy (`#0f172a`), Bosphorus Cobalt (`#2563eb`), Golden Amber (`#d97706`), Emerald Green (`#059669`), Royal Purple (`#7c3aed`), Crimson Rose (`#e11d48`), surface canvases, and border tokens.
 2. **Typography Scale:** System-font typography hierarchy (`-apple-system`, `Segoe UI`, `Roboto`) with responsive fluid sizing from 2.85rem display heroes to micro-badges.
 3. **8-Point Spatial Grid:** Standardized margins, gap metrics, and container geometry (`max-width: 1140px`).
-4. **Core Component Standards:** Navigation bar, hero showcase, live KPI bar, debounced search & filter card, core module cards, Guardian observability banner, and terminal cURL simulator.
+4. **Core Component Standards:** Navigation bar, hero showcase, live KPI bar, debounced search & filter toolbars, core module cards, Guardian observability banner, and terminal cURL simulator.
 5. **Micro-Interactions & a11y:** Smooth hover elevations, focus ring accessibility, WCAG AA/AAA color contrast, zero cumulative layout shift (CLS), and completely self-contained offline CSS.
+6. **Page-by-Page Specification (All 14 Screens):** Detailed visual, interactive, and SSR layout breakdown for every page in `public/`, `views/`, and `middleware/guardianShared.js` ([see Section 8 in `design.md`](./design.md#8-complete-page-by-page-design-specification-all-14-front-end-screens)).
 
 ---
 
@@ -285,30 +287,32 @@ The **Model** encapsulates all domain state, validation, and data mutations with
 > 💡 *Ayrıntılı veri tasarımı, CRUD kontratları, PostgreSQL şemaları ve ER diyagramı için [Data Design Documentation (ddd.md)](./ddd.md) dokümanını inceleyin.*
 
 ### 4. 🖥️ View Layer (`views/` & Presentation)
-The presentation layer separates visual structure from application control:
-- **User Views:**
-  - `views/users.html`: Alumni Directory table with Search/Create/Edit/Delete actions.
-  - `views/userDetail.html`: Individual alumni profile card.
-  - `views/userEdit.html`: Pre-populated edit form.
-  - `views/UserView.js`: HTML rendering engine helper for user templates.
-- **Announcement Views:**
-  - `views/announcements.html`: Management dashboard table and publishing form.
-  - `views/announcementDetail.html`: Full announcement detail card.
-  - `views/announcementEdit.html`: Pre-populated announcement edit form.
-  - `views/AnnouncementView.js`: HTML rendering engine helper for announcement templates.
-- **Job Posting Views:**
-  - `views/jobs.html`: Career & Opportunities Board dashboard and job creation form.
-  - `views/jobDetail.html`: Job detail view with company specs and inline quick-apply form.
-  - `views/jobEdit.html`: Pre-populated edit opportunity form.
-  - `views/JobPostingView.js`: HTML rendering engine helper for job posting templates.
-- **Application Views:**
-  - `views/applications.html`: Candidate submissions dashboard, metric cards, status filters, and creation form.
-  - `views/applicationDetail.html`: Single candidate review card with evaluation status update form.
-  - `views/ApplicationView.js`: HTML rendering engine helper for application templates.
-- **Generic Error Views (404 Guardian):**
-  - `views/404.html`: Diagnostic HTML template for unmatched routes and missing resources.
-  - `views/NotFoundView.js`: Helper rendering generic `/404` diagnostics (`NotFoundView.renderNotFound`, `NotFoundView.buildViewModel`, `sanitizeLocalHref`).
-- **Static Pages:** Stored in `public/` ([`index.html`](./public/index.html) - unified portal dashboard, [`about.html`](./public/about.html)).
+All 14 front-end screens share the unified **Istanbul University (`İstanbul Üniversitesi • Mezun Portalı`)** design system documented in [`design.md`](./design.md) and [`brand.md`](./brand.md), featuring a top service status bar, sticky backdrop-blur navigation, semantic pillar color accents, client-side instant search/filter toolbars, breadcrumb trails, and responsive layouts:
+- **User Views (Bosphorus Cobalt Theme — `#2563eb`):**
+  - [`views/users.html`](./views/users.html): Alumni Directory with real-time search/cohort filter toolbar, live record counter, CRUD table, and graduate enrollment form (`POST /users`).
+  - [`views/userDetail.html`](./views/userDetail.html): 2-column graduate dossier card with avatar emblem, academic metadata, and nested relational cards (`/users/:id/jobs`, `/users/:id/applications`).
+  - [`views/userEdit.html`](./views/userEdit.html): Breadcrumb-guided pre-populated alumni profile editor (`POST /users/:id/edit`).
+  - [`views/UserView.js`](./views/UserView.js): HTML rendering engine helper for user templates.
+- **Announcement Views (IU Golden Amber Theme — `#d97706`):**
+  - [`views/announcements.html`](./views/announcements.html): Campus & Beyazıt Homecoming bulletin board with interactive category filter chips (*Event, Career, Academic, General*), live search, and publishing form (`POST /announcements`).
+  - [`views/announcementDetail.html`](./views/announcementDetail.html): Editorial bulletin article view with category badge, author metadata, and management actions.
+  - [`views/announcementEdit.html`](./views/announcementEdit.html): Pre-populated announcement editor (`POST /announcements/:id/edit`).
+  - [`views/AnnouncementView.js`](./views/AnnouncementView.js): HTML rendering engine helper for announcement templates.
+- **Job Posting Views (Emerald Green Theme — `#059669`):**
+  - [`views/jobs.html`](./views/jobs.html): Career & Opportunities Board with instant search, employment-type filter chips (*Full-time, Remote, Internship, Contract*), and `JP-R1`–`JP-R7` job creation form (`POST /jobs`).
+  - [`views/jobDetail.html`](./views/jobDetail.html): Role specification card with publisher link, compensation pill, and inline **Quick Apply with Alumni Profile** form (`POST /applications`).
+  - [`views/jobEdit.html`](./views/jobEdit.html): Pre-populated opportunity editor (`POST /jobs/:id/edit`).
+  - [`views/JobPostingView.js`](./views/JobPostingView.js): HTML rendering engine helper for job posting templates.
+- **Application Views (Royal Purple Theme — `#7c3aed`):**
+  - [`views/applications.html`](./views/applications.html): ATS dashboard with 4 KPI metric cards (*Total, Submitted, In Review, Accepted*), status filter chips, live search, inline status switcher, and direct submission form.
+  - [`views/applicationDetail.html`](./views/applicationDetail.html): 2-column candidate review dossier pairing candidate academic info with target job specs, CV link, cover note, and evaluation status updater (`POST /applications/:id/status`).
+  - [`views/ApplicationView.js`](./views/ApplicationView.js): HTML rendering engine helper for application templates.
+- **Guardian Diagnostic Views (Crimson Rose Theme — `#e11d48`):**
+  - [`views/404.html`](./views/404.html) & [`views/NotFoundView.js`](./views/NotFoundView.js): Branded generic `/404` diagnostic template and SSR helper (`NotFoundView.renderNotFound`, `NotFoundView.buildViewModel`, `sanitizeLocalHref`).
+  - [`middleware/guardianShared.js`](./middleware/guardianShared.js): Dynamic 404/5xx Guardian diagnostic screen renderer (`renderGuardianScreen`) with `ERR-*` Incident IDs and route suggestions.
+- **Static Portal Pages (`public/`):**
+  - [`public/index.html`](./public/index.html): Unified Istanbul University homepage with gradient hero, KPI bar, live module search, 4 pillar cards, Guardian banner, and live `/api/health` latency playground.
+  - [`public/about.html`](./public/about.html): Institutional 1453 Beyazıt heritage showcase, 5 platform pillars, and MVC/PostgreSQL/Guardian tech stack manual.
 - **API Documentation:** Interactive Swagger UI rendered at `/api/swagger`.
 
 ---

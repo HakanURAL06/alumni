@@ -3,116 +3,359 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{{NAME}} - Profile (View Layer)</title>
+  <title>{{NAME}} — Alumni Profile (View Layer)</title>
   <style>
+    :root {
+      --iu-navy-950: #020617;
+      --iu-navy-900: #0f172a;
+      --iu-navy-800: #1e293b;
+      --iu-cobalt-600: #2563eb;
+      --surface-canvas: #f8fafc;
+      --surface-card: #ffffff;
+      --surface-subtle: #f1f5f9;
+      --border-subtle: #e2e8f0;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #94a3b8;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08);
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --radius-full: 9999px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
     body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      max-width: 650px;
-      margin: 50px auto;
-      padding: 0 20px;
-      color: #1e293b;
-      background: #f8fafc;
-      line-height: 1.5;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      color: var(--text-primary);
+      background: var(--surface-canvas);
+      line-height: 1.55;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      -webkit-font-smoothing: antialiased;
     }
-    .card {
-      background: #ffffff;
-      border: 1px solid #e2e8f0;
-      border-radius: 12px;
+
+    .wrapper { max-width: 1040px; margin: 0 auto; padding: 0 24px; width: 100%; }
+
+    .top-bar {
+      background: var(--iu-navy-950);
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      padding: 7px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .top-bar-inner { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+    .status-indicator { display: inline-flex; align-items: center; gap: 6px; color: #4ade80; font-weight: 600; }
+    .status-dot { width: 7px; height: 7px; background: #4ade80; border-radius: 50%; }
+    .top-bar a { color: #cbd5e1; text-decoration: none; }
+
+    header.main-nav {
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(12px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .nav-container { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; gap: 16px; }
+    .brand-logo { display: flex; align-items: center; gap: 12px; text-decoration: none; color: #ffffff; }
+    .logo-emblem {
+      width: 42px;
+      height: 42px;
+      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+    }
+    .brand-text { display: flex; flex-direction: column; }
+    .brand-title { font-size: 1.15rem; font-weight: 850; color: #ffffff; line-height: 1.2; }
+    .brand-subtitle { font-size: 0.72rem; color: var(--text-muted); font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
+    .nav-links { display: flex; align-items: center; gap: 6px; list-style: none; flex-wrap: wrap; }
+    .nav-link { color: #cbd5e1; text-decoration: none; font-size: 0.88rem; font-weight: 500; padding: 8px 14px; border-radius: var(--radius-sm); }
+    .nav-link:hover { color: #ffffff; background: rgba(255, 255, 255, 0.08); }
+    .nav-link.active { color: #38bdf8; background: rgba(56, 189, 248, 0.12); font-weight: 600; }
+
+    main.main-content { flex: 1; padding: 36px 0 64px; }
+
+    .breadcrumb {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin-bottom: 20px;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .breadcrumb a { color: var(--iu-cobalt-600); text-decoration: none; font-weight: 600; }
+    .breadcrumb a:hover { text-decoration: underline; }
+
+    .profile-hero {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 60%, #1e3a8a 100%);
+      color: #ffffff;
+      border-radius: var(--radius-lg);
       padding: 32px;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      flex-wrap: wrap;
+      box-shadow: var(--shadow-md);
     }
-    h1 {
-      margin-top: 0;
-      color: #0f172a;
-      font-size: 1.6rem;
-      margin-bottom: 4px;
+    .avatar-circle {
+      width: 76px;
+      height: 76px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+      border: 3px solid rgba(255, 255, 255, 0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      flex-shrink: 0;
     }
     .badge {
       display: inline-block;
-      background: #e0f2fe;
-      color: #0369a1;
-      padding: 4px 10px;
-      border-radius: 9999px;
-      font-size: 0.85rem;
-      font-weight: 600;
+      background: rgba(56, 189, 248, 0.15);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      color: #38bdf8;
+      padding: 4px 12px;
+      border-radius: var(--radius-full);
+      font-size: 0.78rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .profile-hero h1 {
+      font-size: 1.95rem;
+      font-weight: 850;
+      color: #ffffff;
+      margin-bottom: 4px;
+    }
+    .profile-hero .meta-line {
+      color: #cbd5e1;
+      font-size: 0.95rem;
+    }
+
+    .profile-grid {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 24px;
+    }
+
+    .card {
+      background: var(--surface-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      box-shadow: var(--shadow-sm);
+    }
+    .card h2 {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--text-primary);
       margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border-subtle);
     }
+
     .details {
-      margin: 20px 0;
-      border-top: 1px solid #f1f5f9;
-      border-bottom: 1px solid #f1f5f9;
-      padding: 16px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-bottom: 24px;
     }
-    p {
-      margin: 8px 0;
-      font-size: 1rem;
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 14px;
+      background: var(--surface-canvas);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      font-size: 0.94rem;
     }
-    strong {
-      color: #475569;
-      display: inline-block;
-      width: 140px;
+    .detail-row strong {
+      color: var(--text-secondary);
+      font-weight: 600;
     }
+    .detail-row span, .detail-row a {
+      font-weight: 700;
+      color: var(--text-primary);
+      text-decoration: none;
+    }
+    .detail-row a { color: var(--iu-cobalt-600); }
+
     .actions {
       display: flex;
-      gap: 12px;
+      gap: 10px;
       align-items: center;
-      margin-top: 24px;
       flex-wrap: wrap;
+      padding-top: 16px;
+      border-top: 1px solid var(--border-subtle);
     }
     .btn {
-      padding: 9px 18px;
-      border-radius: 6px;
-      font-size: 0.9rem;
+      padding: 10px 18px;
+      border-radius: var(--radius-sm);
+      font-size: 0.88rem;
       font-weight: 600;
       text-decoration: none;
       cursor: pointer;
-      border: none;
+      border: 1px solid transparent;
       display: inline-flex;
       align-items: center;
-      transition: background 0.15s ease;
+      gap: 6px;
+      transition: all 0.15s ease;
     }
-    .btn-edit {
-      background: #fef3c7;
-      color: #92400e;
+    .btn-edit { background: #fffbeb; color: #b45309; border-color: #fde68a; }
+    .btn-edit:hover { background: #d97706; color: #ffffff; }
+    .btn-delete { background: #fff1f2; color: #be123c; border-color: #fecdd3; }
+    .btn-delete:hover { background: #e11d48; color: #ffffff; }
+    .btn-secondary { background: var(--surface-subtle); color: var(--text-secondary); border-color: var(--border-subtle); }
+    .btn-secondary:hover { background: var(--border-subtle); color: var(--text-primary); }
+
+    .rel-card {
+      background: var(--surface-canvas);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      margin-bottom: 14px;
     }
-    .btn-edit:hover {
-      background: #fde68a;
+    .rel-card h3 { font-size: 0.98rem; font-weight: 700; margin-bottom: 6px; color: var(--text-primary); }
+    .rel-card p { font-size: 0.84rem; color: var(--text-secondary); margin-bottom: 12px; }
+    .rel-link {
+      display: inline-block;
+      font-size: 0.84rem;
+      font-weight: 700;
+      color: var(--iu-cobalt-600);
+      text-decoration: none;
     }
-    .btn-delete {
-      background: #fee2e2;
-      color: #991b1b;
+    .rel-link:hover { text-decoration: underline; }
+
+    footer.main-footer {
+      background: var(--iu-navy-950);
+      color: var(--text-muted);
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 28px 0;
+      margin-top: auto;
+      font-size: 0.84rem;
     }
-    .btn-delete:hover {
-      background: #fecaca;
-    }
-    .btn-secondary {
-      background: #f1f5f9;
-      color: #475569;
-    }
-    .btn-secondary:hover {
-      background: #e2e8f0;
+    .footer-inner { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; }
+
+    @media (max-width: 768px) {
+      .profile-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
-  <div class="card">
-    <span class="badge">MVC View Layer &bull; Detail View</span>
-    <h1>👤 {{NAME}}</h1>
-    
-    <div class="details">
-      <p><strong>ID:</strong> {{ID}}</p>
-      <p><strong>Department:</strong> {{DEPARTMENT}}</p>
-      <p><strong>Graduation Year:</strong> {{GRADUATION_YEAR}}</p>
-      <p><strong>Email:</strong> {{EMAIL}}</p>
-    </div>
 
-    <div class="actions">
-      <a href="/users/{{ID}}/edit" class="btn btn-edit">✏️ Edit Profile</a>
-      <form action="/users/{{ID}}/delete" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this profile?');">
-        <button type="submit" class="btn btn-delete">🗑️ Delete Profile</button>
-      </form>
-      <a href="/users" class="btn btn-secondary">← Back to Directory</a>
+  <div class="top-bar">
+    <div class="wrapper top-bar-inner">
+      <div class="status-indicator">
+        <span class="status-dot"></span>
+        <span>Istanbul University &bull; Verified Graduate Profile #{{ID}}</span>
+      </div>
+      <div><a href="/api/users/{{ID}}">JSON Profile (/api/users/{{ID}}) &rarr;</a></div>
     </div>
   </div>
+
+  <header class="main-nav">
+    <div class="wrapper nav-container">
+      <a href="/" class="brand-logo">
+        <div class="logo-emblem">🎓</div>
+        <div class="brand-text">
+          <span class="brand-title">Alumni Tracking System</span>
+          <span class="brand-subtitle">İstanbul Üniversitesi &bull; Mezun Portalı</span>
+        </div>
+      </a>
+      <nav>
+        <ul class="nav-links">
+          <li><a href="/" class="nav-link">Home</a></li>
+          <li><a href="/users" class="nav-link active">Alumni Directory</a></li>
+          <li><a href="/announcements" class="nav-link">Announcements</a></li>
+          <li><a href="/jobs" class="nav-link">Job Board</a></li>
+          <li><a href="/applications" class="nav-link">Applications</a></li>
+          <li><a href="/about" class="nav-link">About</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <div class="wrapper">
+
+      <div class="breadcrumb">
+        <a href="/">Home</a> <span>/</span>
+        <a href="/users">Alumni Directory</a> <span>/</span>
+        <span>{{NAME}} (#{{ID}})</span>
+      </div>
+
+      <div class="profile-hero">
+        <div class="avatar-circle">👤</div>
+        <div>
+          <span class="badge">MVC View Layer &bull; Detail View</span>
+          <h1>{{NAME}}</h1>
+          <div class="meta-line">🎓 {{DEPARTMENT}} &bull; Class of {{GRADUATION_YEAR}} &bull; Istanbul University</div>
+        </div>
+      </div>
+
+      <div class="profile-grid">
+        <div class="card">
+          <h2>📋 Academic &amp; Contact Dossier</h2>
+          <div class="details">
+            <div class="detail-row">
+              <strong>ID:</strong>
+              <span>#{{ID}}</span>
+            </div>
+            <div class="detail-row">
+              <strong>Department:</strong>
+              <span>{{DEPARTMENT}}</span>
+            </div>
+            <div class="detail-row">
+              <strong>Graduation Year:</strong>
+              <span>{{GRADUATION_YEAR}}</span>
+            </div>
+            <div class="detail-row">
+              <strong>Email:</strong>
+              <a href="mailto:{{EMAIL}}">{{EMAIL}}</a>
+            </div>
+          </div>
+
+          <div class="actions">
+            <a href="/users/{{ID}}/edit" class="btn btn-edit">✏️ Edit Profile</a>
+            <form action="/users/{{ID}}/delete" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this profile?');">
+              <button type="submit" class="btn btn-delete">🗑️ Delete Profile</button>
+            </form>
+            <a href="/users" class="btn btn-secondary">← Back to Directory</a>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>🔗 Nested Alumni Activity</h2>
+          <div class="rel-card">
+            <h3>💼 Published Career Opportunities</h3>
+            <p>View all job postings and mentorship roles published by {{NAME}}.</p>
+            <a href="/users/{{ID}}/jobs" class="rel-link">Open Published Jobs (/users/{{ID}}/jobs) &rarr;</a>
+          </div>
+          <div class="rel-card">
+            <h3>📝 Submitted Job Applications</h3>
+            <p>Inspect candidate applications submitted by {{NAME}} across the portal.</p>
+            <a href="/users/{{ID}}/applications" class="rel-link">Open Applications (/users/{{ID}}/applications) &rarr;</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="main-footer">
+    <div class="wrapper footer-inner">
+      <div>&copy; 2026 Istanbul University Alumni Tracking System &bull; Founded 1453</div>
+      <div><a href="/users" style="color:#94a3b8; text-decoration:none;">← Return to Alumni Directory</a></div>
+    </div>
+  </footer>
+
 </body>
 </html>

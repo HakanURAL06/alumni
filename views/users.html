@@ -3,286 +3,574 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Alumni Directory - View Layer</title>
+  <title>Alumni Directory — Istanbul University View Layer</title>
   <style>
-    body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      max-width: 960px;
-      margin: 40px auto;
-      padding: 0 20px;
-      color: #1e293b;
-      background-color: #f8fafc;
-      line-height: 1.5;
+    :root {
+      --iu-navy-950: #020617;
+      --iu-navy-900: #0f172a;
+      --iu-navy-800: #1e293b;
+      --iu-navy-700: #334155;
+      --iu-cobalt-600: #2563eb;
+      --iu-cobalt-500: #3b82f6;
+      --surface-canvas: #f8fafc;
+      --surface-card: #ffffff;
+      --surface-subtle: #f1f5f9;
+      --border-subtle: #e2e8f0;
+      --border-strong: #cbd5e1;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #94a3b8;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.04);
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --radius-full: 9999px;
     }
-    .container {
-      background: #ffffff;
-      border: 1px solid #e2e8f0;
-      border-radius: 12px;
-      padding: 32px;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      color: var(--text-primary);
+      background-color: var(--surface-canvas);
+      line-height: 1.55;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .wrapper {
+      max-width: 1140px;
+      margin: 0 auto;
+      padding: 0 24px;
+      width: 100%;
+    }
+
+    /* Top Utility Bar */
+    .top-bar {
+      background: var(--iu-navy-950);
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      padding: 7px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .top-bar-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .status-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: #4ade80;
+      font-weight: 600;
+    }
+    .status-dot { width: 7px; height: 7px; background: #4ade80; border-radius: 50%; box-shadow: 0 0 8px #4ade80; }
+    .top-bar a { color: #cbd5e1; text-decoration: none; }
+    .top-bar a:hover { color: #ffffff; }
+
+    /* Sticky Main Header */
+    header.main-nav {
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.2);
+    }
+    .nav-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 0;
+      gap: 16px;
+    }
+    .brand-logo { display: flex; align-items: center; gap: 12px; text-decoration: none; color: #ffffff; }
+    .logo-emblem {
+      width: 42px;
+      height: 42px;
+      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+    }
+    .brand-text { display: flex; flex-direction: column; }
+    .brand-title { font-size: 1.15rem; font-weight: 850; letter-spacing: -0.02em; line-height: 1.2; color: #ffffff; }
+    .brand-subtitle { font-size: 0.72rem; color: var(--text-muted); font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
+    .nav-links { display: flex; align-items: center; gap: 6px; list-style: none; flex-wrap: wrap; }
+    .nav-link {
+      color: #cbd5e1;
+      text-decoration: none;
+      font-size: 0.88rem;
+      font-weight: 500;
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      transition: all 0.15s ease;
+    }
+    .nav-link:hover { color: #ffffff; background: rgba(255, 255, 255, 0.08); }
+    .nav-link.active { color: #38bdf8; background: rgba(56, 189, 248, 0.12); font-weight: 600; }
+    .nav-cta { background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: #ffffff !important; font-weight: 600 !important; }
+
+    /* Page Banner */
+    .page-banner {
+      background: linear-gradient(135deg, #0b1120 0%, #0f172a 55%, #1e3a8a 100%);
+      color: #ffffff;
+      padding: 40px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .banner-flex {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      flex-wrap: wrap;
+      gap: 20px;
     }
     .badge {
-      display: inline-block;
-      background: #e0f2fe;
-      color: #0369a1;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(56, 189, 248, 0.15);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      color: #38bdf8;
       padding: 4px 12px;
-      border-radius: 9999px;
-      font-size: 0.85rem;
-      font-weight: 600;
+      border-radius: var(--radius-full);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
       margin-bottom: 12px;
     }
-    h1 {
-      color: #0f172a;
-      margin-top: 0;
+    .page-banner h1 {
+      color: #ffffff;
+      font-size: 2.2rem;
+      font-weight: 850;
+      letter-spacing: -0.025em;
       margin-bottom: 6px;
-      font-size: 1.85rem;
     }
     p.subtitle {
-      color: #64748b;
-      margin-top: 0;
-      margin-bottom: 24px;
+      color: #cbd5e1;
+      font-size: 1rem;
+      max-width: 680px;
     }
+    .btn-jump {
+      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+      color: #ffffff;
+      text-decoration: none;
+      padding: 11px 20px;
+      border-radius: var(--radius-md);
+      font-size: 0.9rem;
+      font-weight: 600;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+      transition: transform 0.15s ease;
+    }
+    .btn-jump:hover { transform: translateY(-2px); }
+
+    main.main-content {
+      flex: 1;
+      padding: 36px 0 64px;
+    }
+
     .alert-success {
       background: #dcfce7;
-      border: 1px solid #bbf7d0;
+      border: 1px solid #86efac;
+      border-left: 4px solid #16a34a;
       color: #166534;
-      padding: 12px 16px;
-      border-radius: 8px;
+      padding: 14px 18px;
+      border-radius: var(--radius-md);
       margin-bottom: 24px;
-      font-weight: 500;
+      font-weight: 600;
     }
     .alert-info {
       background: #e0f2fe;
-      border: 1px solid #bae6fd;
+      border: 1px solid #7dd3fc;
+      border-left: 4px solid #0284c7;
       color: #0369a1;
-      padding: 12px 16px;
-      border-radius: 8px;
+      padding: 14px 18px;
+      border-radius: var(--radius-md);
       margin-bottom: 24px;
-      font-weight: 500;
+      font-weight: 600;
     }
     .alert-danger {
       background: #fee2e2;
-      border: 1px solid #fecaca;
+      border: 1px solid #fca5a5;
+      border-left: 4px solid #dc2626;
       color: #991b1b;
-      padding: 12px 16px;
-      border-radius: 8px;
+      padding: 14px 18px;
+      border-radius: var(--radius-md);
       margin-bottom: 24px;
-      font-weight: 500;
+      font-weight: 600;
+    }
+
+    /* Filter & Search Bar */
+    .toolbar-card {
+      background: var(--surface-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 16px 20px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+    .search-box {
+      flex: 1;
+      min-width: 260px;
+      position: relative;
+    }
+    .search-box input {
+      width: 100%;
+      padding: 10px 14px 10px 38px;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      background: var(--surface-canvas);
+      font-size: 0.9rem;
+    }
+    .search-box::before {
+      content: "🔍";
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.9rem;
+    }
+    .toolbar-meta {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      font-weight: 600;
+    }
+
+    /* Directory Table Card */
+    .container {
+      background: var(--surface-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      box-shadow: var(--shadow-sm);
+    }
+    .table-wrap {
+      overflow-x: auto;
+      margin-bottom: 32px;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
     }
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 16px;
-      margin-bottom: 32px;
+      background: var(--surface-card);
     }
     th, td {
-      padding: 12px 16px;
+      padding: 14px 16px;
       text-align: left;
-      border-bottom: 1px solid #e2e8f0;
+      border-bottom: 1px solid var(--border-subtle);
       vertical-align: middle;
+      font-size: 0.92rem;
     }
     th {
-      background: #f1f5f9;
-      color: #475569;
-      font-weight: 600;
-      font-size: 0.85rem;
+      background: var(--surface-subtle);
+      color: var(--text-secondary);
+      font-weight: 700;
+      font-size: 0.78rem;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.06em;
     }
-    tr:hover {
-      background: #f8fafc;
-    }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr:hover { background: #f8fafc; }
+
     .actions-cell {
       display: flex;
       gap: 6px;
       align-items: center;
+      flex-wrap: wrap;
     }
     .btn-sm {
-      padding: 5px 10px;
-      border-radius: 5px;
-      font-size: 0.8rem;
+      padding: 6px 11px;
+      border-radius: var(--radius-sm);
+      font-size: 0.78rem;
       font-weight: 600;
       text-decoration: none;
       cursor: pointer;
-      border: none;
+      border: 1px solid transparent;
       display: inline-flex;
       align-items: center;
-      transition: background 0.15s ease;
+      gap: 4px;
+      transition: all 0.15s ease;
     }
-    .btn-view {
-      background: #e0f2fe;
-      color: #0369a1;
-    }
-    .btn-view:hover {
-      background: #bae6fd;
-    }
-    .btn-edit {
-      background: #fef3c7;
-      color: #92400e;
-    }
-    .btn-edit:hover {
-      background: #fde68a;
-    }
-    .btn-delete {
-      background: #fee2e2;
-      color: #991b1b;
-    }
-    .btn-delete:hover {
-      background: #fecaca;
-    }
+    .btn-view { background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; }
+    .btn-view:hover { background: #2563eb; color: #ffffff; }
+    .btn-edit { background: #fffbeb; color: #b45309; border-color: #fde68a; }
+    .btn-edit:hover { background: #d97706; color: #ffffff; }
+    .btn-delete { background: #fff1f2; color: #be123c; border-color: #fecdd3; }
+    .btn-delete:hover { background: #e11d48; color: #ffffff; }
+
+    /* Enrollment Form Card */
     .card-form {
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
-      border-radius: 10px;
-      padding: 24px;
-      margin-top: 24px;
+      background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
+      border: 1px solid var(--border-subtle);
+      border-top: 4px solid var(--iu-cobalt-600);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      margin-top: 12px;
+      box-shadow: var(--shadow-sm);
     }
     .card-form h2 {
-      margin-top: 0;
-      font-size: 1.25rem;
-      color: #0f172a;
-      margin-bottom: 16px;
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      margin-bottom: 6px;
+    }
+    .card-form .form-desc {
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      margin-bottom: 20px;
     }
     .form-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap: 16px;
-      margin-bottom: 16px;
+      margin-bottom: 20px;
     }
     .form-group {
       display: flex;
       flex-direction: column;
     }
     label {
-      font-size: 0.875rem;
-      font-weight: 500;
+      font-size: 0.84rem;
+      font-weight: 600;
       margin-bottom: 6px;
-      color: #334155;
+      color: var(--iu-navy-700);
     }
     input {
-      padding: 10px 12px;
-      border: 1px solid #cbd5e1;
-      border-radius: 6px;
-      font-size: 0.95rem;
+      padding: 10px 13px;
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-sm);
+      font-size: 0.92rem;
       background: #ffffff;
+      color: var(--text-primary);
       transition: border-color 0.15s, box-shadow 0.15s;
     }
     input:focus {
       outline: none;
-      border-color: #3b82f6;
-      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+      border-color: var(--iu-cobalt-600);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
     }
     button.btn-primary {
-      background: #2563eb;
+      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
       color: #ffffff;
       border: none;
-      padding: 10px 24px;
-      border-radius: 6px;
-      font-size: 0.95rem;
+      padding: 11px 24px;
+      border-radius: var(--radius-md);
+      font-size: 0.92rem;
       font-weight: 600;
       cursor: pointer;
-      transition: background 0.15s ease;
+      box-shadow: 0 4px 10px rgba(37, 99, 235, 0.25);
+      transition: all 0.15s ease;
     }
     button.btn-primary:hover {
-      background: #1d4ed8;
+      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+      transform: translateY(-1px);
     }
+
     .nav-links {
       margin-top: 28px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border-subtle);
       display: flex;
-      gap: 16px;
+      gap: 18px;
+      flex-wrap: wrap;
     }
     .nav-links a {
-      color: #2563eb;
+      color: var(--iu-cobalt-600);
       text-decoration: none;
-      font-weight: 500;
+      font-size: 0.88rem;
+      font-weight: 600;
     }
-    .nav-links a:hover {
-      text-decoration: underline;
+    .nav-links a:hover { text-decoration: underline; }
+
+    footer.main-footer {
+      background: var(--iu-navy-950);
+      color: var(--text-muted);
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 32px 0;
+      margin-top: auto;
+      font-size: 0.84rem;
     }
-    .top-nav {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: #0f172a;
-      color: #fff;
-      padding: 12px 24px;
-      border-radius: 10px;
-      margin-bottom: 24px;
-      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
-    }
-    .top-nav .logo { font-weight: 700; font-size: 1.1rem; }
-    .top-nav .nav-menu { display: flex; gap: 18px; }
-    .top-nav a { color: #cbd5e1; text-decoration: none; font-size: 0.9rem; font-weight: 500; }
-    .top-nav a:hover, .top-nav a.active { color: #38bdf8; }
+    .footer-inner { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; }
+    .footer-links { display: flex; gap: 16px; flex-wrap: wrap; }
+    .footer-links a { color: var(--text-muted); text-decoration: none; }
+    .footer-links a:hover { color: #ffffff; }
   </style>
 </head>
 <body>
-  <!-- Navigation Bar -->
-  <div class="top-nav">
-    <div class="logo">🎓 Alumni Tracking Portal</div>
-    <div class="nav-menu">
-      <a href="/">Home</a>
-      <a href="/users" class="active">Alumni Directory</a>
-      <a href="/announcements">Announcements</a>
-      <a href="/jobs">Job Board</a>
-      <a href="/applications">Applications</a>
-      <a href="/api/swagger">Swagger Docs</a>
+
+  <!-- Top Utility Bar -->
+  <div class="top-bar">
+    <div class="wrapper top-bar-inner">
+      <div class="status-indicator">
+        <span class="status-dot"></span>
+        <span>Istanbul University &bull; Living Alumni Directory</span>
+      </div>
+      <div>
+        <a href="/api/users">JSON Endpoint (/api/users) &rarr;</a>
+      </div>
     </div>
   </div>
 
-  <div class="container">
-    <span class="badge">MVC Architecture &bull; Complete CRUD with View Layer</span>
-    <h1>🎓 Alumni Directory</h1>
-    <p class="subtitle">Full CRUD operations managed via <strong>UserController</strong> &amp; <strong>View Layer</strong></p>
-
-    {{MESSAGE}}
-
-    <table>
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Name</th>
-          <th>Department</th>
-          <th>Graduation Year</th>
-          <th>Email</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {{USER_ROWS}}
-      </tbody>
-    </table>
-
-    <div class="card-form">
-      <h2>➕ Add New Alumni</h2>
-      <form action="/users" method="POST">
-        <div class="form-grid">
-          <div class="form-group">
-            <label for="name">Full Name</label>
-            <input type="text" id="name" name="name" placeholder="e.g. Ahmet Yılmaz" required />
-          </div>
-          <div class="form-group">
-            <label for="department">Department</label>
-            <input type="text" id="department" name="department" placeholder="e.g. Computer Engineering" required />
-          </div>
-          <div class="form-group">
-            <label for="graduationYear">Graduation Year</label>
-            <input type="number" id="graduationYear" name="graduationYear" placeholder="e.g. 2024" required />
-          </div>
-          <div class="form-group">
-            <label for="email">Email Address</label>
-            <input type="email" id="email" name="email" placeholder="e.g. ahmet@alumni.edu" required />
-          </div>
+  <!-- Main Sticky Navigation -->
+  <header class="main-nav">
+    <div class="wrapper nav-container">
+      <a href="/" class="brand-logo">
+        <div class="logo-emblem">🎓</div>
+        <div class="brand-text">
+          <span class="brand-title">Alumni Tracking System</span>
+          <span class="brand-subtitle">İstanbul Üniversitesi &bull; Mezun Portalı</span>
         </div>
-        <button type="submit" class="btn-primary">Add Alumni</button>
-      </form>
+      </a>
+      <nav>
+        <ul class="nav-links" style="margin:0; padding:0; border:none;">
+          <li><a href="/" class="nav-link">Home</a></li>
+          <li><a href="/users" class="nav-link active">Alumni Directory</a></li>
+          <li><a href="/announcements" class="nav-link">Announcements</a></li>
+          <li><a href="/jobs" class="nav-link">Job Board</a></li>
+          <li><a href="/applications" class="nav-link">Applications</a></li>
+          <li><a href="/about" class="nav-link">About</a></li>
+          <li><a href="/api/swagger" class="nav-link nav-cta">Swagger Docs ⚡</a></li>
+        </ul>
+      </nav>
     </div>
+  </header>
 
-    <div class="nav-links">
-      <a href="/">← Return to Home</a>
-      <a href="/apiuser">REST API (/apiuser)</a>
-      <a href="/api/swagger">Swagger Documentation</a>
+  <!-- Page Banner -->
+  <section class="page-banner">
+    <div class="wrapper banner-flex">
+      <div>
+        <span class="badge">MVC Architecture &bull; Complete CRUD with View Layer</span>
+        <h1>🎓 Alumni Directory</h1>
+        <p class="subtitle">Discover verified Istanbul University graduates across faculties and cohorts. Managed via <strong>UserController</strong> &amp; <strong>View Layer</strong>.</p>
+      </div>
+      <a href="#enroll-form" class="btn-jump">➕ Register New Alumni</a>
     </div>
-  </div>
+  </section>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="wrapper">
+
+      <!-- Search & Filter Toolbar -->
+      <div class="toolbar-card">
+        <div class="search-box">
+          <input type="text" id="directory-search" placeholder="Filter alumni by name, department (e.g. Computer Engineering, Law), graduation year, or email..." autocomplete="off">
+        </div>
+        <div class="toolbar-meta" id="directory-count">Showing all registered alumni records</div>
+      </div>
+
+      <div class="container">
+        {{MESSAGE}}
+
+        <div class="table-wrap">
+          <table id="alumni-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Department</th>
+                <th>Graduation Year</th>
+                <th>Email</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {{USER_ROWS}}
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card-form" id="enroll-form">
+          <h2>➕ Add New Alumni</h2>
+          <p class="form-desc">Enroll a graduate into the Istanbul University Alumni Directory (adheres to <code>USR-R1</code> unique email &amp; <code>USR-R2</code> cohort rules).</p>
+          <form action="/users" method="POST">
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="name">Full Name</label>
+                <input type="text" id="name" name="name" placeholder="e.g. Ahmet Yılmaz" required />
+              </div>
+              <div class="form-group">
+                <label for="department">Department</label>
+                <input type="text" id="department" name="department" placeholder="e.g. Computer Engineering" required />
+              </div>
+              <div class="form-group">
+                <label for="graduationYear">Graduation Year</label>
+                <input type="number" id="graduationYear" name="graduationYear" placeholder="e.g. 2024" required />
+              </div>
+              <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" placeholder="e.g. ahmet@alumni.edu" required />
+              </div>
+            </div>
+            <button type="submit" class="btn-primary">Add Alumni</button>
+          </form>
+        </div>
+
+        <div class="nav-links">
+          <a href="/">← Return to Home</a>
+          <a href="/apiuser">REST API (/apiuser)</a>
+          <a href="/jobs">Career Board (/jobs)</a>
+          <a href="/api/swagger">Swagger Documentation</a>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="main-footer">
+    <div class="wrapper footer-inner">
+      <div>&copy; 2026 Istanbul University Alumni Tracking System &bull; Founded 1453</div>
+      <div class="footer-links">
+        <a href="/">Home</a>
+        <a href="/users">Directory</a>
+        <a href="/announcements">Announcements</a>
+        <a href="/jobs">Jobs</a>
+        <a href="/applications">Applications</a>
+        <a href="/about">About</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    (function() {
+      const searchInput = document.getElementById('directory-search');
+      const countLabel = document.getElementById('directory-count');
+      const rows = Array.from(document.querySelectorAll('#alumni-table tbody tr'));
+      if (countLabel && rows.length) {
+        countLabel.textContent = 'Showing ' + rows.length + ' alumni record(s)';
+      }
+      if (searchInput) {
+        searchInput.addEventListener('input', function(e) {
+          const q = e.target.value.toLowerCase().trim();
+          let visible = 0;
+          rows.forEach(function(row) {
+            const match = !q || row.textContent.toLowerCase().includes(q);
+            row.style.display = match ? '' : 'none';
+            if (match) visible++;
+          });
+          if (countLabel) {
+            countLabel.textContent = 'Showing ' + visible + ' of ' + rows.length + ' alumni record(s)';
+          }
+        });
+      }
+    })();
+  </script>
 </body>
 </html>

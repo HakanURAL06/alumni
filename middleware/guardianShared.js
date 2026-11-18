@@ -137,54 +137,75 @@ function renderGuardianScreen({
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${safeStatusCode} Guardian — ${safeTitle}</title>
+  <title>${safeStatusCode} Guardian — ${safeTitle} | Istanbul University Alumni Portal</title>
   <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      max-width: 960px;
-      margin: 30px auto;
-      padding: 0 20px;
-      color: #1e293b;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      color: #0f172a;
       background-color: #f8fafc;
       line-height: 1.6;
-    }
-    .top-nav {
+      min-height: 100vh;
       display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 12px;
-      background: #0f172a;
-      color: #fff;
-      padding: 14px 24px;
-      border-radius: 12px;
-      margin-bottom: 28px;
-      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+      flex-direction: column;
+      -webkit-font-smoothing: antialiased;
     }
-    .top-nav .logo { font-weight: 800; font-size: 1.15rem; }
-    .top-nav .nav-menu { display: flex; flex-wrap: wrap; gap: 16px; }
-    .top-nav a { color: #cbd5e1; text-decoration: none; font-size: 0.9rem; font-weight: 500; }
-    .top-nav a:hover { color: #38bdf8; }
+    .wrapper { max-width: 980px; margin: 0 auto; padding: 0 24px; width: 100%; }
+    .top-bar {
+      background: #020617;
+      color: #94a3b8;
+      font-size: 0.8rem;
+      padding: 7px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .top-bar-inner { max-width: 1140px; margin: 0 auto; padding: 0 24px; display: flex; justify-content: space-between; align-items: center; }
+    header.main-nav {
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(12px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .nav-container { max-width: 1140px; margin: 0 auto; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .brand-logo { display: flex; align-items: center; gap: 12px; text-decoration: none; color: #ffffff; }
+    .logo-emblem {
+      width: 42px;
+      height: 42px;
+      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+    }
+    .brand-text { display: flex; flex-direction: column; }
+    .brand-title { font-size: 1.15rem; font-weight: 850; color: #ffffff; line-height: 1.2; }
+    .brand-subtitle { font-size: 0.72rem; color: #94a3b8; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
+    .nav-links { display: flex; align-items: center; gap: 6px; list-style: none; flex-wrap: wrap; }
+    .nav-link { color: #cbd5e1; text-decoration: none; font-size: 0.88rem; font-weight: 500; padding: 8px 14px; border-radius: 6px; }
+    .nav-link:hover { color: #ffffff; background: rgba(255, 255, 255, 0.08); }
+    main.main-content { flex: 1; padding: 40px 0 64px; }
     .guardian-card {
       background: #ffffff;
       border: 1px solid ${borderColor};
       border-top: 5px solid ${accentColor};
       border-radius: 16px;
-      padding: 32px;
-      box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08);
+      padding: 36px;
+      box-shadow: 0 20px 25px -5px rgba(15, 23, 42, 0.08);
     }
     .badge-row {
       display: flex;
       align-items: center;
       gap: 10px;
-      margin-bottom: 14px;
+      margin-bottom: 16px;
       flex-wrap: wrap;
     }
     .guardian-badge {
       background: ${badgeBg};
       color: ${badgeTextColor};
       border: 1px solid ${borderColor};
-      padding: 4px 12px;
+      padding: 5px 14px;
       border-radius: 999px;
       font-size: 0.78rem;
       font-weight: 700;
@@ -193,23 +214,24 @@ function renderGuardianScreen({
     .code-badge {
       background: #f1f5f9;
       color: #334155;
-      padding: 4px 10px;
+      padding: 5px 11px;
       border-radius: 6px;
       font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
       font-size: 0.78rem;
       font-weight: 600;
     }
     h1 {
-      margin: 0 0 14px 0;
-      font-size: 1.85rem;
+      margin: 0 0 18px 0;
+      font-size: 2rem;
+      font-weight: 850;
       color: #0f172a;
-      letter-spacing: -0.02em;
+      letter-spacing: -0.025em;
     }
     .reason-box {
       background: ${reasonBg};
       border-left: 4px solid ${reasonBorder};
-      padding: 16px 20px;
-      border-radius: 8px;
+      padding: 18px 22px;
+      border-radius: 10px;
       margin-bottom: 22px;
     }
     .reason-label {
@@ -230,7 +252,7 @@ function renderGuardianScreen({
       background: #eff6ff;
       border: 1px solid #bfdbfe;
       border-radius: 10px;
-      padding: 16px 20px;
+      padding: 18px 22px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -241,27 +263,29 @@ function renderGuardianScreen({
     .suggestion-box strong { color: #1e3a8a; }
     .btn-row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 28px; }
     .btn {
-      display: inline-block;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
       padding: 10px 18px;
-      border-radius: 8px;
+      border-radius: 6px;
       text-decoration: none;
       font-weight: 600;
       font-size: 0.9rem;
       cursor: pointer;
-      border: none;
+      border: 1px solid transparent;
     }
-    .btn-primary { background: #0f172a; color: #ffffff; }
+    .btn-primary { background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: #ffffff; }
     .btn-primary:hover { background: #1d4ed8; }
-    .btn-secondary { background: #e2e8f0; color: #1e293b; }
-    .btn-secondary:hover { background: #cbd5e1; }
+    .btn-secondary { background: #f1f5f9; color: #0f172a; border-color: #e2e8f0; }
+    .btn-secondary:hover { background: #e2e8f0; }
     .diag-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 12px;
+      gap: 14px;
       background: #f8fafc;
       border: 1px solid #e2e8f0;
       border-radius: 10px;
-      padding: 16px;
+      padding: 18px;
       margin-bottom: 24px;
     }
     .diag-item .diag-key {
@@ -270,6 +294,7 @@ function renderGuardianScreen({
       letter-spacing: 0.05em;
       color: #64748b;
       font-weight: 700;
+      margin-bottom: 2px;
     }
     .diag-item .diag-val {
       font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
@@ -315,85 +340,123 @@ function renderGuardianScreen({
     }
     .route-pill {
       background: #f1f5f9;
+      border: 1px solid #e2e8f0;
       color: #334155;
       padding: 6px 12px;
-      border-radius: 8px;
+      border-radius: 6px;
       text-decoration: none;
       font-size: 0.85rem;
       font-weight: 600;
     }
-    .route-pill:hover { background: #e2e8f0; color: #0f172a; }
+    .route-pill:hover { background: #eff6ff; color: #2563eb; border-color: #bfdbfe; }
+    footer.main-footer {
+      background: #020617;
+      color: #94a3b8;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 28px 0;
+      margin-top: auto;
+      font-size: 0.84rem;
+    }
+    .footer-inner { max-width: 1140px; margin: 0 auto; padding: 0 24px; display: flex; justify-content: space-between; align-items: center; }
   </style>
 </head>
 <body>
-  <div class="top-nav">
-    <div class="logo">🎓 Alumni Tracking Portal</div>
-    <div class="nav-menu">
-      <a href="/">Home</a>
-      <a href="/users">Alumni Directory</a>
-      <a href="/announcements">Announcements</a>
-      <a href="/jobs">Job Board</a>
-      <a href="/applications">Applications</a>
-      <a href="/api/swagger">Swagger Docs</a>
+  <div class="top-bar">
+    <div class="top-bar-inner">
+      <div style="color:#fda4af; font-weight:600;">🛡️ Istanbul University Guardian Pipeline &bull; ${safeStatusCode} Diagnostic Screen</div>
+      <div><a href="/api/health" style="color:#cbd5e1; text-decoration:none;">System Health (/api/health) &rarr;</a></div>
     </div>
   </div>
 
-  <div class="guardian-card">
-    <div class="badge-row">
-      <span class="guardian-badge">${safeBadgeText}</span>
-      <span class="code-badge">${safeCode}</span>
+  <header class="main-nav">
+    <div class="nav-container">
+      <a href="/" class="brand-logo">
+        <div class="logo-emblem">🎓</div>
+        <div class="brand-text">
+          <span class="brand-title">Alumni Tracking System</span>
+          <span class="brand-subtitle">İstanbul Üniversitesi &bull; Mezun Portalı</span>
+        </div>
+      </a>
+      <nav>
+        <ul class="nav-links">
+          <li><a href="/" class="nav-link">Home</a></li>
+          <li><a href="/users" class="nav-link">Alumni Directory</a></li>
+          <li><a href="/announcements" class="nav-link">Announcements</a></li>
+          <li><a href="/jobs" class="nav-link">Job Board</a></li>
+          <li><a href="/applications" class="nav-link">Applications</a></li>
+          <li><a href="/api/swagger" class="nav-link">Swagger Docs</a></li>
+        </ul>
+      </nav>
     </div>
+  </header>
 
-    <h1>${safeStatusCode} — ${safeTitle}</h1>
+  <main class="main-content">
+    <div class="wrapper">
+      <div class="guardian-card">
+        <div class="badge-row">
+          <span class="guardian-badge">${safeBadgeText}</span>
+          <span class="code-badge">${safeCode}</span>
+        </div>
 
-    <div class="reason-box">
-      <div class="reason-label">Diagnostic Reason</div>
-      <p class="reason-text">${safeReason}</p>
+        <h1>${safeStatusCode} — ${safeTitle}</h1>
+
+        <div class="reason-box">
+          <div class="reason-label">Diagnostic Reason</div>
+          <p class="reason-text">${safeReason}</p>
+        </div>
+
+        <div class="suggestion-box">
+          <div>
+            <strong>Recommended Action:</strong>
+            <span>${safeSuggestionLabel}</span>
+          </div>
+          <a href="${safeSuggestionHref}" class="btn btn-primary">${safeSuggestionLabel} ➔</a>
+        </div>
+
+        <div class="btn-row">
+          ${showDistinctBackBtn ? `<a href="${safeBackHref}" class="btn btn-primary">${safeBackLabel}</a>` : ''}
+          <a href="/" class="btn btn-secondary">🏠 Home Portal</a>
+          <button type="button" class="btn btn-secondary" onclick="window.history.back()">↩ Go Back</button>
+        </div>
+
+        <div class="diag-grid">
+          <div class="diag-item">
+            <div class="diag-key">HTTP Status</div>
+            <div class="diag-val">${safeStatusLabel}</div>
+          </div>
+          <div class="diag-item">
+            <div class="diag-key">Method &amp; Route</div>
+            <div class="diag-val">${safeMethod} ${safePath}</div>
+          </div>
+          <div class="diag-item">
+            <div class="diag-key">Client IP</div>
+            <div class="diag-val">${safeIp}</div>
+          </div>
+          <div class="diag-item">
+            <div class="diag-key">Timestamp (UTC)</div>
+            <div class="diag-val">${safeTimestamp}</div>
+          </div>
+          ${extraDiagHtml}
+        </div>
+
+        ${extraSectionHtml}
+
+        <div class="routes-section">
+          <h3>Available Destinations</h3>
+          <div class="route-pills">
+            ${navPills}
+          </div>
+        </div>
+      </div>
     </div>
+  </main>
 
-    <div class="suggestion-box">
-      <div>
-        <strong>Recommended Action:</strong>
-        <span>${safeSuggestionLabel}</span>
-      </div>
-      <a href="${safeSuggestionHref}" class="btn btn-primary">${safeSuggestionLabel} ➔</a>
+  <footer class="main-footer">
+    <div class="footer-inner">
+      <div>&copy; 2026 Istanbul University Alumni Tracking System &bull; Founded 1453</div>
+      <div><a href="/" style="color:#94a3b8; text-decoration:none;">← Return to Portal Home</a></div>
     </div>
-
-    <div class="btn-row">
-      ${showDistinctBackBtn ? `<a href="${safeBackHref}" class="btn btn-primary">${safeBackLabel}</a>` : ''}
-      <a href="/" class="btn btn-secondary">🏠 Home Portal</a>
-      <button type="button" class="btn btn-secondary" onclick="window.history.back()">↩ Go Back</button>
-    </div>
-
-    <div class="diag-grid">
-      <div class="diag-item">
-        <div class="diag-key">HTTP Status</div>
-        <div class="diag-val">${safeStatusLabel}</div>
-      </div>
-      <div class="diag-item">
-        <div class="diag-key">Method &amp; Route</div>
-        <div class="diag-val">${safeMethod} ${safePath}</div>
-      </div>
-      <div class="diag-item">
-        <div class="diag-key">Client IP</div>
-        <div class="diag-val">${safeIp}</div>
-      </div>
-      <div class="diag-item">
-        <div class="diag-key">Timestamp (UTC)</div>
-        <div class="diag-val">${safeTimestamp}</div>
-      </div>
-      ${extraDiagHtml}
-    </div>
-
-    ${extraSectionHtml}
-
-    <div class="routes-section">
-      <h3>Available Destinations</h3>
-      <div class="route-pills">
-        ${navPills}
-      </div>
-    </div>
-  </div>
+  </footer>
 </body>
 </html>`;
 }

@@ -3,53 +3,119 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{{TITLE}} at {{COMPANY}} - Alumni Portal</title>
+  <title>{{TITLE}} at {{COMPANY}} — Istanbul University Alumni Portal</title>
   <style>
+    :root {
+      --iu-navy-950: #020617;
+      --iu-navy-900: #0f172a;
+      --iu-navy-700: #334155;
+      --iu-cobalt-600: #2563eb;
+      --iu-emerald-600: #059669;
+      --surface-canvas: #f8fafc;
+      --surface-card: #ffffff;
+      --surface-subtle: #f1f5f9;
+      --border-subtle: #e2e8f0;
+      --border-strong: #cbd5e1;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #94a3b8;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08);
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --radius-full: 9999px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
     body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      max-width: 900px;
-      margin: 30px auto;
-      padding: 0 20px;
-      color: #1e293b;
-      background-color: #f8fafc;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      color: var(--text-primary);
+      background-color: var(--surface-canvas);
       line-height: 1.6;
-    }
-    .top-nav {
+      min-height: 100vh;
       display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: #0f172a;
-      color: #fff;
-      padding: 12px 24px;
-      border-radius: 10px;
-      margin-bottom: 24px;
+      flex-direction: column;
+      -webkit-font-smoothing: antialiased;
     }
-    .top-nav .logo { font-weight: 700; font-size: 1.1rem; }
-    .top-nav .nav-menu { display: flex; gap: 18px; }
-    .top-nav a { color: #cbd5e1; text-decoration: none; font-size: 0.9rem; font-weight: 500; }
-    .top-nav a:hover, .top-nav a.active { color: #38bdf8; }
+
+    .wrapper { max-width: 980px; margin: 0 auto; padding: 0 24px; width: 100%; }
+
+    .top-bar {
+      background: var(--iu-navy-950);
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      padding: 7px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .top-bar-inner { max-width: 1140px; margin: 0 auto; padding: 0 24px; display: flex; justify-content: space-between; align-items: center; }
+
+    header.main-nav {
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(12px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .nav-container { max-width: 1140px; margin: 0 auto; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .brand-logo { display: flex; align-items: center; gap: 12px; text-decoration: none; color: #ffffff; }
+    .logo-emblem {
+      width: 42px;
+      height: 42px;
+      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+    }
+    .brand-text { display: flex; flex-direction: column; }
+    .brand-title { font-size: 1.15rem; font-weight: 850; color: #ffffff; line-height: 1.2; }
+    .brand-subtitle { font-size: 0.72rem; color: var(--text-muted); font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
+    .nav-links { display: flex; align-items: center; gap: 6px; list-style: none; flex-wrap: wrap; }
+    .nav-link { color: #cbd5e1; text-decoration: none; font-size: 0.88rem; font-weight: 500; padding: 8px 14px; border-radius: var(--radius-sm); }
+    .nav-link:hover { color: #ffffff; background: rgba(255, 255, 255, 0.08); }
+    .nav-link.active { color: #34d399; background: rgba(16, 185, 129, 0.14); font-weight: 600; }
+
+    main.main-content { flex: 1; padding: 36px 0 64px; }
+
+    .breadcrumb {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin-bottom: 20px;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .breadcrumb a { color: var(--iu-cobalt-600); text-decoration: none; font-weight: 600; }
+
     .container {
-      background: #ffffff;
-      border: 1px solid #e2e8f0;
-      border-radius: 12px;
+      background: var(--surface-card);
+      border: 1px solid var(--border-subtle);
+      border-top: 4px solid var(--iu-emerald-600);
+      border-radius: var(--radius-lg);
       padding: 36px;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+      box-shadow: var(--shadow-md);
     }
     .header-section {
-      border-bottom: 1px solid #e2e8f0;
-      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: 22px;
       margin-bottom: 24px;
     }
     .company-name {
-      font-size: 1.2rem;
-      font-weight: 600;
-      color: #2563eb;
-      margin-bottom: 4px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--iu-emerald-600);
+      margin-bottom: 6px;
     }
     h1 {
-      font-size: 2rem;
-      color: #0f172a;
-      margin: 0 0 12px 0;
+      font-size: 2.1rem;
+      font-weight: 850;
+      color: var(--text-primary);
+      margin-bottom: 14px;
+      letter-spacing: -0.025em;
     }
     .meta-pills {
       display: flex;
@@ -57,40 +123,44 @@
       flex-wrap: wrap;
     }
     .pill {
-      background: #f1f5f9;
-      color: #334155;
-      padding: 4px 12px;
-      border-radius: 9999px;
-      font-size: 0.85rem;
-      font-weight: 500;
+      background: var(--surface-subtle);
+      color: var(--iu-navy-700);
+      padding: 5px 13px;
+      border-radius: var(--radius-full);
+      font-size: 0.84rem;
+      font-weight: 600;
     }
-    .pill-green { background: #dcfce7; color: #166534; font-weight: 600; }
+    .pill-green { background: #dcfce7; color: #166534; font-weight: 700; }
+
     .section-title {
       font-size: 1.1rem;
-      font-weight: 700;
-      color: #0f172a;
+      font-weight: 800;
+      color: var(--text-primary);
       margin-top: 24px;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
     }
     .content-box {
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
-      border-radius: 8px;
-      padding: 16px;
-      color: #334155;
+      background: var(--surface-canvas);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 18px 20px;
+      color: var(--iu-navy-700);
       white-space: pre-wrap;
+      line-height: 1.7;
     }
+
     .apply-card {
       margin-top: 36px;
-      background: #eff6ff;
-      border: 2px solid #bfdbfe;
-      border-radius: 12px;
+      background: linear-gradient(180deg, #eff6ff 0%, #ffffff 100%);
+      border: 1px solid #93c5fd;
+      border-top: 4px solid var(--iu-cobalt-600);
+      border-radius: var(--radius-lg);
       padding: 28px;
     }
     .apply-card h2 {
-      margin-top: 0;
       font-size: 1.35rem;
-      color: #1e40af;
+      font-weight: 800;
+      color: #1e3a8a;
       margin-bottom: 8px;
     }
     .form-group {
@@ -99,127 +169,181 @@
       flex-direction: column;
     }
     label {
-      font-size: 0.875rem;
+      font-size: 0.86rem;
       font-weight: 600;
       color: #1e3a8a;
-      margin-bottom: 4px;
+      margin-bottom: 5px;
     }
     input, textarea {
-      padding: 10px 12px;
+      padding: 10px 13px;
       border: 1px solid #93c5fd;
-      border-radius: 6px;
+      border-radius: var(--radius-sm);
       font-size: 0.95rem;
       background: #ffffff;
       font-family: inherit;
     }
     input:focus, textarea:focus {
       outline: none;
-      border-color: #2563eb;
+      border-color: var(--iu-cobalt-600);
       box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
     }
     .btn-apply {
-      background: #2563eb;
+      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
       color: #ffffff;
       padding: 12px 28px;
       border: none;
-      border-radius: 6px;
-      font-size: 1rem;
+      border-radius: var(--radius-md);
+      font-size: 0.96rem;
       font-weight: 700;
       cursor: pointer;
-      transition: background 0.15s;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
     }
     .btn-apply:hover { background: #1d4ed8; }
+
     .actions-footer {
       display: flex;
       gap: 12px;
       margin-top: 28px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border-subtle);
       align-items: center;
+      flex-wrap: wrap;
     }
     .btn-secondary {
-      background: #e2e8f0;
-      color: #334155;
-      padding: 8px 16px;
-      border-radius: 6px;
+      background: var(--surface-subtle);
+      color: var(--iu-navy-700);
+      border: 1px solid var(--border-subtle);
+      padding: 9px 16px;
+      border-radius: var(--radius-sm);
       text-decoration: none;
-      font-size: 0.9rem;
+      font-size: 0.88rem;
       font-weight: 600;
     }
-    .btn-secondary:hover { background: #cbd5e1; }
+    .btn-secondary:hover { background: var(--border-subtle); color: var(--text-primary); }
+
+    footer.main-footer {
+      background: var(--iu-navy-950);
+      color: var(--text-muted);
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 28px 0;
+      margin-top: auto;
+      font-size: 0.84rem;
+    }
+    .footer-inner { max-width: 1140px; margin: 0 auto; padding: 0 24px; display: flex; justify-content: space-between; align-items: center; }
+
+    @media (max-width: 640px) {
+      .apply-grid { grid-template-columns: 1fr !important; }
+    }
   </style>
 </head>
 <body>
 
-  <!-- Navigation Bar -->
-  <div class="top-nav">
-    <div class="logo">🎓 Alumni Tracking Portal</div>
-    <div class="nav-menu">
-      <a href="/">Home</a>
-      <a href="/users">Alumni Directory</a>
-      <a href="/announcements">Announcements</a>
-      <a href="/jobs" class="active">Job Board</a>
-      <a href="/applications">Applications</a>
-      <a href="/api/swagger">Swagger Docs</a>
+  <div class="top-bar">
+    <div class="top-bar-inner">
+      <div style="color:#34d399; font-weight:600;">💼 Career Opportunity #{{ID}} &bull; Status: {{STATUS}}</div>
+      <div><a href="/api/jobs/{{ID}}" style="color:#cbd5e1; text-decoration:none;">JSON (/api/jobs/{{ID}}) &rarr;</a></div>
     </div>
   </div>
 
-  <div class="container">
-    {{MESSAGE}}
+  <header class="main-nav">
+    <div class="nav-container">
+      <a href="/" class="brand-logo">
+        <div class="logo-emblem">🎓</div>
+        <div class="brand-text">
+          <span class="brand-title">Alumni Tracking System</span>
+          <span class="brand-subtitle">İstanbul Üniversitesi &bull; Mezun Portalı</span>
+        </div>
+      </a>
+      <nav>
+        <ul class="nav-links">
+          <li><a href="/" class="nav-link">Home</a></li>
+          <li><a href="/users" class="nav-link">Alumni Directory</a></li>
+          <li><a href="/announcements" class="nav-link">Announcements</a></li>
+          <li><a href="/jobs" class="nav-link active">Job Board</a></li>
+          <li><a href="/applications" class="nav-link">Applications</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
 
-    <div class="header-section">
-      <div class="company-name">🏢 {{COMPANY}}</div>
-      <h1>{{TITLE}}</h1>
-      <div class="meta-pills">
-        <span class="pill">📍 {{LOCATION}}</span>
-        <span class="pill">💼 {{JOB_TYPE}}</span>
-        <span class="pill pill-green">💰 {{SALARY}}</span>
-        <span class="pill">⏳ Deadline: {{DEADLINE}}</span>
-        <span class="pill">👤 Posted by: {{POSTER_NAME}}</span>
+  <main class="main-content">
+    <div class="wrapper">
+
+      <div class="breadcrumb">
+        <a href="/">Home</a> <span>/</span>
+        <a href="/jobs">Job Board</a> <span>/</span>
+        <span>{{TITLE}} (#{{ID}})</span>
       </div>
-    </div>
 
-    <div class="section-title">Job Description & Responsibilities</div>
-    <div class="content-box">{{DESCRIPTION}}</div>
+      <div class="container">
+        {{MESSAGE}}
 
-    <div class="section-title">Requirements & Qualifications</div>
-    <div class="content-box">{{REQUIREMENTS}}</div>
-
-    <div class="section-title">Employer Contact</div>
-    <p>Direct inquiries to: <a href="mailto:{{CONTACT_EMAIL}}" style="color:#2563eb; font-weight:600;">{{CONTACT_EMAIL}}</a></p>
-
-    <!-- Quick Application Form -->
-    <div class="apply-card">
-      <h2>📝 Quick Apply with Alumni Profile</h2>
-      <p style="color:#1e3a8a; margin-top:0; font-size:0.95rem;">Apply directly to this opportunity. Your submission will immediately be available in the candidate review dashboard.</p>
-      
-      <form action="/applications" method="POST">
-        <input type="hidden" name="jobPostingId" value="{{ID}}">
-
-        <div style="display:grid; grid-template-columns: 1fr 2fr; gap:14px;">
-          <div class="form-group">
-            <label for="userId">Your Alumni User ID *</label>
-            <input type="number" id="userId" name="userId" placeholder="e.g. 1" min="1" required>
-          </div>
-          <div class="form-group">
-            <label for="resumeUrl">Resume / CV Link (URL)</label>
-            <input type="url" id="resumeUrl" name="resumeUrl" placeholder="https://linkedin.com/in/... or drive link">
+        <div class="header-section">
+          <div class="company-name">🏢 {{COMPANY}}</div>
+          <h1>{{TITLE}}</h1>
+          <div class="meta-pills">
+            <span class="pill">📍 {{LOCATION}}</span>
+            <span class="pill">💼 {{JOB_TYPE}}</span>
+            <span class="pill pill-green">💰 {{SALARY}}</span>
+            <span class="pill">⏳ Deadline: {{DEADLINE}}</span>
+            <span class="pill">👤 Posted by: <a href="/users/{{POSTED_BY}}" style="color:#2563eb; text-decoration:none;">{{POSTER_NAME}}</a></span>
+            <span class="pill">🔖 Status: {{STATUS}}</span>
           </div>
         </div>
 
-        <div class="form-group">
-          <label for="coverNote">Cover Note / Brief Pitch</label>
-          <textarea id="coverNote" name="coverNote" rows="3" placeholder="Briefly highlight why you are a great match for this position..."></textarea>
+        <div class="section-title">Job Description &amp; Responsibilities</div>
+        <div class="content-box">{{DESCRIPTION}}</div>
+
+        <div class="section-title">Requirements &amp; Qualifications</div>
+        <div class="content-box">{{REQUIREMENTS}}</div>
+
+        <div class="section-title">Employer Contact</div>
+        <p>Direct inquiries to: <a href="mailto:{{CONTACT_EMAIL}}" style="color:#2563eb; font-weight:700;">{{CONTACT_EMAIL}}</a></p>
+
+        <!-- Quick Application Form -->
+        <div class="apply-card">
+          <h2>📝 Quick Apply with Alumni Profile</h2>
+          <p style="color:#1e3a8a; margin-bottom:16px; font-size:0.94rem;">Apply directly to this opportunity. Your submission will immediately be available in the candidate review dashboard.</p>
+
+          <form action="/applications" method="POST">
+            <input type="hidden" name="jobPostingId" value="{{ID}}">
+
+            <div class="apply-grid" style="display:grid; grid-template-columns: 1fr 2fr; gap:14px;">
+              <div class="form-group">
+                <label for="userId">Your Alumni User ID *</label>
+                <input type="number" id="userId" name="userId" placeholder="e.g. 1" min="1" required>
+              </div>
+              <div class="form-group">
+                <label for="resumeUrl">Resume / CV Link (URL)</label>
+                <input type="url" id="resumeUrl" name="resumeUrl" placeholder="https://linkedin.com/in/... or drive link">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="coverNote">Cover Note / Brief Pitch</label>
+              <textarea id="coverNote" name="coverNote" rows="3" placeholder="Briefly highlight why you are a great match for this position..."></textarea>
+            </div>
+
+            <button type="submit" class="btn-apply">🚀 Submit My Application</button>
+          </form>
         </div>
 
-        <button type="submit" class="btn-apply">🚀 Submit My Application</button>
-      </form>
-    </div>
+        <div class="actions-footer">
+          <a href="/jobs" class="btn-secondary">⬅️ Back to Job Board</a>
+          <a href="/jobs/{{ID}}/edit" class="btn-secondary">✏️ Edit Job</a>
+          <a href="/jobs/{{ID}}/applications" class="btn-secondary">👥 View Candidates ({{ID}})</a>
+        </div>
+      </div>
 
-    <div class="actions-footer">
-      <a href="/jobs" class="btn-secondary">⬅️ Back to Job Board</a>
-      <a href="/jobs/{{ID}}/edit" class="btn-secondary">✏️ Edit Job</a>
-      <a href="/jobs/{{ID}}/applications" class="btn-secondary">👥 View Candidates ({{ID}})</a>
     </div>
-  </div>
+  </main>
+
+  <footer class="main-footer">
+    <div class="footer-inner">
+      <div>&copy; 2026 Istanbul University Alumni Tracking System &bull; Founded 1453</div>
+      <div><a href="/jobs" style="color:#94a3b8; text-decoration:none;">← Return to Career Board</a></div>
+    </div>
+  </footer>
 
 </body>
 </html>

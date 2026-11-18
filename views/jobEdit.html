@@ -3,45 +3,114 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Edit Job #{{ID}} - Alumni Portal</title>
+  <title>Edit Job #{{ID}} — Istanbul University Alumni Portal</title>
   <style>
+    :root {
+      --iu-navy-950: #020617;
+      --iu-navy-900: #0f172a;
+      --iu-navy-700: #334155;
+      --iu-cobalt-600: #2563eb;
+      --iu-emerald-600: #059669;
+      --iu-emerald-500: #10b981;
+      --surface-canvas: #f8fafc;
+      --surface-card: #ffffff;
+      --surface-subtle: #f1f5f9;
+      --border-subtle: #e2e8f0;
+      --border-strong: #cbd5e1;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #94a3b8;
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08);
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --radius-full: 9999px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
     body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      max-width: 860px;
-      margin: 30px auto;
-      padding: 0 20px;
-      color: #1e293b;
-      background-color: #f8fafc;
-      line-height: 1.5;
-    }
-    .top-nav {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      color: var(--text-primary);
+      background-color: var(--surface-canvas);
+      line-height: 1.55;
+      min-height: 100vh;
       display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: #0f172a;
-      color: #fff;
-      padding: 12px 24px;
-      border-radius: 10px;
-      margin-bottom: 24px;
+      flex-direction: column;
+      -webkit-font-smoothing: antialiased;
     }
-    .top-nav .logo { font-weight: 700; font-size: 1.1rem; }
-    .top-nav .nav-menu { display: flex; gap: 18px; }
-    .top-nav a { color: #cbd5e1; text-decoration: none; font-size: 0.9rem; font-weight: 500; }
-    .top-nav a:hover, .top-nav a.active { color: #38bdf8; }
+
+    .wrapper { max-width: 920px; margin: 0 auto; padding: 0 24px; width: 100%; }
+
+    .top-bar {
+      background: var(--iu-navy-950);
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      padding: 7px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .top-bar-inner { max-width: 1140px; margin: 0 auto; padding: 0 24px; display: flex; justify-content: space-between; align-items: center; }
+
+    header.main-nav {
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(12px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .nav-container { max-width: 1140px; margin: 0 auto; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .brand-logo { display: flex; align-items: center; gap: 12px; text-decoration: none; color: #ffffff; }
+    .logo-emblem {
+      width: 42px;
+      height: 42px;
+      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+    }
+    .brand-text { display: flex; flex-direction: column; }
+    .brand-title { font-size: 1.15rem; font-weight: 850; color: #ffffff; line-height: 1.2; }
+    .brand-subtitle { font-size: 0.72rem; color: var(--text-muted); font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
+    .nav-links { display: flex; align-items: center; gap: 6px; list-style: none; flex-wrap: wrap; }
+    .nav-link { color: #cbd5e1; text-decoration: none; font-size: 0.88rem; font-weight: 500; padding: 8px 14px; border-radius: var(--radius-sm); }
+    .nav-link:hover { color: #ffffff; background: rgba(255, 255, 255, 0.08); }
+    .nav-link.active { color: #34d399; background: rgba(16, 185, 129, 0.14); font-weight: 600; }
+
+    main.main-content { flex: 1; padding: 36px 0 64px; }
+
+    .breadcrumb {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin-bottom: 20px;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .breadcrumb a { color: var(--iu-cobalt-600); text-decoration: none; font-weight: 600; }
+
     .container {
-      background: #ffffff;
-      border: 1px solid #e2e8f0;
-      border-radius: 12px;
+      background: var(--surface-card);
+      border: 1px solid var(--border-subtle);
+      border-top: 4px solid var(--iu-emerald-600);
+      border-radius: var(--radius-lg);
       padding: 32px;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+      box-shadow: var(--shadow-md);
     }
     h1 {
-      color: #0f172a;
-      margin-top: 0;
+      color: var(--text-primary);
+      font-size: 1.8rem;
+      font-weight: 850;
       margin-bottom: 6px;
-      font-size: 1.75rem;
     }
-    p.subtitle { color: #64748b; margin-top: 0; margin-bottom: 24px; }
+    p.subtitle {
+      color: var(--text-secondary);
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
     .form-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -54,135 +123,183 @@
       margin-bottom: 14px;
     }
     label {
-      font-size: 0.875rem;
+      font-size: 0.86rem;
       font-weight: 600;
       margin-bottom: 6px;
-      color: #334155;
+      color: var(--iu-navy-700);
     }
     input, select, textarea {
-      padding: 10px 12px;
-      border: 1px solid #cbd5e1;
-      border-radius: 6px;
-      font-size: 0.95rem;
+      padding: 10px 13px;
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-sm);
+      font-size: 0.94rem;
       background: #ffffff;
+      color: var(--text-primary);
       font-family: inherit;
     }
     input:focus, select:focus, textarea:focus {
       outline: none;
-      border-color: #2563eb;
-      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+      border-color: var(--iu-emerald-500);
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
     }
     .actions-bar {
       display: flex;
       gap: 12px;
       margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border-subtle);
     }
     button.btn-primary {
-      background: #2563eb;
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
       color: #ffffff;
       border: none;
-      padding: 10px 24px;
-      border-radius: 6px;
+      padding: 11px 24px;
+      border-radius: var(--radius-md);
       font-size: 0.95rem;
-      font-weight: 600;
+      font-weight: 700;
       cursor: pointer;
     }
-    button.btn-primary:hover { background: #1d4ed8; }
+    button.btn-primary:hover { background: #047857; }
     .btn-cancel {
-      background: #e2e8f0;
-      color: #334155;
-      padding: 10px 20px;
-      border-radius: 6px;
+      background: var(--surface-subtle);
+      color: var(--text-secondary);
+      border: 1px solid var(--border-subtle);
+      padding: 11px 20px;
+      border-radius: var(--radius-md);
       text-decoration: none;
       font-size: 0.95rem;
       font-weight: 600;
       display: inline-flex;
       align-items: center;
     }
-    .btn-cancel:hover { background: #cbd5e1; }
+
+    footer.main-footer {
+      background: var(--iu-navy-950);
+      color: var(--text-muted);
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 28px 0;
+      margin-top: auto;
+      font-size: 0.84rem;
+    }
+    .footer-inner { max-width: 1140px; margin: 0 auto; padding: 0 24px; display: flex; justify-content: space-between; align-items: center; }
   </style>
 </head>
 <body>
 
-  <!-- Navigation Bar -->
-  <div class="top-nav">
-    <div class="logo">🎓 Alumni Tracking Portal</div>
-    <div class="nav-menu">
-      <a href="/">Home</a>
-      <a href="/users">Alumni Directory</a>
-      <a href="/announcements">Announcements</a>
-      <a href="/jobs" class="active">Job Board</a>
-      <a href="/applications">Applications</a>
-      <a href="/api/swagger">Swagger Docs</a>
+  <div class="top-bar">
+    <div class="top-bar-inner">
+      <div style="color:#34d399; font-weight:600;">✏️ Editing Career Opportunity #{{ID}}</div>
+      <div>Istanbul University Career Exchange</div>
     </div>
   </div>
 
-  <div class="container">
-    <h1>✏️ Edit Job Posting #{{ID}}</h1>
-    <p class="subtitle">Modify position specifications, compensation, or active application status.</p>
+  <header class="main-nav">
+    <div class="nav-container">
+      <a href="/" class="brand-logo">
+        <div class="logo-emblem">🎓</div>
+        <div class="brand-text">
+          <span class="brand-title">Alumni Tracking System</span>
+          <span class="brand-subtitle">İstanbul Üniversitesi &bull; Mezun Portalı</span>
+        </div>
+      </a>
+      <nav>
+        <ul class="nav-links">
+          <li><a href="/" class="nav-link">Home</a></li>
+          <li><a href="/users" class="nav-link">Alumni Directory</a></li>
+          <li><a href="/announcements" class="nav-link">Announcements</a></li>
+          <li><a href="/jobs" class="nav-link active">Job Board</a></li>
+          <li><a href="/applications" class="nav-link">Applications</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
 
-    <form action="/jobs/{{ID}}/edit" method="POST">
-      <div class="form-grid">
-        <div class="form-group">
-          <label for="title">Job Title *</label>
-          <input type="text" id="title" name="title" value="{{TITLE}}" required>
-        </div>
-        <div class="form-group">
-          <label for="company">Company *</label>
-          <input type="text" id="company" name="company" value="{{COMPANY}}" required>
-        </div>
-        <div class="form-group">
-          <label for="location">Location *</label>
-          <input type="text" id="location" name="location" value="{{LOCATION}}" required>
-        </div>
-        <div class="form-group">
-          <label for="jobType">Job Type *</label>
-          <select id="jobType" name="jobType">
-            <option value="Full-time">Full-time</option>
-            <option value="Part-time">Part-time</option>
-            <option value="Contract">Contract</option>
-            <option value="Internship">Internship</option>
-            <option value="Remote">Remote</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="salary">Compensation / Salary</label>
-          <input type="text" id="salary" name="salary" value="{{SALARY}}">
-        </div>
-        <div class="form-group">
-          <label for="contactEmail">Contact Email *</label>
-          <input type="email" id="contactEmail" name="contactEmail" value="{{CONTACT_EMAIL}}" required>
-        </div>
-        <div class="form-group">
-          <label for="status">Posting Status</label>
-          <select id="status" name="status">
-            <option value="Active">Active</option>
-            <option value="Draft">Draft</option>
-            <option value="Closed">Closed</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="applicationDeadline">Application Deadline</label>
-          <input type="date" id="applicationDeadline" name="applicationDeadline" value="{{DEADLINE}}">
-        </div>
+  <main class="main-content">
+    <div class="wrapper">
+
+      <div class="breadcrumb">
+        <a href="/">Home</a> <span>/</span>
+        <a href="/jobs">Job Board</a> <span>/</span>
+        <a href="/jobs/{{ID}}">Job #{{ID}}</a> <span>/</span>
+        <span>Edit</span>
       </div>
 
-      <div class="form-group">
-        <label for="description">Job Description</label>
-        <textarea id="description" name="description" rows="4">{{DESCRIPTION}}</textarea>
+      <div class="container">
+        <h1>✏️ Edit Job Posting #{{ID}}</h1>
+        <p class="subtitle">Modify position specifications, compensation, or active application status (validated under <code>JP-R1</code>–<code>JP-R7</code>).</p>
+
+        <form action="/jobs/{{ID}}/edit" method="POST">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="title">Job Title * (max 120 chars)</label>
+              <input type="text" id="title" name="title" maxlength="120" value="{{TITLE}}" required>
+            </div>
+            <div class="form-group">
+              <label for="company">Company *</label>
+              <input type="text" id="company" name="company" value="{{COMPANY}}" required>
+            </div>
+            <div class="form-group">
+              <label for="location">Location *</label>
+              <input type="text" id="location" name="location" value="{{LOCATION}}" required>
+            </div>
+            <div class="form-group">
+              <label for="jobType">Job Type *</label>
+              <select id="jobType" name="jobType">
+                <option value="Full-time">Full-time</option>
+                <option value="Part-time">Part-time</option>
+                <option value="Contract">Contract</option>
+                <option value="Internship">Internship</option>
+                <option value="Remote">Remote</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="salary">Compensation / Salary</label>
+              <input type="text" id="salary" name="salary" value="{{SALARY}}">
+            </div>
+            <div class="form-group">
+              <label for="contactEmail">Contact Email *</label>
+              <input type="email" id="contactEmail" name="contactEmail" value="{{CONTACT_EMAIL}}" required>
+            </div>
+            <div class="form-group">
+              <label for="status">Posting Status</label>
+              <select id="status" name="status">
+                <option value="Active">Active</option>
+                <option value="Draft">Draft</option>
+                <option value="Closed">Closed</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="applicationDeadline">Application Deadline</label>
+              <input type="date" id="applicationDeadline" name="applicationDeadline" value="{{DEADLINE}}">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="description">Job Description</label>
+            <textarea id="description" name="description" rows="4">{{DESCRIPTION}}</textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="requirements">Key Requirements</label>
+            <textarea id="requirements" name="requirements" rows="3">{{REQUIREMENTS}}</textarea>
+          </div>
+
+          <div class="actions-bar">
+            <button type="submit" class="btn-primary">💾 Save Changes</button>
+            <a href="/jobs/{{ID}}" class="btn-cancel">Cancel</a>
+          </div>
+        </form>
       </div>
 
-      <div class="form-group">
-        <label for="requirements">Key Requirements</label>
-        <textarea id="requirements" name="requirements" rows="3">{{REQUIREMENTS}}</textarea>
-      </div>
+    </div>
+  </main>
 
-      <div class="actions-bar">
-        <button type="submit" class="btn-primary">💾 Save Changes</button>
-        <a href="/jobs/{{ID}}" class="btn-cancel">Cancel</a>
-      </div>
-    </form>
-  </div>
+  <footer class="main-footer">
+    <div class="footer-inner">
+      <div>&copy; 2026 Istanbul University Alumni Tracking System &bull; Founded 1453</div>
+      <div><a href="/jobs/{{ID}}" style="color:#94a3b8; text-decoration:none;">← Return to Job Detail</a></div>
+    </div>
+  </footer>
 
 </body>
 </html>
