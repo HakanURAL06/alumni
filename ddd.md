@@ -3,7 +3,7 @@
 > *Version:* 2.0.0  
 > *Scope:* Data Architecture, Domain Models, Validation Rules, Observability/Error Contracts, In-Memory Storage, and Relational Database Transition Blueprint  
 > *Target Audience:* Software Engineers, Architects, Course Evaluators, and Autonomous AI Agents  
-> 🔗 **System Overview & MVC Manual:** [README.md](./README.md) &bull; **Brand & Vision Guide:** [brand.md](./brand.md)
+> 🔗 **System Overview & MVC Manual:** [README.md](./README.md) &bull; **Brand & Vision Guide:** [brand.md](./brand.md) &bull; **Design System:** [design.md](./design.md)
 
 ---
 

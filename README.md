@@ -11,13 +11,18 @@
 
 A modular, production-ready alumni tracking and management web application designed for **Istanbul University (İstanbul Üniversitesi)** to organize, search, publish announcements for, and manage university alumni profiles, career opportunities, and applications.
 
+> 📚 **Core Documentation & Architecture Guides:**
+> - [**`brand.md`**](./brand.md) — Institutional Brand Identity, 1453 Heritage, Vision, Mission & 5 Community Pillars
+> - [**`design.md`**](./design.md) — UI/UX Design System, Refero Styles, Tokens, Grid Metrics & Component Guidelines
+> - [**`ddd.md`**](./ddd.md) — Data Design Documentation, Domain Models, Rules (`JP-R1`..`JP-R7`, `APP-R1`..`APP-R6`) & Schemas
+
 ---
 
 ## 📑 Table of Contents
 
 - [💻 Tech Stack & Languages](#-tech-stack--languages)
-- [🏛️ Brand Identity & Mission (Istanbul University)](#-brand-identity--mission-istanbul-university)
-- [🎨 Design System & UI Specification (`design.md`)](#-design-system--ui-specification-designmd)
+- [🏛️ Brand Identity & Mission (Istanbul University)](#brand-identity-mission)
+- [🎨 Design System & UI Specification (`design.md`)](#design-system-ui-specification)
 - [📚 Data Design & Architecture Documentation (DDD)](#-data-design--architecture-documentation-ddd)
 - [🏛️ MVC (Model-View-Controller) Architecture](#️-mvc-model-view-controller-architecture)
   - [1. 🚦 Routing Layer (`routes/`)](#1--routing-layer-routes)
@@ -61,6 +66,8 @@ This application is built with a modern, decoupled JavaScript architecture prepa
 
 ---
 
+<a id="brand-identity-mission"></a>
+<a id="brand"></a>
 ## 🏛️ Brand Identity & Mission (Istanbul University)
 
 A dedicated, comprehensive brand vision, institutional mission, and community specification tailored for **Istanbul University (İstanbul Üniversitesi)** is maintained in **[`brand.md`](./brand.md)**:
@@ -76,6 +83,9 @@ A dedicated, comprehensive brand vision, institutional mission, and community sp
 
 ---
 
+<a id="design-system-ui-specification"></a>
+<a id="design-system"></a>
+<a id="design"></a>
 ## 🎨 Design System & UI Specification (`design.md`)
 
 A comprehensive, production-grade UI design specification inspired by **[Refero Styles](https://refero.design)** and the **[VoltAgent/awesome-design-md](https://github.com/VoltAgent/awesome-design-md)** standard is documented in **[`design.md`](./design.md)**:

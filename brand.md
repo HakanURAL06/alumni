@@ -4,7 +4,7 @@
 > **Heritage:** Founded in 1453 &bull; Turkey’s Foremost Institution of Higher Education  
 > **Platform Version:** 2.0.0  
 > **Document Status:** Active Architectural & Brand Specification  
-> 🔗 **Technical Manuals:** [README.md](./README.md) &bull; [Data Design Documentation (ddd.md)](./ddd.md) &bull; [Interactive Swagger API](http://localhost:3000/api/swagger)
+> 🔗 **Technical Manuals:** [README.md](./README.md) &bull; [Design System (design.md)](./design.md) &bull; [Data Design Documentation (ddd.md)](./ddd.md) &bull; [Interactive Swagger API](http://localhost:3000/api/swagger)
 
 ---
 
