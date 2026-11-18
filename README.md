@@ -6,14 +6,16 @@
 [![OpenAPI](https://img.shields.io/badge/OpenAPI-3.0_Swagger-85EA2D?style=flat&logo=swagger&logoColor=black)](http://localhost:3000/api/swagger)
 [![Architecture](https://img.shields.io/badge/Architecture-MVC_Pattern-blueviolet?style=flat)](#-mvc-model-view-controller-architecture)
 [![Data Design](https://img.shields.io/badge/Documentation-DDD_Specification-orange?style=flat)](./ddd.md)
+[![Brand & Vision](https://img.shields.io/badge/Brand%20%26%20Vision-Istanbul%20University-c0392b?style=flat)](./brand.md)
 
-A modular, production-ready alumni tracking and management web application designed to organize, search, publish announcements for, and manage university alumni profiles and records.
+A modular, production-ready alumni tracking and management web application designed for **Istanbul University (İstanbul Üniversitesi)** to organize, search, publish announcements for, and manage university alumni profiles, career opportunities, and applications.
 
 ---
 
 ## 📑 Table of Contents
 
 - [💻 Tech Stack & Languages](#-tech-stack--languages)
+- [🏛️ Brand Identity & Mission (Istanbul University)](#-brand-identity--mission-istanbul-university)
 - [📚 Data Design & Architecture Documentation (DDD)](#-data-design--architecture-documentation-ddd)
 - [🏛️ MVC (Model-View-Controller) Architecture](#️-mvc-model-view-controller-architecture)
   - [1. 🚦 Routing Layer (`routes/`)](#1--routing-layer-routes)
@@ -54,6 +56,21 @@ This application is built with a modern, decoupled JavaScript architecture prepa
 - **Database / Storage — PostgreSQL 16 & Resilient In-Memory Fallback**
   - **Role:** Relational database management system (RDBMS) & domain data store.
   - **Specifics:** Persistent storage powered by PostgreSQL 16 with Docker Named Volume (`pgdata`), centralized connection pooling via `pg.Pool` ([`models/db.js`](./models/db.js)), automated SQL schema migrations (`npm run migrate`), Mock Data Factories (`factories/`), and seeder automation (`npm run seed`), accompanied by a graceful in-memory fallback for isolated testing environments.
+
+---
+
+## 🏛️ Brand Identity & Mission (Istanbul University)
+
+A dedicated, comprehensive brand vision, institutional mission, and community specification tailored for **Istanbul University (İstanbul Üniversitesi)** is maintained in **[`brand.md`](./brand.md)**:
+
+👉 **[Read the Full Brand Identity & Platform Vision Guide (brand.md)](./brand.md)**
+
+### Key Highlights Covered in `brand.md`:
+1. **Institutional Legacy & Heritage:** Grounded in Istanbul University's foundation dating back to 1453, connecting graduates across Computer & Software Engineering, Law, Medicine, Economics, Science, Letters, and all sister faculties.
+2. **Vision & Mission Statements:** Formalized strategic objectives for uniting global alumni cohorts, empowering early-career graduates, and facilitating peer-to-peer mentorship.
+3. **5 Core Platform Pillars:** Living Alumni Directory (`/users`), Campus Announcements & Homecoming Days (`/announcements`), Career & Job Board (`/jobs`), Candidate Tracking ATS (`/applications`), and Guardian Fault Observability (`/404` & `logs/error.logs`).
+4. **Target Audience Personas:** Tailored workflows for recent graduates, senior alumni recruiters, current students seeking internships, and university administrators.
+5. **Brand Tone & Visual System:** Prestige, warmth, clarity, and an IU Navy & Bosphorus Cobalt design language.
 
 ---
 
@@ -754,6 +771,7 @@ alumni/
 ├── .env                             # Local environment secrets (git-ignored)
 ├── .dockerignore                    # Excludes secrets and node_modules from images
 ├── .gitignore                       # Git exclusions (ignores .env)
+├── brand.md                         # Brand Identity, Purpose & Platform Vision Guide (Istanbul University)
 ├── ddd.md                           # Comprehensive Data Design Documentation
 ├── docker-compose.yml               # Container orchestration configuration
 ├── Dockerfile                       # Container image build manifest
