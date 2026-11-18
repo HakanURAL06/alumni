@@ -7,6 +7,7 @@
 [![Architecture](https://img.shields.io/badge/Architecture-MVC_Pattern-blueviolet?style=flat)](#-mvc-model-view-controller-architecture)
 [![Data Design](https://img.shields.io/badge/Documentation-DDD_Specification-orange?style=flat)](./ddd.md)
 [![Brand & Vision](https://img.shields.io/badge/Brand%20%26%20Vision-Istanbul%20University-c0392b?style=flat)](./brand.md)
+[![Design System](https://img.shields.io/badge/Design%20System-Refero%20%26%20Awesome--Design--MD-0284c7?style=flat)](./design.md)
 
 A modular, production-ready alumni tracking and management web application designed for **Istanbul University (İstanbul Üniversitesi)** to organize, search, publish announcements for, and manage university alumni profiles, career opportunities, and applications.
 
@@ -16,6 +17,7 @@ A modular, production-ready alumni tracking and management web application desig
 
 - [💻 Tech Stack & Languages](#-tech-stack--languages)
 - [🏛️ Brand Identity & Mission (Istanbul University)](#-brand-identity--mission-istanbul-university)
+- [🎨 Design System & UI Specification (`design.md`)](#-design-system--ui-specification-designmd)
 - [📚 Data Design & Architecture Documentation (DDD)](#-data-design--architecture-documentation-ddd)
 - [🏛️ MVC (Model-View-Controller) Architecture](#️-mvc-model-view-controller-architecture)
   - [1. 🚦 Routing Layer (`routes/`)](#1--routing-layer-routes)
@@ -71,6 +73,21 @@ A dedicated, comprehensive brand vision, institutional mission, and community sp
 3. **5 Core Platform Pillars:** Living Alumni Directory (`/users`), Campus Announcements & Homecoming Days (`/announcements`), Career & Job Board (`/jobs`), Candidate Tracking ATS (`/applications`), and Guardian Fault Observability (`/404` & `logs/error.logs`).
 4. **Target Audience Personas:** Tailored workflows for recent graduates, senior alumni recruiters, current students seeking internships, and university administrators.
 5. **Brand Tone & Visual System:** Prestige, warmth, clarity, and an IU Navy & Bosphorus Cobalt design language.
+
+---
+
+## 🎨 Design System & UI Specification (`design.md`)
+
+A comprehensive, production-grade UI design specification inspired by **[Refero Styles](https://refero.design)** and the **[VoltAgent/awesome-design-md](https://github.com/VoltAgent/awesome-design-md)** standard is documented in **[`design.md`](./design.md)**:
+
+👉 **[Read the Full Design System Specification (design.md)](./design.md)**
+
+### Key Highlights Covered in `design.md`:
+1. **Design Tokens:** Strict CSS variables for Istanbul University Navy (`#0f172a`), Bosphorus Cobalt (`#2563eb`), Golden Amber (`#d97706`), Emerald Green (`#059669`), surface canvases, and border tokens.
+2. **Typography Scale:** System-font typography hierarchy (`-apple-system`, `Segoe UI`, `Roboto`) with responsive fluid sizing from 2.85rem display heroes to micro-badges.
+3. **8-Point Spatial Grid:** Standardized margins, gap metrics, and container geometry (`max-width: 1140px`).
+4. **Core Component Standards:** Navigation bar, hero showcase, live KPI bar, debounced search & filter card, core module cards, Guardian observability banner, and terminal cURL simulator.
+5. **Micro-Interactions & a11y:** Smooth hover elevations, focus ring accessibility, WCAG AA/AAA color contrast, zero cumulative layout shift (CLS), and completely self-contained offline CSS.
 
 ---
 
@@ -772,6 +789,7 @@ alumni/
 ├── .dockerignore                    # Excludes secrets and node_modules from images
 ├── .gitignore                       # Git exclusions (ignores .env)
 ├── brand.md                         # Brand Identity, Purpose & Platform Vision Guide (Istanbul University)
+├── design.md                        # UI Design System & Component Specification (Refero / Awesome-Design-MD)
 ├── ddd.md                           # Comprehensive Data Design Documentation
 ├── docker-compose.yml               # Container orchestration configuration
 ├── Dockerfile                       # Container image build manifest

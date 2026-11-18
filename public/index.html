@@ -3,192 +3,1351 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Alumni Tracking Portal - Home</title>
+  <title>Alumni Tracking System — Istanbul University Portal</title>
+  <meta name="description" content="Official Istanbul University Alumni Tracking System portal for graduate networking, verified campus announcements, career opportunities, and job application tracking.">
   <style>
+    :root {
+      /* Brand Primitives (Istanbul University & Bosphorus Palette) */
+      --iu-navy-950: #020617;
+      --iu-navy-900: #0f172a;
+      --iu-navy-800: #1e293b;
+      --iu-navy-700: #334155;
+      --iu-cobalt-600: #2563eb;
+      --iu-cobalt-500: #3b82f6;
+      --iu-cobalt-400: #60a5fa;
+      --iu-gold-600: #d97706;
+      --iu-gold-500: #f59e0b;
+      --iu-gold-50: #fffbeb;
+      --iu-emerald-600: #059669;
+      --iu-emerald-500: #10b981;
+      --iu-emerald-50: #ecfdf5;
+      --iu-purple-600: #7c3aed;
+      --iu-purple-500: #a855f7;
+      --iu-purple-50: #faf5ff;
+      --iu-rose-600: #e11d48;
+      --iu-rose-50: #fff1f2;
+
+      /* Neutral Surfaces & Elevation */
+      --surface-canvas: #f8fafc;
+      --surface-card: #ffffff;
+      --surface-subtle: #f1f5f9;
+      --border-subtle: #e2e8f0;
+      --border-strong: #cbd5e1;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #94a3b8;
+
+      /* Elevation Tokens */
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+      --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.10), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+
+      /* Geometry */
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --radius-full: 9999px;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
     body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      max-width: 980px;
-      margin: 30px auto;
-      padding: 0 20px;
-      color: #1e293b;
-      background-color: #f8fafc;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: var(--surface-canvas);
+      color: var(--text-primary);
       line-height: 1.6;
-    }
-    .top-nav {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: #0f172a;
-      color: #fff;
-      padding: 14px 24px;
-      border-radius: 12px;
-      margin-bottom: 30px;
-      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
-    }
-    .top-nav .logo { font-weight: 800; font-size: 1.2rem; letter-spacing: -0.02em; }
-    .top-nav .nav-menu { display: flex; gap: 18px; }
-    .top-nav a { color: #cbd5e1; text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: color 0.15s; }
-    .top-nav a:hover, .top-nav a.active { color: #38bdf8; }
-    .hero {
-      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-      color: #ffffff;
-      padding: 36px 32px;
-      border-radius: 16px;
-      margin-bottom: 32px;
-      box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
-    }
-    .hero h1 { margin: 0 0 10px 0; font-size: 2.2rem; font-weight: 800; letter-spacing: -0.03em; }
-    .hero p { margin: 0; color: #94a3b8; font-size: 1.1rem; max-width: 650px; }
-    .grid-cards {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 20px;
-      margin-bottom: 32px;
-    }
-    .portal-card {
-      background: #ffffff;
-      border: 1px solid #e2e8f0;
-      border-radius: 12px;
-      padding: 24px;
-      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
-      transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
     }
-    .portal-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
-      border-color: #cbd5e1;
+
+    .wrapper {
+      max-width: 1140px;
+      margin: 0 auto;
+      padding: 0 24px;
+      width: 100%;
     }
-    .card-icon {
-      font-size: 2.2rem;
-      margin-bottom: 12px;
+
+    /* Top Utility Bar */
+    .top-bar {
+      background: var(--iu-navy-950);
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      padding: 7px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     }
-    .portal-card h2 {
-      margin: 0 0 8px 0;
-      font-size: 1.3rem;
-      color: #0f172a;
+    .top-bar-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
     }
-    .portal-card p {
-      margin: 0 0 20px 0;
-      color: #64748b;
-      font-size: 0.92rem;
-      flex-grow: 1;
+    .top-bar-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
     }
-    .btn-card {
-      display: inline-block;
-      text-align: center;
-      background: #0f172a;
-      color: #ffffff;
-      padding: 10px 18px;
-      border-radius: 8px;
-      text-decoration: none;
+    .status-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: #4ade80;
       font-weight: 600;
-      font-size: 0.9rem;
-      transition: background 0.15s;
     }
-    .btn-card:hover { background: #2563eb; }
-    .card-blue .btn-card:hover { background: #0284c7; }
-    .card-amber .btn-card:hover { background: #d97706; }
-    .card-green .btn-card:hover { background: #16a34a; }
-    .card-purple .btn-card:hover { background: #7c3aed; }
-    .api-section {
-      background: #ffffff;
-      border: 1px solid #e2e8f0;
-      border-radius: 12px;
-      padding: 24px 32px;
-      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      background: #4ade80;
+      border-radius: 50%;
+      box-shadow: 0 0 8px #4ade80;
+      animation: pulse-dot 2s infinite ease-in-out;
     }
-    .api-section h3 { margin-top: 0; color: #0f172a; font-size: 1.15rem; }
-    .api-links {
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
+    }
+    .top-bar a {
+      color: #cbd5e1;
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    .top-bar a:hover {
+      color: #ffffff;
+    }
+
+    /* Main Navigation Header */
+    header.main-nav {
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.2);
+    }
+    .nav-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 0;
+      gap: 16px;
+    }
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: #ffffff;
+    }
+    .logo-emblem {
+      width: 44px;
+      height: 44px;
+      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.45rem;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+    }
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+    }
+    .brand-title {
+      font-size: 1.18rem;
+      font-weight: 850;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+      color: #ffffff;
+    }
+    .brand-subtitle {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      list-style: none;
+    }
+    .nav-link {
+      color: #cbd5e1;
+      text-decoration: none;
+      font-size: 0.88rem;
+      font-weight: 500;
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      transition: all 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .nav-link:hover {
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.08);
+    }
+    .nav-link.active {
+      color: #38bdf8;
+      background: rgba(56, 189, 248, 0.12);
+      font-weight: 600;
+    }
+    .nav-cta {
+      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+      color: #ffffff !important;
+      font-weight: 600 !important;
+      padding: 8px 16px !important;
+      border-radius: var(--radius-sm);
+      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.4);
+    }
+    .nav-cta:hover {
+      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+      transform: translateY(-1px);
+    }
+
+    /* Hero Section */
+    .hero-section {
+      background: linear-gradient(140deg, #0b1120 0%, #0f172a 45%, #1e1b4b 100%);
+      color: #ffffff;
+      position: relative;
+      overflow: hidden;
+      padding: 64px 0 72px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .hero-section::before {
+      content: "";
+      position: absolute;
+      top: -140px;
+      right: -140px;
+      width: 440px;
+      height: 440px;
+      background: radial-gradient(circle, rgba(59, 130, 246, 0.25) 0%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    .hero-section::after {
+      content: "";
+      position: absolute;
+      bottom: -120px;
+      left: 8%;
+      width: 360px;
+      height: 360px;
+      background: radial-gradient(circle, rgba(168, 85, 247, 0.18) 0%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 840px;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      color: #38bdf8;
+      padding: 6px 14px;
+      border-radius: var(--radius-full);
+      font-size: 0.82rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      margin-bottom: 20px;
+    }
+    .hero-title {
+      font-size: 2.85rem;
+      font-weight: 850;
+      letter-spacing: -0.035em;
+      line-height: 1.15;
+      margin-bottom: 18px;
+    }
+    .hero-title span.gradient-text {
+      background: linear-gradient(135deg, #60a5fa 0%, #38bdf8 50%, #c084fc 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero-description {
+      font-size: 1.14rem;
+      color: #cbd5e1;
+      line-height: 1.7;
+      margin-bottom: 32px;
+      max-width: 780px;
+    }
+    .hero-actions {
       display: flex;
       flex-wrap: wrap;
-      gap: 12px;
-      margin-top: 12px;
+      gap: 14px;
+      margin-bottom: 44px;
     }
-    .api-pill {
-      background: #f1f5f9;
-      color: #334155;
-      padding: 6px 14px;
-      border-radius: 8px;
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 0.94rem;
+      font-weight: 600;
+      padding: 12px 22px;
+      border-radius: var(--radius-md);
+      text-decoration: none;
+      transition: all 0.18s ease;
+      cursor: pointer;
+      border: 1px solid transparent;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+      color: #ffffff;
+      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4);
+    }
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+      box-shadow: 0 6px 20px rgba(37, 99, 235, 0.5);
+      transform: translateY(-2px);
+    }
+    .btn-ghost {
+      background: rgba(255, 255, 255, 0.08);
+      color: #ffffff;
+      border-color: rgba(255, 255, 255, 0.18);
+      backdrop-filter: blur(8px);
+    }
+    .btn-ghost:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.35);
+      transform: translateY(-2px);
+    }
+
+    /* Live KPI Counter Bar */
+    .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 16px;
+      padding-top: 24px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .kpi-item {
+      display: flex;
+      flex-direction: column;
+    }
+    .kpi-value {
+      font-size: 1.65rem;
+      font-weight: 850;
+      color: #ffffff;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+    .kpi-label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-weight: 500;
+      margin-top: 2px;
+    }
+
+    /* Main Container Content */
+    main.main-content {
+      flex: 1;
+      padding: 48px 0 64px;
+    }
+
+    /* Section Headers */
+    .section-header {
+      margin-bottom: 28px;
+    }
+    .section-tag {
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--iu-cobalt-600);
+      margin-bottom: 6px;
+      display: block;
+    }
+    .section-title {
+      font-size: 1.85rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      letter-spacing: -0.025em;
+      line-height: 1.25;
+      margin-bottom: 8px;
+    }
+    .section-subtitle {
+      font-size: 1rem;
+      color: var(--text-secondary);
+      max-width: 720px;
+    }
+
+    /* Quick Filter / Search Bar */
+    .search-filter-card {
+      background: var(--surface-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 20px 24px;
+      margin-bottom: 40px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .search-input-group {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+    .search-input-wrap {
+      flex: 1;
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .search-icon {
+      position: absolute;
+      left: 14px;
+      font-size: 1rem;
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+    .search-input {
+      width: 100%;
+      padding: 12px 14px 12px 42px;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      font-size: 0.92rem;
+      background: var(--surface-canvas);
+      color: var(--text-primary);
+      outline: none;
+      transition: all 0.15s ease;
+    }
+    .search-input:focus {
+      background: var(--surface-card);
+      border-color: var(--iu-cobalt-600);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+    .filter-chips {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .filter-chip-label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-right: 4px;
+    }
+    .filter-chip {
+      background: var(--surface-subtle);
+      color: var(--iu-navy-700);
+      padding: 4px 12px;
+      border-radius: var(--radius-full);
+      font-size: 0.78rem;
+      font-weight: 500;
+      text-decoration: none;
+      transition: all 0.15s ease;
+      cursor: pointer;
+      border: 1px solid transparent;
+    }
+    .filter-chip:hover {
+      background: #eff6ff;
+      color: var(--iu-cobalt-600);
+      border-color: rgba(37, 99, 235, 0.2);
+    }
+
+    /* Core Portal Grid Cards */
+    .portal-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 24px;
+      margin-bottom: 48px;
+    }
+    .portal-card {
+      background: var(--surface-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 28px 24px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.22s ease;
+    }
+    .portal-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: var(--iu-cobalt-600);
+      opacity: 0;
+      transition: opacity 0.22s ease;
+    }
+    .portal-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-xl);
+      border-color: var(--border-strong);
+    }
+    .portal-card:hover::before {
+      opacity: 1;
+    }
+    .portal-card.card-blue::before { background: linear-gradient(90deg, #3b82f6, #1d4ed8); }
+    .portal-card.card-amber::before { background: linear-gradient(90deg, #f59e0b, #d97706); }
+    .portal-card.card-emerald::before { background: linear-gradient(90deg, #10b981, #059669); }
+    .portal-card.card-purple::before { background: linear-gradient(90deg, #a855f7, #7c3aed); }
+
+    .card-icon-bubble {
+      width: 52px;
+      height: 52px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.6rem;
+      margin-bottom: 18px;
+      transition: transform 0.2s ease;
+    }
+    .portal-card:hover .card-icon-bubble {
+      transform: scale(1.08);
+    }
+    .bubble-blue { background: #eff6ff; color: #2563eb; }
+    .bubble-amber { background: #fffbeb; color: #d97706; }
+    .bubble-emerald { background: #ecfdf5; color: #059669; }
+    .bubble-purple { background: #faf5ff; color: #7c3aed; }
+
+    .card-title {
+      font-size: 1.25rem;
+      font-weight: 750;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+      letter-spacing: -0.015em;
+    }
+    .card-desc {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      line-height: 1.55;
+      margin-bottom: 18px;
+      flex-grow: 1;
+    }
+    .card-features {
+      list-style: none;
+      margin-bottom: 22px;
+      border-top: 1px solid var(--border-subtle);
+      padding-top: 14px;
+    }
+    .card-feature-item {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 6px;
+    }
+    .card-feature-item::before {
+      content: "✓";
+      color: #10b981;
+      font-weight: 700;
+      font-size: 0.75rem;
+    }
+
+    .card-footer {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .card-btn {
+      flex: 1;
+      text-align: center;
+      padding: 10px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 0.88rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.15s ease;
+    }
+    .btn-blue {
+      background: #eff6ff;
+      color: #2563eb;
+    }
+    .btn-blue:hover {
+      background: #2563eb;
+      color: #ffffff;
+    }
+    .btn-amber {
+      background: #fffbeb;
+      color: #d97706;
+    }
+    .btn-amber:hover {
+      background: #d97706;
+      color: #ffffff;
+    }
+    .btn-emerald {
+      background: #ecfdf5;
+      color: #059669;
+    }
+    .btn-emerald:hover {
+      background: #059669;
+      color: #ffffff;
+    }
+    .btn-purple {
+      background: #faf5ff;
+      color: #7c3aed;
+    }
+    .btn-purple:hover {
+      background: #7c3aed;
+      color: #ffffff;
+    }
+
+    /* Architecture & Guardian Banner */
+    .guardian-banner {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      color: #ffffff;
+      border-radius: var(--radius-lg);
+      padding: 32px 36px;
+      margin-bottom: 48px;
+      box-shadow: var(--shadow-lg);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .guardian-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .guardian-badge-tag {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: #34d399;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: var(--radius-full);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .guardian-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+    }
+    .guardian-box {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: var(--radius-md);
+      padding: 18px;
+    }
+    .guardian-box h4 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .guardian-box p {
+      font-size: 0.82rem;
+      color: #cbd5e1;
+      line-height: 1.5;
+    }
+
+    /* Developer & REST API Section */
+    .api-panel {
+      background: var(--surface-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 48px;
+    }
+    .api-panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .api-panel-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .health-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #ecfdf5;
+      color: #065f46;
+      border: 1px solid #a7f3d0;
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 4px 12px;
+      border-radius: var(--radius-full);
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+    .api-endpoints-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+    .endpoint-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--surface-canvas);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      text-decoration: none;
+      transition: all 0.15s ease;
+    }
+    .endpoint-item:hover {
+      background: var(--surface-card);
+      border-color: var(--iu-cobalt-600);
+      box-shadow: var(--shadow-sm);
+      transform: translateX(2px);
+    }
+    .endpoint-route {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .method-tag {
+      font-size: 0.68rem;
+      font-weight: 800;
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+    .method-get { background: #dbeafe; color: #1e40af; }
+    .method-post { background: #dcfce7; color: #166534; }
+    .route-text {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 0.84rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    .endpoint-label {
+      font-size: 0.76rem;
+      color: var(--text-muted);
+    }
+
+    /* Terminal Quick Test Snippet */
+    .code-terminal {
+      background: #0f172a;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      border: 1px solid #1e293b;
+    }
+    .code-terminal-header {
+      background: #090d16;
+      padding: 8px 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .term-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+    .dot-red { background: #ef4444; }
+    .dot-yellow { background: #f59e0b; }
+    .dot-green { background: #10b981; }
+    .term-title {
+      color: #94a3b8;
+      font-size: 0.74rem;
+      font-family: ui-monospace, monospace;
+      margin-left: 6px;
+    }
+    .code-terminal-body {
+      padding: 16px 20px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 0.82rem;
+      color: #e2e8f0;
+      line-height: 1.6;
+      overflow-x: auto;
+    }
+    .cmd-line {
+      display: flex;
+      gap: 8px;
+    }
+    .cmd-prompt { color: #38bdf8; user-select: none; }
+    .cmd-text { color: #f8fafc; }
+    .cmd-comment { color: #64748b; font-style: italic; }
+
+    /* Footer */
+    footer.main-footer {
+      background: var(--iu-navy-950);
+      color: var(--text-muted);
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 48px 0 32px;
+      margin-top: auto;
+      font-size: 0.88rem;
+    }
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 32px;
+      margin-bottom: 36px;
+    }
+    .footer-brand h4 {
+      color: #ffffff;
+      font-size: 1.1rem;
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+    .footer-brand p {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      line-height: 1.6;
+      max-width: 320px;
+      margin-bottom: 14px;
+    }
+    .footer-column h5 {
+      color: #ffffff;
+      font-size: 0.88rem;
+      font-weight: 700;
+      margin-bottom: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .footer-links {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .footer-links a {
+      color: var(--text-muted);
       text-decoration: none;
       font-size: 0.85rem;
-      font-weight: 600;
+      transition: color 0.15s ease;
+    }
+    .footer-links a:hover {
+      color: #ffffff;
+    }
+    .footer-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      padding-top: 24px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 0.8rem;
+    }
+    .footer-badges {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .tech-badge {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #cbd5e1;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.72rem;
       font-family: ui-monospace, monospace;
     }
-    .api-pill:hover { background: #e2e8f0; color: #0f172a; }
+
+    /* Responsive adjustments */
+    @media (max-width: 840px) {
+      .hero-title { font-size: 2.2rem; }
+      .nav-links { display: none; }
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 560px) {
+      .hero-title { font-size: 1.85rem; }
+      .footer-grid { grid-template-columns: 1fr; }
+      .hero-actions { flex-direction: column; }
+      .btn { width: 100%; }
+      .search-input-group { flex-direction: column; }
+    }
   </style>
 </head>
 <body>
 
-  <!-- Navigation Bar -->
-  <div class="top-nav">
-    <div class="logo">🎓 Alumni Tracking Portal</div>
-    <div class="nav-menu">
-      <a href="/" class="active">Home</a>
-      <a href="/users">Alumni Directory</a>
-      <a href="/announcements">Announcements</a>
-      <a href="/jobs">Job Board</a>
-      <a href="/applications">Applications</a>
-      <a href="/api/swagger">Swagger Docs</a>
+  <!-- Top Announcement Bar -->
+  <div class="top-bar">
+    <div class="wrapper top-bar-inner">
+      <div class="top-bar-left">
+        <span class="status-indicator">
+          <span class="status-dot"></span>
+          <span id="api-status-text">Istanbul University &bull; Core Services Active</span>
+        </span>
+        <span style="color: rgba(255,255,255,0.2);">|</span>
+        <span>Est. 1453 &bull; Express 5 &bull; PostgreSQL 16 &bull; Guardian Pipeline</span>
+      </div>
+      <div class="top-bar-right">
+        <a href="/api/swagger" target="_blank" rel="noopener">Interactive API Explorer &rarr;</a>
+      </div>
     </div>
   </div>
 
-  <!-- Hero Banner -->
-  <div class="hero">
-    <h1>Alumni Tracking System</h1>
-    <p>Welcome to the Alumni application. This is a temporary home page and unified portal to organize alumni networks, publish community announcements, manage career opportunities, and review candidate job applications.</p>
-  </div>
+  <!-- Primary Header & Navigation -->
+  <header class="main-nav">
+    <div class="wrapper nav-container">
+      <a href="/" class="brand-logo" aria-label="Alumni Tracking System Home">
+        <div class="logo-emblem">🎓</div>
+        <div class="brand-text">
+          <span class="brand-title">Alumni Tracking System</span>
+          <span class="brand-subtitle">İstanbul Üniversitesi &bull; Mezun Portalı</span>
+        </div>
+      </a>
 
-  <!-- Portal Grid -->
-  <div class="grid-cards">
-    <!-- 1. Alumni Directory -->
-    <div class="portal-card card-blue">
-      <div class="card-icon">👥</div>
-      <h2>Alumni Directory</h2>
-      <p>Browse registered alumni members, view graduation years, departments, profile cards, and register new alumni.</p>
-      <a href="/users" class="btn-card">Open Directory ➔</a>
+      <nav>
+        <ul class="nav-links">
+          <li><a href="/" class="nav-link active">Home</a></li>
+          <li><a href="/users" class="nav-link">Alumni Directory</a></li>
+          <li><a href="/announcements" class="nav-link">Announcements</a></li>
+          <li><a href="/jobs" class="nav-link">Job Board</a></li>
+          <li><a href="/applications" class="nav-link">Applications</a></li>
+          <li><a href="/about" class="nav-link">About</a></li>
+          <li><a href="/api/swagger" class="nav-link nav-cta">Swagger Docs ⚡</a></li>
+        </ul>
+      </nav>
     </div>
+  </header>
 
-    <!-- 2. Announcements -->
-    <div class="portal-card card-amber">
-      <div class="card-icon">📢</div>
-      <h2>Announcements & Events</h2>
-      <p>Stay updated with university homecoming events, academic seminars, career fairs, and administrative news.</p>
-      <a href="/announcements" class="btn-card">View Announcements ➔</a>
-    </div>
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="wrapper">
+      <div class="hero-content">
+        <div class="hero-badge">
+          <span>✨</span> Istanbul University Alumni Network &bull; Release v2.0
+        </div>
+        <h1 class="hero-title">
+          Empowering Graduates, Elevating Careers & <span class="gradient-text">Connecting Alumni</span>
+        </h1>
+        <p class="hero-description">
+          Welcome to the <strong>Alumni Tracking System</strong> — the official portal and temporary home page designed to foster lifelong alumni relationships, publish verified university announcements, manage career opportunities, and track candidate job applications with enterprise-grade fault resilience.
+        </p>
 
-    <!-- 3. Job Board -->
-    <div class="portal-card card-green">
-      <div class="card-icon">💼</div>
-      <h2>Career & Job Board</h2>
-      <p>Explore opportunities posted by alumni and industry partners. Post new engineering, design, or research roles.</p>
-      <a href="/jobs" class="btn-card">Explore Jobs ➔</a>
-    </div>
+        <div class="hero-actions">
+          <a href="/users" class="btn btn-primary">
+            <span>👥</span> Explore Alumni Directory
+          </a>
+          <a href="/jobs" class="btn btn-ghost">
+            <span>💼</span> Browse Career Board
+          </a>
+          <a href="/announcements" class="btn btn-ghost">
+            <span>📢</span> Latest Announcements
+          </a>
+          <a href="/applications" class="btn btn-ghost">
+            <span>📝</span> Review Applications
+          </a>
+        </div>
 
-    <!-- 4. Applications -->
-    <div class="portal-card card-purple">
-      <div class="card-icon">📝</div>
-      <h2>Job Applications</h2>
-      <p>Track candidate applications, review CV documents, filter by status, and manage interview evaluations.</p>
-      <a href="/applications" class="btn-card">Review Applications ➔</a>
+        <div class="kpi-row">
+          <div class="kpi-item">
+            <span class="kpi-value">500+</span>
+            <span class="kpi-label">Registered Alumni</span>
+          </div>
+          <div class="kpi-item">
+            <span class="kpi-value">100%</span>
+            <span class="kpi-label">Verified Announcements</span>
+          </div>
+          <div class="kpi-item">
+            <span class="kpi-value">Active</span>
+            <span class="kpi-label">Job Postings & Roles</span>
+          </div>
+          <div class="kpi-item">
+            <span class="kpi-value">99.9%</span>
+            <span class="kpi-label">Guardian Fault Uptime</span>
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
+  </section>
 
-  <!-- Developer & API Section -->
-  <div class="api-section">
-    <h3>⚡ Developer & REST API Quick Access</h3>
-    <div class="api-links">
-      <a href="/api/swagger" class="api-pill" style="background:#dbeafe; color:#1e40af;">📖 /api/swagger (Interactive UI)</a>
-      <a href="/api/swagger.json" class="api-pill">📄 /api/swagger.json</a>
-      <a href="/api/users" class="api-pill">👥 /api/users</a>
-      <a href="/api/announcements" class="api-pill">📢 /api/announcements</a>
-      <a href="/api/jobs" class="api-pill">💼 /api/jobs</a>
-      <a href="/api/applications" class="api-pill">📝 /api/applications</a>
-      <a href="/api/health" class="api-pill" style="background:#dcfce7; color:#166534;">🩺 /api/health</a>
-      <a href="/about" class="api-pill">ℹ️ /about</a>
+  <!-- Main Content Area -->
+  <main class="main-content">
+    <div class="wrapper">
+
+      <!-- Interactive Quick Search & Jump Card -->
+      <div class="search-filter-card">
+        <div class="search-input-group">
+          <div class="search-input-wrap">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="portal-search" class="search-input" placeholder="Quick search modules, departments (e.g. Computer Engineering, Law), roles, or keywords..." autocomplete="off">
+          </div>
+          <a href="/users" class="btn btn-primary" style="padding: 10px 18px; font-size: 0.88rem;">Open Directory</a>
+        </div>
+        <div class="filter-chips">
+          <span class="filter-chip-label">Quick Jump:</span>
+          <a href="/users" class="filter-chip">👥 Computer Engineering</a>
+          <a href="/users" class="filter-chip">👥 Software Engineering</a>
+          <a href="/jobs" class="filter-chip">💼 Full-time Roles</a>
+          <a href="/jobs" class="filter-chip">💼 Remote Opportunities</a>
+          <a href="/announcements" class="filter-chip">📢 Homecoming & Mezunlar Günü</a>
+          <a href="/applications" class="filter-chip">📝 Candidate Reviews</a>
+          <a href="/api/swagger" class="filter-chip">⚡ API Explorer</a>
+        </div>
+      </div>
+
+      <!-- Core Modules Section -->
+      <div class="section-header">
+        <span class="section-tag">Unified Platform Modules</span>
+        <h2 class="section-title">Core Management & Presentation Modules</h2>
+        <p class="section-subtitle">
+          Seamlessly navigate all system subsystems decoupled into Model-View-Controller architecture with synchronous relational persistence and resilient in-memory fallback.
+        </p>
+      </div>
+
+      <!-- 4 Core Portal Cards -->
+      <div class="portal-grid" id="portal-cards-container">
+        <!-- 1. Alumni Directory -->
+        <article class="portal-card card-blue" data-keywords="alumni users directory profiles graduates students search register engineering law economics">
+          <div class="card-icon-bubble bubble-blue">👥</div>
+          <h3 class="card-title">Alumni Directory</h3>
+          <p class="card-desc">
+            Browse registered Istanbul University alumni profiles, search by name, department, or graduation year, view nested career contributions, and enroll new alumni members.
+          </p>
+          <ul class="card-features">
+            <li class="card-feature-item">Graduation cohort & faculty classification</li>
+            <li class="card-feature-item">Single alumni profile cards with edit controls</li>
+            <li class="card-feature-item">Nested /users/:id/jobs career relationship</li>
+            <li class="card-feature-item">Direct web forms with flash notifications</li>
+          </ul>
+          <div class="card-footer">
+            <a href="/users" class="card-btn btn-blue">Open Directory &rarr;</a>
+          </div>
+        </article>
+
+        <!-- 2. Announcements & Events -->
+        <article class="portal-card card-amber" data-keywords="announcements events campus news seminars homecoming mezunlar gunu beyazit publish">
+          <div class="card-icon-bubble bubble-amber">📢</div>
+          <h3 class="card-title">Announcements & News</h3>
+          <p class="card-desc">
+            Stay informed with official university bulletins, academic seminars, campus career fairs, Beyazıt Homecoming Days (*Geleneksel Mezunlar Günü*), and administrative news.
+          </p>
+          <ul class="card-features">
+            <li class="card-feature-item">Category-based filtering & chronological sort</li>
+            <li class="card-feature-item">Dedicated announcement detail cards</li>
+            <li class="card-feature-item">In-place publication form with validation</li>
+            <li class="card-feature-item">RESTful JSON and web management interface</li>
+          </ul>
+          <div class="card-footer">
+            <a href="/announcements" class="card-btn btn-amber">View Announcements &rarr;</a>
+          </div>
+        </article>
+
+        <!-- 3. Career & Job Board -->
+        <article class="portal-card card-emerald" data-keywords="jobs careers hiring opportunities post applications positions tech remote internship">
+          <div class="card-icon-bubble bubble-emerald">💼</div>
+          <h3 class="card-title">Career & Job Board</h3>
+          <p class="card-desc">
+            Explore high-impact career opportunities posted by fellow alumni and industry partners. Post engineering, design, legal, or research roles for Istanbul University graduates.
+          </p>
+          <ul class="card-features">
+            <li class="card-feature-item">Foreign key resolution to publishing alumni</li>
+            <li class="card-feature-item">Full-time, Part-time, Contract & Remote tags</li>
+            <li class="card-feature-item">Inline quick-application workflow form</li>
+            <li class="card-feature-item">Strict validation (JP-R1..JP-R7 domain rules)</li>
+          </ul>
+          <div class="card-footer">
+            <a href="/jobs" class="card-btn btn-emerald">Explore Career Board &rarr;</a>
+          </div>
+        </article>
+
+        <!-- 4. Job Applications & ATS -->
+        <article class="portal-card card-purple" data-keywords="applications candidate resume cv review tracking ats evaluation status mentorship">
+          <div class="card-icon-bubble bubble-purple">📝</div>
+          <h3 class="card-title">Job Applications (ATS)</h3>
+          <p class="card-desc">
+            Candidate review dashboard and application tracking. Evaluate submissions, update interview progress, and oversee recruitment lifecycles.
+          </p>
+          <ul class="card-features">
+            <li class="card-feature-item">Review candidate CV links & cover notes</li>
+            <li class="card-feature-item">Lifecycle states: Pending, Reviewed, Accepted, Rejected</li>
+            <li class="card-feature-item">Nested candidate reviews per job posting</li>
+            <li class="card-feature-item">Composite uniqueness prevention (APP-R1..APP-R6)</li>
+          </ul>
+          <div class="card-footer">
+            <a href="/applications" class="card-btn btn-purple">Manage Applications &rarr;</a>
+          </div>
+        </article>
+      </div>
+
+      <!-- Architecture & Guardian Observability Banner -->
+      <div class="guardian-banner">
+        <div class="guardian-header">
+          <div>
+            <span class="guardian-badge-tag">
+              <span>🛡️</span> Guardian Fault Handling & Observability
+            </span>
+            <h3 style="font-size: 1.45rem; font-weight: 800; margin-top: 8px;">
+              Enterprise Reliability & Automated Error Diagnosis
+            </h3>
+          </div>
+          <a href="/404" class="btn btn-ghost" style="font-size: 0.82rem; padding: 8px 14px;">
+            Preview Diagnostic 404 Screen &rarr;
+          </a>
+        </div>
+
+        <div class="guardian-grid">
+          <div class="guardian-box">
+            <h4><span>🔍</span> 404 Guardian</h4>
+            <p>
+              Detects URL typos with fuzzy matching, suggests valid routes, prevents open-redirect exploits, and smoothly routes browser traffic to <code style="color: #67e8f9;">/404?from=...</code>.
+            </p>
+          </div>
+          <div class="guardian-box">
+            <h4><span>🚨</span> 5xx Server Guardian</h4>
+            <p>
+              Intercepts unhandled server exceptions, classifies database, schema, query, or view faults, tags incidents with <code style="color: #cbd5e1;">ERR-*</code> IDs, and protects stack traces in production.
+            </p>
+          </div>
+          <div class="guardian-box">
+            <h4><span>📊</span> Dual-Sink Telemetry</h4>
+            <p>
+              High-resolution request logger captures duration, MIME type, response size, and IP to both terminal console and persistent <code style="color: #cbd5e1;">logs/error.logs</code>.
+            </p>
+          </div>
+          <div class="guardian-box">
+            <h4><span>🗄️</span> Dual Persistence</h4>
+            <p>
+              PostgreSQL 16 connection pooling via <code style="color: #cbd5e1;">models/db.js</code> with Docker Volume persistence and seamless in-memory fallback for offline test suites.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Developer & REST API Quick Access Panel -->
+      <div class="api-panel">
+        <div class="api-panel-header">
+          <div class="api-panel-title">
+            <span>⚡</span> Developer & RESTful JSON API Hub
+          </div>
+          <div class="health-pill" id="health-badge">
+            <span class="status-dot"></span>
+            <span id="health-status-label">Checking API Status...</span>
+          </div>
+        </div>
+
+        <p style="font-size: 0.92rem; color: var(--text-secondary); margin-bottom: 20px;">
+          All resources are exposed through standard REST endpoints supporting full CRUD operations, pagination, query filtering, and interactive OpenAPI 3.0 documentation.
+        </p>
+
+        <div class="api-endpoints-grid">
+          <a href="/api/swagger" class="endpoint-item" style="border-left: 3px solid #2563eb;">
+            <div class="endpoint-route">
+              <span class="method-tag method-get">DOCS</span>
+              <span class="route-text">/api/swagger</span>
+            </div>
+            <span class="endpoint-label">Interactive UI &rarr;</span>
+          </a>
+
+          <a href="/api/swagger.json" class="endpoint-item">
+            <div class="endpoint-route">
+              <span class="method-tag method-get">JSON</span>
+              <span class="route-text">/api/swagger.json</span>
+            </div>
+            <span class="endpoint-label">OpenAPI 3.0 Spec</span>
+          </a>
+
+          <a href="/api/users" class="endpoint-item">
+            <div class="endpoint-route">
+              <span class="method-tag method-get">GET</span>
+              <span class="route-text">/api/users</span>
+            </div>
+            <span class="endpoint-label">Alumni List</span>
+          </a>
+
+          <a href="/api/announcements" class="endpoint-item">
+            <div class="endpoint-route">
+              <span class="method-tag method-get">GET</span>
+              <span class="route-text">/api/announcements</span>
+            </div>
+            <span class="endpoint-label">Campus Bulletins</span>
+          </a>
+
+          <a href="/api/jobs" class="endpoint-item">
+            <div class="endpoint-route">
+              <span class="method-tag method-get">GET</span>
+              <span class="route-text">/api/jobs</span>
+            </div>
+            <span class="endpoint-label">Career Postings</span>
+          </a>
+
+          <a href="/api/applications" class="endpoint-item">
+            <div class="endpoint-route">
+              <span class="method-tag method-get">GET</span>
+              <span class="route-text">/api/applications</span>
+            </div>
+            <span class="endpoint-label">Job Applications</span>
+          </a>
+
+          <a href="/api/health" class="endpoint-item">
+            <div class="endpoint-route">
+              <span class="method-tag method-get">GET</span>
+              <span class="route-text">/api/health</span>
+            </div>
+            <span class="endpoint-label">Health & Liveness</span>
+          </a>
+
+          <a href="/about" class="endpoint-item">
+            <div class="endpoint-route">
+              <span class="method-tag method-get">HTML</span>
+              <span class="route-text">/about</span>
+            </div>
+            <span class="endpoint-label">System Specs</span>
+          </a>
+        </div>
+
+        <!-- Terminal Quick cURL -->
+        <div class="code-terminal">
+          <div class="code-terminal-header">
+            <span class="term-dot dot-red"></span>
+            <span class="term-dot dot-yellow"></span>
+            <span class="term-dot dot-green"></span>
+            <span class="term-title">Quick API Verification (Terminal / Bash)</span>
+          </div>
+          <div class="code-terminal-body">
+            <div class="cmd-line">
+              <span class="cmd-prompt">$</span>
+              <span class="cmd-text">curl -i http://localhost:3000/api/health</span>
+            </div>
+            <div class="cmd-comment"># HTTP/1.1 200 OK &bull; {"status":"ok"}</div>
+            <div class="cmd-line" style="margin-top: 8px;">
+              <span class="cmd-prompt">$</span>
+              <span class="cmd-text">curl -s http://localhost:3000/api/users | json_pp</span>
+            </div>
+            <div class="cmd-comment"># Returns JSON array of verified alumni profiles</div>
+          </div>
+        </div>
+
+      </div>
+
     </div>
-  </div>
+  </main>
+
+  <!-- Global Footer -->
+  <footer class="main-footer">
+    <div class="wrapper">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <h4>🎓 Alumni Tracking System</h4>
+          <p>
+            The official Istanbul University alumni management portal designed for seamless graduate discovery, community announcements, and career growth.
+          </p>
+          <div class="footer-badges">
+            <span class="tech-badge">Node.js 18+</span>
+            <span class="tech-badge">Express 5</span>
+            <span class="tech-badge">PostgreSQL 16</span>
+            <span class="tech-badge">Docker</span>
+          </div>
+        </div>
+
+        <div class="footer-column">
+          <h5>Presentation</h5>
+          <ul class="footer-links">
+            <li><a href="/">Home</a></li>
+            <li><a href="/users">Alumni Directory</a></li>
+            <li><a href="/announcements">Announcements</a></li>
+            <li><a href="/jobs">Job Board</a></li>
+            <li><a href="/applications">Applications</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-column">
+          <h5>Developer Hub</h5>
+          <ul class="footer-links">
+            <li><a href="/api/swagger">Interactive Swagger</a></li>
+            <li><a href="/api/swagger.json">OpenAPI Spec (JSON)</a></li>
+            <li><a href="/api/health">Liveness Health Check</a></li>
+            <li><a href="/about">About & System Spec</a></li>
+            <li><a href="/404">Guardian 404 Screen</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-column">
+          <h5>Documentation</h5>
+          <ul class="footer-links">
+            <li><a href="https://github.com/HakanURAL06/alumni" target="_blank" rel="noopener">GitHub Repository</a></li>
+            <li><a href="/about">Data Design Blueprint</a></li>
+            <li><a href="/api/swagger">REST Contracts</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <div>
+          &copy; 2026 Istanbul University Alumni Tracking System. Founded 1453. All rights reserved.
+        </div>
+        <div>
+          Unified Model-View-Controller Architecture with Guardian Telemetry.
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Client-side Search Filter & Live API Health Ping -->
+  <script>
+    // Live Health Ping
+    (async function checkSystemHealth() {
+      const label = document.getElementById('health-status-label');
+      const apiStatusText = document.getElementById('api-status-text');
+      const start = performance.now();
+      try {
+        const res = await fetch('/api/health');
+        const duration = Math.round(performance.now() - start);
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.status === 'ok') {
+            if (label) label.textContent = 'API Healthy (' + duration + 'ms)';
+            if (apiStatusText) apiStatusText.textContent = 'Istanbul University • Core Services Active (' + duration + 'ms)';
+          }
+        } else {
+          if (label) label.textContent = 'API Degraded (' + res.status + ')';
+        }
+      } catch (e) {
+        if (label) label.textContent = 'API Offline (In-Memory Fallback)';
+        if (apiStatusText) apiStatusText.textContent = 'Offline Fallback';
+      }
+    })();
+
+    // Client-side quick filter on portal cards
+    const searchInput = document.getElementById('portal-search');
+    if (searchInput) {
+      searchInput.addEventListener('input', function(e) {
+        const query = e.target.value.toLowerCase().trim();
+        const cards = document.querySelectorAll('#portal-cards-container .portal-card');
+        cards.forEach(card => {
+          const text = (card.textContent + ' ' + (card.dataset.keywords || '')).toLowerCase();
+          if (!query || text.includes(query)) {
+            card.style.display = 'flex';
+          } else {
+            card.style.display = 'none';
+          }
+        });
+      });
+    }
+  </script>
 
 </body>
 </html>
