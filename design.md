@@ -231,7 +231,7 @@ Layered box-shadow tokens provide realistic physical depth without muddying dark
 
 ---
 
-## 8. Complete Page-by-Page Design Specification (All 14 Front-End Screens)
+## 8. Complete Page-by-Page Design Specification (All 15 Front-End Screens)
 
 All 14 front-end screens across `public/`, `views/`, and `middleware/guardianShared.js` implement the Refero Styles & `VoltAgent/awesome-design-md` token architecture with zero external CDN dependencies:
 
@@ -245,8 +245,18 @@ All 14 front-end screens across `public/`, `views/`, and `middleware/guardianSha
 - **[`views/users.html`](./views/users.html) (`GET /users`, `/user`) — Alumni Directory & Enrollment:**
   - **Accent Theme:** Bosphorus Cobalt (`--iu-cobalt-600: #2563eb`).
   - **Interactive UX:** Client-side real-time search input (`#directory-search`) filtering `tbody tr` rows by name, faculty/department, cohort year, or email with live counter (`#directory-count`), responsive data table, and cobalt-accented `POST /users` enrollment card (`#enroll-form`).
-- **[`views/userDetail.html`](./views/userDetail.html) (`GET /users/:id`) — Single Alumni Profile Dossier:**
-  - **Layout:** Breadcrumb trail + dark gradient profile hero with circular avatar emblem + 2-column layout pairing the Academic & Contact Dossier card (`#{{ID}}`, `{{DEPARTMENT}}`, `{{GRADUATION_YEAR}}`, `mailto:{{EMAIL}}`) with Nested Alumni Activity cards (`/users/{{ID}}/jobs` & `/users/{{ID}}/applications`).
+- **[`views/userDetail.html`](./views/userDetail.html) (`GET /users/:id`, `/profile`, `/me`) — Single Alumni Profile & Personal Workspace Dossier:**
+  - **Layout & Visual Hierarchy:**
+    - Breadcrumb trail (`Home / Alumni Directory / {{NAME}} (#{{ID}})`).
+    - **Personal Workspace Banner:** Elevated dark-indigo banner (`linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%)`) shown exclusively when members view their own profile, featuring personalized greeting, member ID, profile editing button, and logout action.
+    - Dark gradient profile hero with circular role emblem avatar (`👑`, `⚖️`, `💼`, `🎓`), contextual role badge pill, account status pill (`Active`, `Pending`, `Suspended`, `Archived`), and verified mentor badge (`🌟 Verified Mentor`).
+    - Professional headline (e.g. `🏢 Senior Software Engineer at Google`) when title/company are present.
+    - 2-column layout pairing the Academic & Contact Dossier card with the **Role-Adaptive Activity Dashboard**:
+      - *Student:* Links to personal applications & internship tracker (`/users/:id/applications`), open jobs board (`/jobs`), and mentor pool (`/users`).
+      - *Alumni:* Links to published career opportunities (`/users/:id/jobs`), submitted applications (`/users/:id/applications`), and mentorship settings.
+      - *Employer:* Links to new job creation (`/jobs#post-job-form`), active company listings (`/users/:id/jobs`), and candidate review (`/applications`).
+      - *Admin:* Links to central governance console (`/admin`) and member activity metrics.
+    - Action bar with profile editing (`/users/:id/edit`), safe deletion dialog, and directory return.
 - **[`views/userEdit.html`](./views/userEdit.html) (`GET /users/:id/edit`) — Edit Alumni Profile Form:**
   - **Layout:** Breadcrumb trail + Golden-Amber top-bordered card + 2-column responsive form grid (`POST /users/{{ID}}/edit`) + action bar.
 
@@ -279,6 +289,58 @@ All 14 front-end screens across `public/`, `views/`, and `middleware/guardianSha
 - **[`views/404.html`](./views/404.html) & [`middleware/guardianShared.js`](./middleware/guardianShared.js) (`/404`, `/404.html`, 404 & 5xx Fallbacks):**
   - **Accent Theme:** Crimson Rose (`--iu-rose-600: #e11d48`) with dynamic theme overrides for 5xx server faults.
   - **Layout:** Unified Istanbul University top bar & sticky navbar + `.guardian-card` with `.guardian-badge` and monospace `.code-badge` + orange diagnostic `.reason-box` + cobalt `.suggestion-box` CTA + 4-item telemetry `.diag-grid` (*HTTP Status, Method & Route, Client IP, Timestamp UTC*, plus `ERR-*` Incident ID on 5xx) + quick destination `.route-pills`.
+
+### 8.7 Member Registration & Authentication Screens (`views/register.html`, `views/login.html` & `views/UserView.js`)
+- **[`views/register.html`](./views/register.html) (`GET /register`, `/signup`) — Member Onboarding & RBAC Enrollment:**
+  - **Accent Theme:** Bosphorus Cobalt (`--iu-cobalt-600: #2563eb`) & Beyazıt Gold (`--iu-gold-600: #d97706`).
+  - **Layout:** Top utility bar + sticky header + dark hero with role badge + 2-column layout (4-step enrollment form + verified institutional benefits side panel).
+  - **Interactive Features:** 3 interactive role selection cards (*Alumni, Student, Employer*), 14 faculty academic selector, live graduation cohort bounds check (`1900..2100`), mentorship preference toggle switch, and instant validation error alert banners.
+- **[`views/login.html`](./views/login.html) (`GET /login`) — Member Portal Authentication:**
+  - **Accent Theme:** Istanbul University Navy (`--iu-navy-950: #020617`, `--iu-navy-900: #0f172a`) & Bosphorus Cobalt (`--iu-cobalt-600: #2563eb`).
+  - **Layout:** Centered security card with Beyazıt gold emblem badge (`🎓`) + top status indicator + dark gradient page banner (`🔑 Member Portal Login`).
+  - **Interactive Form Elements:**
+    - Autofocused email input (`type="email"`, RFC 5322 normalization helper).
+    - Password input (`type="password"`, `minlength="8"`, show/hide visibility toggle).
+    - Session persistence checkbox (`name="rememberMe"`, 30-day extended cookie toggle).
+    - Full-width cobalt sign-in CTA (`#login-submit-btn`) with smooth translateY elevation hover.
+    - Contextual alert banners for authentication errors (`alert-danger`) and successful logout (`alert-success`).
+    - Quick Demo Credentials panel allowing one-click testing as *Alumni (Hakan)*, *Student/Mentor (Ayşe)*, or *Employer (Mehmet)*.
+    - Secondary navigation to Member Registration (`/register`) and directory bypass (`/users`).
+
+### 8.8 Central Administration Console & Data Manipulation Screens (`views/admin.html` & `views/AdminView.js`)
+- **[`views/admin.html`](./views/admin.html) (`GET /admin`) — Central Administration Console:**
+  - **Accent Theme:** Istanbul University Navy (`--iu-navy-950: #020617`), Royal Purple (`--iu-purple-600: #7c3aed`), and Crimson Rose (`--iu-rose-600: #e11d48`).
+  - **Access Gate:** Guarded strictly by `requireAuth` and `requireRole('admin')`. Unauthenticated users redirect to `/login?returnUrl=/admin`; unauthorized roles receive `403 Forbidden`.
+  - **Layout & Visual Hierarchy:**
+    - Top utility status bar with live administrator badge (`👑 Superuser / Admin`) and quick link to `/logout`.
+    - Hero banner featuring system administration title and dynamic statistics subtitle.
+    - 4 KPI metric cards with distinct accent colors: *Total Users*, *Job Postings*, *Campus Announcements*, *Job Applications*.
+    - **Fast Direct Data Manipulation Console:** Interactive quick-mutation card allowing administrators to modify arbitrary fields on `user`, `job`, and `announcement` entities without leaving the panel.
+    - **User Directory & RBAC Governance Table:** Full member roster with inline `<select>` controls for role mutation (`student`, `alumni`, `employer`, `moderator`, `admin`), account status mutation (`active`, `pending_verification`, `suspended`, `archived`), and permanent record deletion (`POST /admin/users/:id/delete`).
+    - **Career Opportunities Governance Table:** Active and draft job postings with status change actions and delete operations.
+    - **Campus Bulletins Table:** Announcement oversight table with publication dates, categories, and purge actions.
+    - Alert notification strips (`.alert-success`, `.alert-danger`) responding to URL query parameter feedback (`roleUpdated`, `statusUpdated`, `manipulated`, `error`).
+
+### 8.9 Dynamic Role-Based Navigation & Menu System (`views/navHelper.js`)
+- **Shared Navigation Engine:** Centralized in [`views/navHelper.js`](./views/navHelper.js), replacing static navigation with dynamic, role-adaptive links and action pills across all HTML views.
+- **Visual Design Tokens & State Hierarchy:**
+  - **Admin Badge Link (`🛡️ Admin Panel`):** Highlighted gold pill (`color: #fde047; background: rgba(234, 179, 8, 0.15); border: 1px solid rgba(234, 179, 8, 0.35); border-radius: 6px; font-weight: 750;`). Positioned prominently as the first menu item for administrators.
+  - **Identity Badges & Role Pills (`.user-pill`):**
+    - `admin`: Red pill (`background: #fee2e2; color: #991b1b; border: 1px solid #fecaca;`) with `👑` icon.
+    - `moderator`: Amber pill (`background: #fef3c7; color: #92400e; border: 1px solid #fde68a;`) with `⚖️` icon.
+    - `employer`: Purple pill (`background: #faf5ff; color: #6b21a8; border: 1px solid #e9d5ff;`) with `💼` icon.
+    - `student`: Emerald pill (`background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0;`) with `🎓` icon.
+    - `alumni`: Blue pill (`background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe;`) with `🎓` icon.
+  - **Logout Action Button (`🚪 Çıkış Yap` / `.btn-logout`):**
+    - High-visibility crimson-tinted button (`background: rgba(239, 68, 68, 0.15); color: #fca5a5 !important; border: 1px solid rgba(239, 68, 68, 0.35); border-radius: 6px; font-weight: 700;`).
+    - Visible on every page for authenticated members, eliminating traps in active sessions.
+  - **Dynamic Menu Tailoring:**
+    - *Guests:* Direct links to `Home`, `Alumni Directory`, `Announcements`, `Job Board`, `Applications`, `➕ Register`, `🔑 Login` (CTA button).
+    - *Students:* Replaces directory with `Rehber & Mentorlar`, jobs with `💼 İş & Staj`, adds `📝 Başvurularım`.
+    - *Alumni:* Adds direct link to personal profile (`👤 Profilim` -> `/users/:id`), `💼 İlanlarım`, and `📝 Başvurularım`.
+    - *Employers:* Replaces directory with `Yetenek Havuzu (Alumni)`, adds `📢 İlan Ver` and `📋 Adaylar & Başvurular`.
+    - *Admins:* Injects prominent `🛡️ Admin Panel` gold action pill.
+- **Client-Side Hydration:** Included on static landing pages (`/` and `/about`) via lightweight `initDynamicNav()` probe to `/api/me`.
 
 ---
 

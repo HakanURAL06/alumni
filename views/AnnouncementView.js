@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const { injectDynamicNav } = require('./navHelper');
 
 const announcementsTemplatePath = path.join(__dirname, 'announcements.html');
 const announcementDetailTemplatePath = path.join(__dirname, 'announcementDetail.html');
@@ -44,17 +45,19 @@ class AnnouncementView {
       messageHtml = `<div class="${alertClass}">${options.message}</div>`;
     }
 
-    return template
+    const output = template
       .replace('{{ANNOUNCEMENT_ROWS}}', rows)
       .replace('{{MESSAGE}}', messageHtml);
+    return injectDynamicNav(output, { currentUser: options.currentUser, activePage: 'announcements' });
   }
 
   /**
    * Renders single announcement detail view.
    * @param {Object} announcement Announcement object
+   * @param {Object} options Optional context options
    * @returns {string} Fully rendered HTML string
    */
-  static renderAnnouncementDetail(announcement = {}) {
+  static renderAnnouncementDetail(announcement = {}, options = {}) {
     let template = fs.readFileSync(announcementDetailTemplatePath, 'utf-8');
     const id = announcement.id != null ? announcement.id : '';
     const title = announcement.title || 'Announcement';
@@ -63,21 +66,23 @@ class AnnouncementView {
     const date = announcement.date || '';
     const content = announcement.content || '';
 
-    return template
+    const output = template
       .replace(/{{ID}}/g, id)
       .replace(/{{TITLE}}/g, title)
       .replace(/{{CATEGORY}}/g, category)
       .replace(/{{AUTHOR}}/g, author)
       .replace(/{{DATE}}/g, date)
       .replace(/{{CONTENT}}/g, content);
+    return injectDynamicNav(output, { currentUser: options.currentUser, activePage: 'announcementdetail' });
   }
 
   /**
    * Renders edit announcement form view.
    * @param {Object} announcement Announcement object
+   * @param {Object} options Optional context options
    * @returns {string} Fully rendered HTML string
    */
-  static renderAnnouncementEdit(announcement = {}) {
+  static renderAnnouncementEdit(announcement = {}, options = {}) {
     let template = fs.readFileSync(announcementEditTemplatePath, 'utf-8');
     const id = announcement.id != null ? announcement.id : '';
     const title = announcement.title || '';
@@ -86,13 +91,14 @@ class AnnouncementView {
     const date = announcement.date || '';
     const content = announcement.content || '';
 
-    return template
+    const output = template
       .replace(/{{ID}}/g, id)
       .replace(/{{TITLE}}/g, title)
       .replace(/{{CATEGORY}}/g, category)
       .replace(/{{AUTHOR}}/g, author)
       .replace(/{{DATE}}/g, date)
       .replace(/{{CONTENT}}/g, content);
+    return injectDynamicNav(output, { currentUser: options.currentUser, activePage: 'announcementedit' });
   }
 }
 

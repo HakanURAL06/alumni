@@ -40,9 +40,9 @@ class AnnouncementController {
         }
 
         if (typeof res.render === 'function') {
-          return res.render('announcements', { announcements, message, alertType });
+          return res.render('announcements', { announcements, message, alertType, currentUser: req.user });
         }
-        return res.send(AnnouncementView.renderAnnouncements(announcements, { message, alertType }));
+        return res.send(AnnouncementView.renderAnnouncements(announcements, { message, alertType, currentUser: req.user }));
       }
 
       return res.status(200).json(announcements);
@@ -68,9 +68,9 @@ class AnnouncementController {
 
       if (req.accepts('html')) {
         if (typeof res.render === 'function') {
-          return res.render('announcementDetail', { announcement });
+          return res.render('announcementDetail', { announcement, currentUser: req.user });
         }
-        return res.send(AnnouncementView.renderAnnouncementDetail(announcement));
+        return res.send(AnnouncementView.renderAnnouncementDetail(announcement, { currentUser: req.user }));
       }
 
       return res.status(200).json(announcement);
@@ -96,9 +96,9 @@ class AnnouncementController {
 
       if (req.accepts('html')) {
         if (typeof res.render === 'function') {
-          return res.render('announcementEdit', { announcement });
+          return res.render('announcementEdit', { announcement, currentUser: req.user });
         }
-        return res.send(AnnouncementView.renderAnnouncementEdit(announcement));
+        return res.send(AnnouncementView.renderAnnouncementEdit(announcement, { currentUser: req.user }));
       }
 
       return res.status(200).json(announcement);

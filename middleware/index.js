@@ -43,6 +43,19 @@ const {
   is5xxError
 } = require('./serverErrorGuardian');
 
+const {
+  authMiddleware,
+  requireAuth,
+  requireRole,
+  requireActive,
+  requireOwnershipOrAdmin,
+  guestOnly,
+  setSessionCookie,
+  clearSessionCookie,
+  parseCookies,
+  wantsHtml
+} = require('./auth');
+
 module.exports = {
   logger,
   createLogger,
@@ -76,5 +89,15 @@ module.exports = {
   diagnoseServerError,
   renderServerErrorHtml,
   resolveServerStatusCode,
-  is5xxError
+  is5xxError,
+  authMiddleware,
+  requireAuth,
+  requireRole,
+  requireActive,
+  requireOwnershipOrAdmin,
+  guestOnly,
+  setSessionCookie,
+  clearSessionCookie,
+  parseCookies,
+  wantsHtml
 };

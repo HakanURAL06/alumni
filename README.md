@@ -29,6 +29,9 @@ A modular, production-ready alumni tracking and management web application desig
   - [2. ⚙️ Controller Layer (`controllers/`)](#2-️-controller-layer-controllers)
   - [3. 📦 Model Layer (`models/`)](#3--model-layer-models)
   - [4. 🖥️ View Layer (`views/` & Presentation)](#4-️-view-layer-views--presentation)
+- [🔐 Authentication, Authorization & Security Architecture](#-authentication-authorization--security-architecture)
+- [👤 User-Specific Pages & Personal Workspaces](#-user-specific-pages--personal-workspaces)
+- [🛡️ Central Administration Console & Governance](#️-central-administration-console--governance)
 - [🛡️ Middleware, Logging & Error Guardian Pipeline (`middleware/`)](#️-middleware-logging--error-guardian-pipeline-middleware)
 - [🧠 The Forgetting Test (Data Volatility Demonstration)](#-the-forgetting-test-data-volatility-demonstration)
 - [🗄️ Database, Migrations & Seeding Layer](#-database-migrations--seeding-layer)
@@ -317,6 +320,102 @@ All 14 front-end screens share the unified **Istanbul University (`İstanbul Ün
 
 ---
 
+## 🔐 Authentication, Authorization & Security Architecture
+
+The Istanbul University Alumni Tracking System implements a hardened, production-grade authentication and authorization subsystem operating seamlessly across both Server-Side Rendered (SSR) HTML views and stateless RESTful JSON APIs.
+
+### 1. Identity & Credential Security Principles
+- **Normalized Identity Handling:** Email addresses are normalized using `trim().toLowerCase()` prior to verification or storage, guaranteeing case-insensitive identity lookup (`AUTH-R1`).
+- **Cryptographic Password Hashing:** Passwords are never stored in plaintext. They are protected using:
+  - Cryptographically secure per-user random salts generated via Node's `crypto.randomBytes(16)`.
+  - PBKDF2 (Password-Based Key Derivation Function 2) with 1,000 iterations, 64-byte key length, and SHA-512 digest (`crypto.pbkdf2Sync(password, salt, 1000, 64, 'sha512')`).
+  - Constant-time verification using `crypto.timingSafeEqual` to eliminate timing-attack vulnerabilities.
+- **Strict Password Validation (`USR-R1`):** Minimum length of 8 characters enforced on both user registration and profile updates.
+
+### 2. Stateless HMAC-SHA256 Session Tokens
+- **Compact Token Architecture (`AUTH-R3`):** Session tokens format as `<base64url(payload)>.<base64url(hmacSignature)>`, signed with HMAC-SHA256 using `SESSION_SECRET`.
+- **Payload Claims:**
+  ```json
+  {
+    "userId": 1,
+    "id": 1,
+    "email": "hakan@alumni.edu",
+    "name": "Hakan Ural",
+    "role": "admin",
+    "accountStatus": "active",
+    "iat": 1732525600000,
+    "exp": 1732612000000
+  }
+  ```
+- **Flexible Expiration Policy:**
+  - Standard Session: 24 hours (`86400` seconds).
+  - Extended Session ("Remember Me" checkbox enabled): 30 days (`2592000` seconds).
+
+### 3. Hardened HTTP Cookie & Header Strategy (RFC 6265)
+- **`Set-Cookie` Directives:** `session=<token>; Path=/; HttpOnly; SameSite=Lax; Max-Age=<seconds>`
+  - `HttpOnly`: Protects session tokens from client-side script inspection (XSS defense).
+  - `SameSite=Lax`: Prevents cross-site request forgery (CSRF defense) during third-party site navigation.
+  - `Path=/`: Ensures universal session availability across all portal routes.
+- **Session Termination:** Handled by `clearSessionCookie(res)`, which sets `session=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0`.
+- **Dual Bearer & Cookie Support:** REST API clients can pass tokens via `Authorization: Bearer <token>` or session cookies interchangeably.
+
+### 4. Role-Based Access Control (RBAC) Matrix
+The system enforces 6 canonical actor personas with strictly segregated domain capabilities:
+
+| Role Identifier | Icon & Title | Primary Responsibilities | Access Privileges |
+| :--- | :--- | :--- | :--- |
+| **`guest`** | 🌐 Ziyaretçi | Prospective students, public visitors, health probes | Read-only browsing (`/`, `/about`, `/users`, `/jobs`, `/announcements`), member registration (`/register`), and portal sign-in (`/login`). Cannot mutate state. |
+| **`student`** | 🎓 Öğrenci | Currently enrolled undergraduate & graduate students | Browse Alumni Directory for mentors, apply to active jobs/internships (`POST /applications`), track personal applications (`/users/:id/applications`), view personal student workspace. |
+| **`alumni`** | 🎓 Mezun | Verified graduates of Istanbul University | Maintain alumni profile dossier, publish career opportunities (`POST /jobs`), review candidate applications to own jobs, apply to peer postings, opt into mentorship (`isMentor=true`). |
+| **`employer`** | 💼 İşveren | Partner recruiters, corporate hiring managers | Post and manage corporate job listings (`/jobs#post-job-form`), review applicant dossiers (`/applications`), search verified talent pool (`/users`). |
+| **`moderator`** | ⚖️ Moderatör | Academic & faculty coordinators | Oversight and moderation of public announcements and job listings across the ecosystem. |
+| **`admin`** | 👑 Yönetici | System superusers and platform administrators | Full governance authority, user role reassignment, account status mutation (`active`, `pending_verification`, `suspended`, `archived`), user deletion, direct entity field manipulation (`/admin`, `/api/admin/*`). |
+
+### 5. Authentication & Authorization Middleware Suite ([`middleware/auth.js`](./middleware/auth.js))
+- **`authMiddleware`:** Global request hydrator mounted after body parsers in `index.js`. Inspects cookies and Bearer headers, verifies HMAC signatures, and populates `req.user`, `res.locals.currentUser`, and `res.locals.isAuthenticated`.
+- **`requireAuth`:** Route guard for protected endpoints. Web requests receive a `302 Found` redirect to `/login?returnUrl=<originalUrl>`; API requests receive `401 Unauthorized` JSON.
+- **`requireRole(...roles)`:** Enforces role permissions. Returns `403 Forbidden` (`{"error": "Forbidden: Requires one of [roles]"}`) if the user's role is not authorized.
+- **`requireActive`:** Enforces `accountStatus === 'active'` (`USR-R7`), preventing suspended or unverified accounts from mutating data.
+- **`requireOwnershipOrAdmin(getOwnerIdFn)`:** Ensures members can only edit or delete their own resources unless holding administrative privileges.
+- **`guestOnly`:** Anti-reauthentication guard on `/login` and `/register`, redirecting logged-in users to `/users`.
+
+---
+
+## 👤 User-Specific Pages & Personal Workspaces
+
+The platform provides tailored, user-specific pages and personalized workspaces based on the viewing member's identity and active role:
+
+### 1. Personal Profile & Workspace (`/profile`, `/me`, `/users/:id`)
+- **Direct Jump (`/profile` & `/me`):** Authenticated users visiting `/profile` or `/me` are immediately redirected (`302`) to their own individual dossier (`/users/:id`). Unauthenticated visitors are redirected to `/login?returnUrl=/profile`.
+- **Personal Workspace Banner:** When members view their own profile, a high-contrast dark indigo banner (`✨ Kişisel Profil & Çalışma Alanı`) welcomes them by name, displays their member ID, and provides quick shortcuts to edit their profile (`/users/:id/edit`) or sign out (`/logout`).
+- **Role-Adaptive Activity Widgets:**
+  - **Student View:** Displays "📝 Başvurularım & Staj Takibi" (`/users/:id/applications`), "💼 Açık İş & Staj İlanları" (`/jobs`), and "👥 Mezun Rehberleri & Mentorlar" (`/users`).
+  - **Alumni View:** Displays "💼 Yayınladığım İlanlar" (`/users/:id/jobs`), "📝 Başvurularım" (`/users/:id/applications`), and mentorship status.
+  - **Employer View:** Displays "📢 Yeni İlan Yayınla" (`/jobs#post-job-form`), "📋 Yayınlanan İlanlarım" (`/users/:id/jobs`), and "👥 Aday Başvuruları" (`/applications`).
+  - **Admin View:** Displays "🛡️ Yönetim Konsolu" (`/admin`) and links to user activity logs.
+- **Contextual Badging:** Displays role badge (`👑`, `⚖️`, `💼`, `🎓`), account status badge (`● Active`, `⏳ Pending`, `⚠️ Suspended`), and verified alumni mentor badge.
+- **Professional Headline:** Automatically displays company and title (e.g. `🏢 Senior Software Engineer at Google`) when populated.
+
+### 2. Nested User Job Listings (`/users/:userId/jobs`)
+- Displays all career opportunities published by the specific user.
+- If viewed by the publisher themselves, displays owner-tailored subtitles and quick actions to add new positions.
+
+### 3. Nested User Applications Tracker (`/users/:userId/applications`)
+- Displays candidate applications submitted by the member across all job postings.
+- Shows real-time application status badges (`Submitted`, `Under Review`, `Accepted`, `Rejected`) and cover note review.
+
+---
+
+## 🛡️ Central Administration Console & Governance
+
+Accessible exclusively to administrators (`role === 'admin'`) at [`/admin`](http://localhost:3000/admin) and [`/api/admin/*`](http://localhost:3000/api/admin/overview):
+- **KPI Metrics Dashboard:** Real-time counts for Total Users, Job Postings, Announcements, and Applications.
+- **User Directory & RBAC Governance Table:** Inline dropdowns to mutate user roles (`student`, `alumni`, `employer`, `moderator`, `admin`) and account statuses (`active`, `pending_verification`, `suspended`, `archived`), plus permanent user deletion.
+- **Career & Announcement Oversight:** Review, change status, and purge any listing or campus bulletin.
+- **Fast Direct Data Manipulation Engine:** Direct field mutation command card (`POST /admin/manipulate` and `POST /api/admin/manipulate`) allowing immediate updates to any entity field.
+
+---
+
 ## 🛡️ Middleware, Logging & Error Guardian Pipeline (`middleware/`)
 
 Express 5 mounts a centralized observability and fault-handling pipeline via [`middleware/index.js`](./middleware/index.js) and [`index.js`](./index.js) so every request is traced and every `404` or `5xx` error produces structured diagnostics instead of bare stack traces or default Express text:
@@ -335,12 +434,21 @@ Express 5 mounts a centralized observability and fault-handling pipeline via [`m
    - Strips ANSI escape sequences (`stripAnsi`), creates missing parent directories automatically, and ignores disk write failures gracefully so logging never breaks request handling.
    - Exported helpers: `DEFAULT_LOG_FILE_PATH`, `stripAnsi`, `formatFileLogLine`, `appendLogLine`, `writeDualLog`, `emitLogEvent`.
 
-3. **Generic `/404` Page & 404 Guardian ([`middleware/notFoundGuardian.js`](./middleware/notFoundGuardian.js))**:
+3. **Authentication & RBAC Middleware Suite ([`middleware/auth.js`](./middleware/auth.js))** — mounted after body parsers via `app.use(authMiddleware)`:
+   - **Identity Hydration (`authMiddleware`):** Inspects incoming requests for Bearer tokens (`Authorization: Bearer <token>`) or HttpOnly cookies (`session=<token>`). Validates HMAC-SHA256 signatures, checks expiration (`exp > Date.now()`), and populates `req.user`, `res.locals.currentUser`, and `res.locals.isAuthenticated`.
+   - **Authentication Guard (`requireAuth`):** Protects routes requiring sign-in; redirects web users (`302`) to `/login?returnUrl=...` and returns `401 Unauthorized` for REST clients.
+   - **Role Gate (`requireRole(...roles)`):** Enforces RBAC permissions (`USR-R3`..`USR-R6`), returning `403 Forbidden` if the authenticated member lacks sufficient privileges.
+   - **Account Status Guard (`requireActive`):** Enforces `accountStatus === 'active'` (`USR-R7`), blocking suspended or unverified members from performing state mutations (`403 Forbidden`).
+   - **Data Ownership Guard (`requireOwnershipOrAdmin(ownerExtractor)`):** Protects sensitive data so members can only edit/delete their own job postings or applications unless carrying administrative authority.
+   - **Guest Gate (`guestOnly`):** Redirects already signed-in members away from `/login` or `/register` to `/users`.
+   - **Cookie Helpers:** `setSessionCookie` (supports 24-hour and 30-day extended sessions), `clearSessionCookie`, and `parseCookies`.
+
+4. **Generic `/404` Page & 404 Guardian ([`middleware/notFoundGuardian.js`](./middleware/notFoundGuardian.js))**:
    - **Redirect-on-Invalid-Web-Request:** Unmatched non-API web requests reaching `notFoundGuardian` receive a `302 Found` redirect to `/404?from=...` (constructed by `buildNotFoundRedirectUrl` and `sanitizeFromPath` to prevent open redirects or protocol-relative targets).
    - **Generic `/404` & `/404.html` Route:** Mounted before `notFoundGuardian` in `index.js` using `genericNotFoundPageHandler`, rendering [`views/404.html`](./views/404.html) via [`views/NotFoundView.js`](./views/NotFoundView.js) with HTTP `404` status, probable-cause diagnosis (`diagnoseNotFound`), safe `from` backlink sanitization (`sanitizeLocalHref`), known route hints (`KNOWN_ROUTES`), and quick navigation cards.
    - **REST API & Explicit Missing Resource 404s:** Unmatched `/api/*` paths (or JSON-negotiated requests) bypass the redirect and return structured diagnostic JSON (`sendGuardian404`). Missing entity lookups inside web controllers (`UserController`, `AnnouncementController`, `JobPostingController`, `ApplicationController`) invoke `sendResourceNotFound` to render rich HTML 404 diagnostics directly without losing context. `guardian404ErrorHandler` also intercepts errors explicitly thrown with status `404`.
 
-4. **5xx Server Error Guardian ([`middleware/serverErrorGuardian.js`](./middleware/serverErrorGuardian.js))**:
+5. **5xx Server Error Guardian ([`middleware/serverErrorGuardian.js`](./middleware/serverErrorGuardian.js))**:
    - Classifies unexpected `5xx` errors from controllers (`sendServerError`) or Express middleware (`serverErrorGuardian`) into structured diagnostic categories:
      - `DB_CONNECTION_ERROR` (`503`)
      - `DB_SCHEMA_ERROR` (`500`)
@@ -352,8 +460,13 @@ Express 5 mounts a centralized observability and fault-handling pipeline via [`m
      - `INTERNAL_SERVER_ERROR` (`500`)
    - Generates unique per-incident identifiers (`ERR-<base36>-<rand>`), suppresses raw stack traces in HTTP responses when `NODE_ENV=production`, negotiates HTML vs. JSON output via `shouldRenderHtml`, and writes `[5XX GUARDIAN]` / `[5XX STACK]` entries to both console and `logs/error.logs`.
 
-5. **Shared Guardian Utilities ([`middleware/guardianShared.js`](./middleware/guardianShared.js))**:
+6. **Shared Guardian Utilities ([`middleware/guardianShared.js`](./middleware/guardianShared.js))**:
    - Centralizes `KNOWN_ROUTES`, `QUICK_NAV_LINKS`, `escapeHtml`, `normalizePath`, `shouldRenderHtml`, and `renderGuardianScreen` across both 404 and 5xx screens.
+
+7. **Dynamic Role-Based Navigation & Menu Generator ([`views/navHelper.js`](./views/navHelper.js))**:
+   - Centralized Single Source of Truth for role-specific navigation menus, user identity badges, and authentication/exit actions based on user role (`guest`, `student`, `alumni`, `employer`, `moderator`, `admin`).
+   - Guarantees `🛡️ Admin Panel` visibility exclusively for administrators, student/employer specific career shortcuts, and an always-available `🚪 Çıkış Yap` (logout) button for all authenticated sessions.
+   - Integrates seamlessly with all server-side rendered HTML views (`UserView`, `JobPostingView`, `AnnouncementView`, `ApplicationView`, `AdminView`) and hydrates static landing pages (`index.html`, `about.html`) via client-side `/api/me` probing.
 
 ---
 
@@ -474,6 +587,12 @@ Database operations utilize the PostgreSQL client pool (`pg.Pool`):
 | :--- | :--- | :--- | :--- | :--- |
 | `/` | `GET` | Static File | Temporary landing page | `public/index.html` |
 | `/about` | `GET` | Static File | About page | `public/about.html` |
+| `/register` / `/signup` | `GET` | `UserController.getRegisterForm` | Member onboarding registration page with role selector | `views/register.html` |
+| `/register` / `/signup` | `POST` | `UserController.register` | Validates registration (`USR-R1..USR-R7`) and creates user | Flash redirect |
+| `/login` | `GET` | `UserController.getLoginForm` | Member portal login page with quick credentials | `views/login.html` |
+| `/login` | `POST` | `UserController.login` | Authenticates user & issues session cookie (`Set-Cookie`) | Flash redirect / Token |
+| `/logout` | `GET` / `POST` | `UserController.logout` | Terminates session, clears cookie, redirects to `/login` | Flash redirect |
+| `/profile` / `/me` | `GET` | `UserController.getProfile` | Redirects authenticated member to their profile dossier (`/users/:id`) | `302` Redirect |
 | `/users` / `/user` | `GET` | `UserController.getAll` | Alumni directory list with creation form | `views/users.html` |
 | `/users/:id` | `GET` | `UserController.getById` | Alumni profile card view | `views/userDetail.html` |
 | `/users/:id/edit` | `GET` | `UserController.getEditForm` | Alumni edit form view | `views/userEdit.html` |
@@ -500,15 +619,27 @@ Database operations utilize the PostgreSQL client pool (`pg.Pool`):
 | `/applications/:id/delete` | `POST` | `ApplicationController.delete` | Deletes application record | Flash redirect |
 | `/users/:userId/applications` | `GET` | `ApplicationController.getByUser` | Nested web view: applications submitted by user ("My Applications") | `views/applications.html` |
 | `/jobs/:jobId/applications` | `GET` | `ApplicationController.getByJob` | Nested web view: candidate review for job posting | `views/applications.html` |
+| `/admin` | `GET` | `AdminController.getDashboard` | Central administration console & metrics (Guarded: requires `admin` role) | `views/admin.html` |
+| `/admin/users/:id/role` | `POST` | `AdminController.updateUserRole` | Reassigns user role (admin only) | Flash redirect |
+| `/admin/users/:id/status` | `POST` | `AdminController.updateUserStatus` | Updates account status (admin only) | Flash redirect |
+| `/admin/users/:id/delete` | `POST` | `AdminController.deleteUser` | Permanently deletes user record (admin only) | Flash redirect |
+| `/admin/jobs/:id/status` | `POST` | `AdminController.updateJobStatus` | Updates job posting status (admin only) | Flash redirect |
+| `/admin/jobs/:id/delete` | `POST` | `AdminController.deleteJob` | Permanently deletes job posting (admin only) | Flash redirect |
+| `/admin/announcements/:id/delete` | `POST` | `AdminController.deleteAnnouncement` | Permanently deletes announcement (admin only) | Flash redirect |
+| `/admin/manipulate` | `POST` | `AdminController.manipulate` | Direct entity field mutation engine (admin only) | Flash redirect |
 | `/404`, `/404.html` | `ALL` | `genericNotFoundPageHandler` | Generic diagnostic 404 screen (`from` sanitized, quick nav, probable cause) | `views/404.html` |
 | `*` *(unmatched web)* | `ALL` | `notFoundGuardian` | Redirects invalid browser routes (`302`) to `/404?from=...` (JSON 404 for `/api/*`) | Redirect / Guardian JSON |
 
 ### ⚡ RESTful JSON API Routes
 
-#### Direct Entity Endpoints
+#### Authentication & Direct Entity Endpoints
 | Endpoint | Method | Controller Action | Expected Payload | Response Status |
 | :--- | :--- | :--- | :--- | :--- |
 | `/api/health` | `GET` | Utility | None | `200 OK` (`{"status":"ok"}`) |
+| `/api/login` | `POST` | `ApiUserController.login` | `{ email, password, rememberMe? }` | `200 OK` (token & user) / `401 Unauthorized` |
+| `/api/logout` | `POST` | `ApiUserController.logout` | None | `200 OK` (`{"message":"Logged out successfully"}`) |
+| `/api/me` / `/api/profile` | `GET` | `ApiUserController.me` | Bearer token / Cookie | `200 OK` (user profile) / `401 Unauthorized` |
+| `/api/register` | `POST` | `UserController.register` | `{ name, email, department, graduationYear, ... }` | `201 Created` / `400 Bad Request` |
 | `/api/users` | `GET` | `ApiUserController.getAll` | None | `200 OK` (Array of users) |
 | `/api/users/:id` | `GET` | `ApiUserController.getById` | None | `200 OK` / `404 Not Found` |
 | `/api/users` | `POST` | `ApiUserController.create` | `{ name, department, graduationYear, email }` | `201 Created` / `400 Bad Request` |
@@ -563,6 +694,18 @@ Database operations utilize the PostgreSQL client pool (`pg.Pool`):
 | `/api/jobs/:jobId/applications/:id`| `GET` | `ApiApplicationController.getById` | None | `200 OK` / `404 Not Found` |
 | `/api/jobs/:jobId/applications/:id`| `PATCH` | `ApiApplicationController.partialUpdate`| `{ status: 'Accepted' }` | `200 OK` / `404 Not Found` |
 | `/api/jobs/:jobId/applications/:id`| `DELETE` | `ApiApplicationController.delete` | None | `200 OK` / `404 Not Found` |
+
+#### Administration & Governance Endpoints (Requires `admin` Role)
+| Endpoint | Method | Controller Action | Expected Payload | Response Status |
+| :--- | :--- | :--- | :--- | :--- |
+| `/api/admin/overview` | `GET` | `AdminController.getDashboard` | None | `200 OK` (Aggregated metrics & all records) / `403` |
+| `/api/admin/users/:id/role` | `PATCH` | `AdminController.updateUserRole` | `{ role: 'moderator' }` | `200 OK` / `400` / `404` |
+| `/api/admin/users/:id/status`| `PATCH` | `AdminController.updateUserStatus` | `{ status: 'suspended' }` | `200 OK` / `400` / `404` |
+| `/api/admin/users/:id` | `DELETE` | `AdminController.deleteUser` | None | `200 OK` / `404` |
+| `/api/admin/jobs/:id/status` | `PATCH` | `AdminController.updateJobStatus` | `{ status: 'Closed' }` | `200 OK` / `404` |
+| `/api/admin/jobs/:id` | `DELETE` | `AdminController.deleteJob` | None | `200 OK` / `404` |
+| `/api/admin/announcements/:id`| `DELETE` | `AdminController.deleteAnnouncement` | None | `200 OK` / `404` |
+| `/api/admin/manipulate` | `POST` | `AdminController.manipulate` | `{ entity, id, field, value }` | `200 OK` (Mutated record) / `400` / `404` |
 
 ---
 
@@ -670,6 +813,10 @@ node --test test/controllers.test.js
 node --test test/announcement.controller.test.js
 node --test test/views.test.js
 
+# Authentication, RBAC & Role Navigation Tests
+node --test test/auth.middleware.test.js
+node --test test/nav.test.js
+
 # Middleware, Logging & Error Guardian Tests
 node --test test/logger.middleware.test.js
 node --test test/logWriter.middleware.test.js
@@ -703,6 +850,7 @@ All REST API endpoints are documented with interactive OpenAPI 3.0 specification
 ```text
 alumni/
 ├── controllers/                     # Controller Layer (Request handling & orchestration)
+│   ├── AdminController.js           # Web & REST Controller for Administration Console
 │   ├── AnnouncementController.js    # Web Controller for Announcements UI
 │   ├── ApiAnnouncementController.js # RESTful JSON API Controller for Announcements
 │   ├── ApiApplicationController.js   # RESTful JSON API Controller for Applications (Direct & Nested)
@@ -710,7 +858,7 @@ alumni/
 │   ├── ApiUserController.js         # RESTful JSON API Controller for Users
 │   ├── ApplicationController.js     # Web Controller for Applications UI
 │   ├── JobPostingController.js      # Web Controller for Job Postings
-│   └── UserController.js            # Web Controller for Alumni UI
+│   └── UserController.js            # Web Controller for Alumni UI & Auth Pages
 ├── factories/                       # Data Factory Layer (Test data & seed generators)
 │   ├── AnnouncementFactory.js       # Generates announcement mock records
 │   ├── ApplicationFactory.js        # Generates job application mock records
@@ -720,6 +868,7 @@ alumni/
 ├── logs/                            # Persistent runtime & error telemetry logs
 │   └── error.logs                   # Dual-sink request telemetry, 404 & 5xx logs
 ├── middleware/                      # Observability & Error Guardian Middleware Pipeline
+│   ├── auth.js                      # Authentication, session cookies & RBAC guards
 │   ├── guardianShared.js            # Shared route hints, HTML escaping, content negotiation
 │   ├── index.js                     # Middleware barrel exports
 │   ├── logWriter.js                 # Dual-sink terminal + logs/error.logs writer
@@ -742,8 +891,10 @@ alumni/
 │   ├── about.html                   # Static About page
 │   └── index.html                   # Static Home page
 ├── routes/                          # Routing Layer (Path mapping & HTTP verbs)
+│   ├── admin.js                     # Administration Console Web routes (/admin)
 │   ├── announcement.js              # Announcements Web routes (/announcements)
 │   ├── announcementRoutes.js        # Announcement alias route module
+│   ├── apiAdmin.js                  # Administration REST routes (/api/admin)
 │   ├── apiAnnouncement.js           # Announcements REST routes (/api/announcements)
 │   ├── apiAnnouncementRoutes.js     # ApiAnnouncement alias route module
 │   ├── apiApplication.js            # Application REST routes (Direct & Nested)
@@ -768,6 +919,7 @@ alumni/
 │   ├── announcement.routes.test.js
 │   ├── application.model.test.js
 │   ├── application.routes.test.js
+│   ├── auth.middleware.test.js
 │   ├── controllers.test.js
 │   ├── factories.test.js
 │   ├── index.test.js
@@ -775,6 +927,7 @@ alumni/
 │   ├── jobPosting.routes.test.js
 │   ├── logWriter.middleware.test.js
 │   ├── logger.middleware.test.js
+│   ├── nav.test.js
 │   ├── notFoundGuardian.middleware.test.js
 │   ├── routes.test.js
 │   ├── serverErrorGuardian.middleware.test.js
@@ -782,11 +935,13 @@ alumni/
 │   └── views.test.js
 ├── views/                           # View Layer (HTML templates & View helpers)
 │   ├── 404.html                     # Generic diagnostic 404 HTML template
+│   ├── AdminView.js                 # Helper rendering administration dashboard
 │   ├── AnnouncementView.js          # Helper rendering announcement templates
 │   ├── ApplicationView.js           # Helper rendering application templates
 │   ├── JobPostingView.js            # Helper rendering job posting templates
 │   ├── NotFoundView.js              # Helper rendering /404 generic error template
 │   ├── UserView.js                  # Helper rendering user templates
+│   ├── admin.html                   # Central administration console template
 │   ├── announcementDetail.html      # Announcement detail card template
 │   ├── announcementEdit.html        # Announcement edit form template
 │   ├── announcements.html           # Announcements management dashboard template
@@ -795,7 +950,10 @@ alumni/
 │   ├── jobDetail.html               # Job opportunity detail & application form template
 │   ├── jobEdit.html                 # Job opportunity edit form template
 │   ├── jobs.html                    # Career board & job postings dashboard template
-│   ├── userDetail.html              # Alumni profile card template
+│   ├── login.html                   # Member portal authentication template
+│   ├── navHelper.js                 # Central role-based dynamic navigation generator
+│   ├── register.html                # Member registration & onboarding template
+│   ├── userDetail.html              # Alumni profile & personal workspace template
 │   ├── userEdit.html                # Alumni edit form template
 │   └── users.html                   # Alumni directory list & form template
 ├── .example.env                     # Environment variable template (committed)

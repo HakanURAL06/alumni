@@ -43,9 +43,9 @@ class ApplicationController {
         }
 
         if (typeof res.render === 'function') {
-          return res.render('applications', { applications, message, alertType });
+          return res.render('applications', { applications, message, alertType, currentUser: req.user });
         }
-        return res.send(ApplicationView.renderApplications(applications, { message, alertType }));
+        return res.send(ApplicationView.renderApplications(applications, { message, alertType, currentUser: req.user }));
       }
 
       return res.status(200).json(applications);
@@ -78,9 +78,9 @@ class ApplicationController {
         }
 
         if (typeof res.render === 'function') {
-          return res.render('applicationDetail', { application, message, alertType });
+          return res.render('applicationDetail', { application, message, alertType, currentUser: req.user });
         }
-        return res.send(ApplicationView.renderApplicationDetail(application, { message, alertType }));
+        return res.send(ApplicationView.renderApplicationDetail(application, { message, alertType, currentUser: req.user }));
       }
 
       return res.status(200).json(application);
@@ -207,9 +207,9 @@ class ApplicationController {
       if (req.accepts('html') && !req.xhr && !req.headers['sec-fetch-dest']?.includes('empty')) {
         const subtitle = `Applications submitted by alumni ${user.name} (${user.email})`;
         if (typeof res.render === 'function') {
-          return res.render('applications', { applications, subtitle });
+          return res.render('applications', { applications, subtitle, currentUser: req.user });
         }
-        return res.send(ApplicationView.renderApplications(applications, { subtitle }));
+        return res.send(ApplicationView.renderApplications(applications, { subtitle, currentUser: req.user }));
       }
 
       return res.status(200).json({ user, applications });
@@ -242,9 +242,9 @@ class ApplicationController {
       if (req.accepts('html') && !req.xhr && !req.headers['sec-fetch-dest']?.includes('empty')) {
         const subtitle = `Candidate applications received for ${job.title} at ${job.company}`;
         if (typeof res.render === 'function') {
-          return res.render('applications', { applications, subtitle });
+          return res.render('applications', { applications, subtitle, currentUser: req.user });
         }
-        return res.send(ApplicationView.renderApplications(applications, { subtitle }));
+        return res.send(ApplicationView.renderApplications(applications, { subtitle, currentUser: req.user }));
       }
 
       return res.status(200).json({ job, applications });

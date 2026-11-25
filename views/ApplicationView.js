@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const { injectDynamicNav } = require('./navHelper');
 
 const applicationsTemplatePath = path.join(__dirname, 'applications.html');
 const applicationDetailTemplatePath = path.join(__dirname, 'applicationDetail.html');
@@ -85,7 +86,7 @@ class ApplicationView {
 
     const subtitle = options.subtitle || 'Track, evaluate, and manage candidate submissions across career opportunities.';
 
-    return template
+    const output = template
       .replace('{{APPLICATION_ROWS}}', rows)
       .replace('{{MESSAGE}}', messageHtml)
       .replace('{{SUBTITLE}}', subtitle)
@@ -93,6 +94,7 @@ class ApplicationView {
       .replace('{{SUBMITTED_COUNT}}', submittedCount)
       .replace('{{REVIEW_COUNT}}', reviewCount)
       .replace('{{ACCEPTED_COUNT}}', acceptedCount);
+    return injectDynamicNav(output, { currentUser: options.currentUser, activePage: 'applications' });
   }
 
   /**
@@ -127,7 +129,7 @@ class ApplicationView {
       messageHtml = `<div class="${alertClass}">${options.message}</div>`;
     }
 
-    return template
+    const output = template
       .replace(/{{ID}}/g, id)
       .replace(/{{USER_ID}}/g, userId)
       .replace(/{{USER_NAME}}/g, userName)
@@ -143,6 +145,7 @@ class ApplicationView {
       .replace(/{{STATUS}}/g, status)
       .replace(/{{APPLIED_AT}}/g, appliedAt)
       .replace(/{{MESSAGE}}/g, messageHtml);
+    return injectDynamicNav(output, { currentUser: options.currentUser, activePage: 'applicationdetail' });
   }
 }
 

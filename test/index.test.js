@@ -1,6 +1,7 @@
 const test = require('node:test');
 const assert = require('node:assert');
 const app = require('../index');
+const User = require('../models/User');
 
 test('GET / returns temporary home page HTML and status 200', async () => {
   const server = app.listen(0);
@@ -415,6 +416,13 @@ test('POST /users/:id/edit updates user and redirects to /users?updated=1', asyn
     assert.strictEqual(res.status, 302);
     assert.ok(res.headers.get('location').includes('updated=1'));
   } finally {
+    // Restore user 1 back to default seed credentials so Hakan can always log in with hakan@alumni.edu
+    await User.update(1, {
+      name: 'Hakan Ural',
+      department: 'Computer Engineering',
+      graduationYear: 2024,
+      email: 'hakan@alumni.edu'
+    });
     await new Promise((resolve) => server.close(resolve));
   }
 });
@@ -590,6 +598,13 @@ test('POST /announcements/:id/edit updates announcement and redirects to /announ
     assert.strictEqual(res.status, 302);
     assert.ok(res.headers.get('location').includes('updated=1'));
   } finally {
+    // Restore user 1 back to default seed credentials so Hakan can always log in with hakan@alumni.edu
+    await User.update(1, {
+      name: 'Hakan Ural',
+      department: 'Computer Engineering',
+      graduationYear: 2024,
+      email: 'hakan@alumni.edu'
+    });
     await new Promise((resolve) => server.close(resolve));
   }
 });
@@ -618,4 +633,451 @@ test('POST /announcements/:id/delete deletes announcement and redirects to /anno
     await new Promise((resolve) => server.close(resolve));
   }
 });
+
+test('GET /register and POST /register handle functional member registration with role validation', async () => {
+  const server = app.listen(0);
+  const { port } = server.address();
+
+  try {
+    // 1. GET /register renders registration HTML page
+    const getRes = await fetch(`http://127.0.0.1:${port}/register`, {
+      headers: { Accept: 'text/html' }
+    });
+    assert.strictEqual(getRes.status, 200);
+    const getHtml = await getRes.text();
+    assert.ok(getHtml.includes('Register for the Istanbul University Network'));
+    assert.ok(getHtml.includes('action="/register" method="POST"'));
+
+    // 2. POST /register with valid form inputs creates user and redirects to /users
+    const validForm = new URLSearchParams({
+      name: 'Elif Şahin',
+      email: 'elif.sahin@alumni.edu',
+      password: 'SecurePassword123!',
+      confirmPassword: 'SecurePassword123!',
+      department: 'Computer Engineering',
+      graduationYear: '2024',
+      role: 'alumni',
+      title: 'Cloud Architect',
+      company: 'Istanbul Tech',
+      isMentor: 'true'
+    });
+
+    const postHtmlRes = await fetch(`http://127.0.0.1:${port}/register`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        Accept: 'text/html'
+      },
+      body: validForm.toString(),
+      redirect: 'manual'
+    });
+    assert.strictEqual(postHtmlRes.status, 302);
+    assert.ok(postHtmlRes.headers.get('location').includes('/users?success=1&registered=1'));
+
+    // 3. POST /api/register with privileged role ('admin') returns 403 Forbidden (USR-R4)
+    const forbiddenRes = await fetch(`http://127.0.0.1:${port}/api/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({
+        name: 'Escalation Attempt',
+        email: 'hacker@alumni.edu',
+        department: 'Law',
+        graduationYear: 2024,
+        role: 'admin'
+      })
+    });
+    assert.strictEqual(forbiddenRes.status, 403);
+
+    // 4. POST /api/register with mismatched passwords returns 400 Bad Request
+    const mismatchRes = await fetch(`http://127.0.0.1:${port}/api/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({
+        name: 'Mismatch User',
+        email: 'mismatch@alumni.edu',
+        department: 'Economics',
+        graduationYear: 2024,
+        password: 'Password123!',
+        confirmPassword: 'DifferentPassword!'
+      })
+    });
+    assert.strictEqual(mismatchRes.status, 400);
+  } finally {
+    await new Promise((resolve) => server.close(resolve));
+  }
+});
+
+test('Authentication: Login and Logout workflows across Web views and REST API', async () => {
+  const server = app.listen(0);
+  const { port } = server.address();
+
+  try {
+    // 1. GET /login renders login page with HTTP 200
+    const getLoginRes = await fetch(`http://127.0.0.1:${port}/login`);
+    assert.strictEqual(getLoginRes.status, 200);
+    const getLoginHtml = await getLoginRes.text();
+    assert.ok(getLoginHtml.includes('Member Portal Login'));
+    assert.ok(getLoginHtml.includes('action="/login" method="POST"'));
+
+    // 2. POST /login with invalid credentials returns 401 HTML error screen
+    const invalidForm = new URLSearchParams({
+      email: 'ayse@alumni.edu',
+      password: 'WrongPassword999!'
+    });
+    const invalidLoginRes = await fetch(`http://127.0.0.1:${port}/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        Accept: 'text/html'
+      },
+      body: invalidForm.toString(),
+      redirect: 'manual'
+    });
+    assert.strictEqual(invalidLoginRes.status, 401);
+    const invalidLoginHtml = await invalidLoginRes.text();
+    assert.ok(invalidLoginHtml.includes('alert-danger'));
+    assert.ok(invalidLoginHtml.includes('Invalid email or password.'));
+
+    // 3. POST /login with valid credentials sets session cookie and redirects (302)
+    const validForm = new URLSearchParams({
+      email: 'ayse@alumni.edu',
+      password: 'Password123!',
+      rememberMe: 'true'
+    });
+    const validLoginRes = await fetch(`http://127.0.0.1:${port}/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        Accept: 'text/html'
+      },
+      body: validForm.toString(),
+      redirect: 'manual'
+    });
+    assert.strictEqual(validLoginRes.status, 302);
+    assert.ok(validLoginRes.headers.get('location').includes('/users?login=1'));
+    const cookieHeader = validLoginRes.headers.get('set-cookie');
+    assert.ok(cookieHeader && cookieHeader.includes('session='));
+    assert.ok(cookieHeader.includes('HttpOnly'));
+
+    // 4. POST /api/login with invalid credentials returns 401 JSON
+    const apiBadRes = await fetch(`http://127.0.0.1:${port}/api/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({ email: 'nonexistent@alumni.edu', password: 'Password123!' })
+    });
+    assert.strictEqual(apiBadRes.status, 401);
+    const apiBadJson = await apiBadRes.json();
+    assert.ok(apiBadJson.error);
+
+    // 5. POST /api/login with valid credentials returns 200 JSON with token and user profile
+    const apiGoodRes = await fetch(`http://127.0.0.1:${port}/api/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({ email: 'mehmet@alumni.edu', password: 'Password123!' })
+    });
+    assert.strictEqual(apiGoodRes.status, 200);
+    const apiGoodJson = await apiGoodRes.json();
+    assert.strictEqual(apiGoodJson.message, 'Login successful');
+    assert.ok(typeof apiGoodJson.token === 'string' && apiGoodJson.token.includes('.'));
+    assert.strictEqual(apiGoodJson.user.email, 'mehmet@alumni.edu');
+
+    // 6. GET /api/me with Bearer token returns 200 JSON with authenticated user
+    const meRes = await fetch(`http://127.0.0.1:${port}/api/me`, {
+      headers: {
+        Authorization: `Bearer ${apiGoodJson.token}`,
+        Accept: 'application/json'
+      }
+    });
+    assert.strictEqual(meRes.status, 200);
+    const meJson = await meRes.json();
+    assert.strictEqual(meJson.email, 'mehmet@alumni.edu');
+
+    // 7. GET /api/me without authentication returns 401 JSON
+    const unauthMeRes = await fetch(`http://127.0.0.1:${port}/api/me`, {
+      headers: { Accept: 'application/json' }
+    });
+    assert.strictEqual(unauthMeRes.status, 401);
+
+    // 8. GET /logout terminates session, clears cookie, and redirects to /login?logout=1
+    const logoutRes = await fetch(`http://127.0.0.1:${port}/logout`, {
+      headers: { Accept: 'text/html' },
+      redirect: 'manual'
+    });
+    assert.strictEqual(logoutRes.status, 302);
+    assert.ok(logoutRes.headers.get('location').includes('/login?logout=1'));
+    const logoutCookie = logoutRes.headers.get('set-cookie');
+    assert.ok(logoutCookie && logoutCookie.includes('Max-Age=0'));
+
+    // 9. POST /api/logout clears session cookie and returns 200 JSON
+    const apiLogoutRes = await fetch(`http://127.0.0.1:${port}/api/logout`, {
+      method: 'POST',
+      headers: { Accept: 'application/json' }
+    });
+    assert.strictEqual(apiLogoutRes.status, 200);
+    const apiLogoutJson = await apiLogoutRes.json();
+    assert.strictEqual(apiLogoutJson.message, 'Logged out successfully');
+  } finally {
+    await new Promise((resolve) => server.close(resolve));
+  }
+});
+
+test('Admin Panel: Role Assignment, Protected Access, and Direct Data Manipulation', async () => {
+  const server = app.listen(0);
+  const { port } = server.address();
+  try {
+    // ------------------------------------------------------------------------
+    // 1. Unauthenticated Access Protection
+    // ------------------------------------------------------------------------
+    // Web: GET /admin redirects 302 to /login?returnUrl=%2Fadmin
+    const unauthWebRes = await fetch(`http://127.0.0.1:${port}/admin`, {
+      headers: { Accept: 'text/html' },
+      redirect: 'manual'
+    });
+    assert.strictEqual(unauthWebRes.status, 302);
+    assert.ok(unauthWebRes.headers.get('location').includes('/login?returnUrl='));
+
+    // API: GET /api/admin/overview returns 401 Unauthorized
+    const unauthApiRes = await fetch(`http://127.0.0.1:${port}/api/admin/overview`, {
+      headers: { Accept: 'application/json' }
+    });
+    assert.strictEqual(unauthApiRes.status, 401);
+
+    // ------------------------------------------------------------------------
+    // 2. Non-Admin RBAC Gate (403 Forbidden)
+    // ------------------------------------------------------------------------
+    // Create regular user with alumni role
+    const regularUser = await User.create({
+      name: 'Regular Alumni Member',
+      department: 'Felsefe',
+      graduationYear: 2019,
+      email: 'regular.alumni@alumni.edu',
+      role: 'alumni'
+    });
+
+    // Login as non-admin user via API
+    const nonAdminLoginRes = await fetch(`http://127.0.0.1:${port}/api/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({ email: regularUser.email, password: 'Password123!' })
+    });
+    assert.strictEqual(nonAdminLoginRes.status, 200);
+    const nonAdminToken = (await nonAdminLoginRes.json()).token;
+
+    // Non-admin accessing API -> 403 Forbidden
+    const forbiddenApiRes = await fetch(`http://127.0.0.1:${port}/api/admin/overview`, {
+      headers: {
+        Authorization: `Bearer ${nonAdminToken}`,
+        Accept: 'application/json'
+      }
+    });
+    assert.strictEqual(forbiddenApiRes.status, 403);
+    const forbiddenApiJson = await forbiddenApiRes.json();
+    assert.ok(forbiddenApiJson.error.includes('Insufficient privileges') || forbiddenApiJson.error.includes('admin'));
+
+    // Non-admin accessing Web -> 403 Forbidden
+    const nonAdminWebRes = await fetch(`http://127.0.0.1:${port}/admin`, {
+      headers: {
+        Cookie: `session=${nonAdminToken}`,
+        Accept: 'text/html'
+      }
+    });
+    assert.strictEqual(nonAdminWebRes.status, 403);
+
+    // ------------------------------------------------------------------------
+    // 3. Assign Admin Role to a Specific User & Access Panel
+    // ------------------------------------------------------------------------
+    const specificUser = await User.create({
+      name: 'Promoted Super Admin',
+      department: 'Yönetim Bilişim Sistemleri',
+      graduationYear: 2021,
+      email: 'promoted.admin@alumni.edu',
+      role: 'student'
+    });
+    assert.strictEqual(specificUser.role, 'student');
+
+    // Assign admin role to specific user
+    const updatedRoleUser = await User.assignRole(specificUser.id, 'admin');
+    assert.strictEqual(updatedRoleUser.role, 'admin');
+
+    // Admin user logs in via API and receives admin token
+    const adminLoginRes = await fetch(`http://127.0.0.1:${port}/api/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({ email: 'promoted.admin@alumni.edu', password: 'Password123!' })
+    });
+    assert.strictEqual(adminLoginRes.status, 200);
+    const adminLoginJson = await adminLoginRes.json();
+    assert.strictEqual(adminLoginJson.user.role, 'admin');
+    const adminToken = adminLoginJson.token;
+    assert.ok(adminToken);
+
+    // Admin accesses Web Panel -> 200 OK HTML
+    const adminWebRes = await fetch(`http://127.0.0.1:${port}/admin`, {
+      headers: {
+        Cookie: `session=${adminToken}`,
+        Accept: 'text/html'
+      }
+    });
+    assert.strictEqual(adminWebRes.status, 200);
+    const adminHtml = await adminWebRes.text();
+    assert.ok(adminHtml.includes('Administration Panel'));
+    assert.ok(adminHtml.includes('Fast Direct Data Manipulation'));
+    assert.ok(adminHtml.includes('Promoted Super Admin'));
+
+    // Admin accesses REST API -> 200 OK JSON with metrics
+    const adminOverviewRes = await fetch(`http://127.0.0.1:${port}/api/admin/overview`, {
+      headers: {
+        Authorization: `Bearer ${adminToken}`,
+        Accept: 'application/json'
+      }
+    });
+    assert.strictEqual(adminOverviewRes.status, 200);
+    const adminOverviewJson = await adminOverviewRes.json();
+    assert.ok(adminOverviewJson.metrics);
+    assert.ok(typeof adminOverviewJson.metrics.usersCount === 'number');
+    assert.ok(Array.isArray(adminOverviewJson.users));
+
+    // ------------------------------------------------------------------------
+    // 4. Data Manipulation: Role & Status Updates
+    // ------------------------------------------------------------------------
+    // Web: POST /admin/users/:id/role to reassign role
+    const updateRoleFormRes = await fetch(`http://127.0.0.1:${port}/admin/users/${regularUser.id}/role`, {
+      method: 'POST',
+      headers: {
+        Cookie: `session=${adminToken}`,
+        'Content-Type': 'application/x-www-form-urlencoded',
+        Accept: 'text/html'
+      },
+      body: new URLSearchParams({ role: 'moderator' }),
+      redirect: 'manual'
+    });
+    assert.strictEqual(updateRoleFormRes.status, 302);
+    assert.ok(updateRoleFormRes.headers.get('location').includes('/admin?roleUpdated=1'));
+    let checkedUser = await User.findById(regularUser.id);
+    assert.strictEqual(checkedUser.role, 'moderator');
+
+    // API: PATCH /api/admin/users/:id/role
+    const patchRoleApiRes = await fetch(`http://127.0.0.1:${port}/api/admin/users/${regularUser.id}/role`, {
+      method: 'PATCH',
+      headers: {
+        Authorization: `Bearer ${adminToken}`,
+        'Content-Type': 'application/json',
+        Accept: 'application/json'
+      },
+      body: JSON.stringify({ role: 'employer' })
+    });
+    assert.strictEqual(patchRoleApiRes.status, 200);
+    const patchRoleJson = await patchRoleApiRes.json();
+    assert.strictEqual(patchRoleJson.user.role, 'employer');
+    checkedUser = await User.findById(regularUser.id);
+    assert.strictEqual(checkedUser.role, 'employer');
+
+    // Web: POST /admin/users/:id/status to suspend user
+    const updateStatusFormRes = await fetch(`http://127.0.0.1:${port}/admin/users/${regularUser.id}/status`, {
+      method: 'POST',
+      headers: {
+        Cookie: `session=${adminToken}`,
+        'Content-Type': 'application/x-www-form-urlencoded',
+        Accept: 'text/html'
+      },
+      body: new URLSearchParams({ status: 'suspended' }),
+      redirect: 'manual'
+    });
+    assert.strictEqual(updateStatusFormRes.status, 302);
+    assert.ok(updateStatusFormRes.headers.get('location').includes('/admin?statusUpdated=1'));
+    checkedUser = await User.findById(regularUser.id);
+    assert.strictEqual(checkedUser.accountStatus, 'suspended');
+
+    // API: PATCH /api/admin/users/:id/status to reactivate
+    const patchStatusApiRes = await fetch(`http://127.0.0.1:${port}/api/admin/users/${regularUser.id}/status`, {
+      method: 'PATCH',
+      headers: {
+        Authorization: `Bearer ${adminToken}`,
+        'Content-Type': 'application/json',
+        Accept: 'application/json'
+      },
+      body: JSON.stringify({ status: 'active' })
+    });
+    assert.strictEqual(patchStatusApiRes.status, 200);
+    checkedUser = await User.findById(regularUser.id);
+    assert.strictEqual(checkedUser.accountStatus, 'active');
+
+    // ------------------------------------------------------------------------
+    // 5. Direct Fast Data Manipulation Engine (/admin/manipulate)
+    // ------------------------------------------------------------------------
+    // Mutate User Title via API
+    const mutateUserRes = await fetch(`http://127.0.0.1:${port}/api/admin/manipulate`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${adminToken}`,
+        'Content-Type': 'application/json',
+        Accept: 'application/json'
+      },
+      body: JSON.stringify({
+        entity: 'user',
+        id: regularUser.id,
+        field: 'title',
+        value: 'Chief Technology Officer'
+      })
+    });
+    assert.strictEqual(mutateUserRes.status, 200);
+    const mutateUserJson = await mutateUserRes.json();
+    assert.strictEqual(mutateUserJson.result.title, 'Chief Technology Officer');
+    checkedUser = await User.findById(regularUser.id);
+    assert.strictEqual(checkedUser.title, 'Chief Technology Officer');
+
+    // Mutate Job salary via API
+    const mutateJobRes = await fetch(`http://127.0.0.1:${port}/api/admin/manipulate`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${adminToken}`,
+        'Content-Type': 'application/json',
+        Accept: 'application/json'
+      },
+      body: JSON.stringify({
+        entity: 'job',
+        id: 1,
+        field: 'salary',
+        value: '180,000 TL'
+      })
+    });
+    assert.strictEqual(mutateJobRes.status, 200);
+    const mutateJobJson = await mutateJobRes.json();
+    assert.strictEqual(mutateJobJson.result.salary, '180,000 TL');
+
+    // Mutate Announcement Title via Web Form
+    const mutateAnnFormRes = await fetch(`http://127.0.0.1:${port}/admin/manipulate`, {
+      method: 'POST',
+      headers: {
+        Cookie: `session=${adminToken}`,
+        'Content-Type': 'application/x-www-form-urlencoded',
+        Accept: 'text/html'
+      },
+      body: new URLSearchParams({
+        entity: 'announcement',
+        id: '1',
+        field: 'title',
+        value: 'Manipulated Grand Gala 2026'
+      }),
+      redirect: 'manual'
+    });
+    assert.strictEqual(mutateAnnFormRes.status, 302);
+    assert.ok(mutateAnnFormRes.headers.get('location').includes('/admin?manipulated=1'));
+
+    // Validation error when field or id missing
+    const badManipulateRes = await fetch(`http://127.0.0.1:${port}/api/admin/manipulate`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${adminToken}`,
+        'Content-Type': 'application/json',
+        Accept: 'application/json'
+      },
+      body: JSON.stringify({ entity: 'user', id: 1 })
+    });
+    assert.strictEqual(badManipulateRes.status, 400);
+  } finally {
+    await new Promise((resolve) => server.close(resolve));
+  }
+});
+
 

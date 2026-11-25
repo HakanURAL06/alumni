@@ -292,12 +292,18 @@
         <span>{{NAME}} (#{{ID}})</span>
       </div>
 
+      {{PERSONAL_WORKSPACE_BANNER}}
+
       <div class="profile-hero">
-        <div class="avatar-circle">👤</div>
-        <div>
-          <span class="badge">MVC View Layer &bull; Detail View</span>
+        <div class="avatar-circle">{{AVATAR_ICON}}</div>
+        <div style="flex: 1;">
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px; flex-wrap:wrap;">
+            <span class="badge" style="margin:0;">MVC View Layer &bull; Detail View</span>
+            {{BADGES_ROW}}
+          </div>
           <h1>{{NAME}}</h1>
           <div class="meta-line">🎓 {{DEPARTMENT}} &bull; Class of {{GRADUATION_YEAR}} &bull; Istanbul University</div>
+          {{HEADLINE_INFO}}
         </div>
       </div>
 
@@ -308,6 +314,14 @@
             <div class="detail-row">
               <strong>ID:</strong>
               <span>#{{ID}}</span>
+            </div>
+            <div class="detail-row">
+              <strong>Role:</strong>
+              <span>{{ROLE_LABEL}}</span>
+            </div>
+            <div class="detail-row">
+              <strong>Account Status:</strong>
+              <span>{{STATUS_LABEL}}</span>
             </div>
             <div class="detail-row">
               <strong>Department:</strong>
@@ -321,29 +335,16 @@
               <strong>Email:</strong>
               <a href="mailto:{{EMAIL}}">{{EMAIL}}</a>
             </div>
+            {{EXTRA_DETAILS}}
           </div>
 
           <div class="actions">
-            <a href="/users/{{ID}}/edit" class="btn btn-edit">✏️ Edit Profile</a>
-            <form action="/users/{{ID}}/delete" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this profile?');">
-              <button type="submit" class="btn btn-delete">🗑️ Delete Profile</button>
-            </form>
-            <a href="/users" class="btn btn-secondary">← Back to Directory</a>
+            {{ACTIONS_HTML}}
           </div>
         </div>
 
         <div class="card">
-          <h2>🔗 Nested Alumni Activity</h2>
-          <div class="rel-card">
-            <h3>💼 Published Career Opportunities</h3>
-            <p>View all job postings and mentorship roles published by {{NAME}}.</p>
-            <a href="/users/{{ID}}/jobs" class="rel-link">Open Published Jobs (/users/{{ID}}/jobs) &rarr;</a>
-          </div>
-          <div class="rel-card">
-            <h3>📝 Submitted Job Applications</h3>
-            <p>Inspect candidate applications submitted by {{NAME}} across the portal.</p>
-            <a href="/users/{{ID}}/applications" class="rel-link">Open Applications (/users/{{ID}}/applications) &rarr;</a>
-          </div>
+          {{ROLE_ACTIVITY_CARD}}
         </div>
       </div>
 

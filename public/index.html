@@ -903,6 +903,8 @@
         <span>Est. 1453 &bull; Express 5 &bull; PostgreSQL 16 &bull; Guardian Pipeline</span>
       </div>
       <div class="top-bar-right">
+        <a href="/admin" style="color:#38bdf8; margin-right:12px;">🛡️ Admin Panel</a>
+        <a href="/logout" style="color:#fca5a5; font-weight:700; margin-right:12px;">🚪 Çıkış Yap</a>
         <a href="/api/swagger" target="_blank" rel="noopener">Interactive API Explorer &rarr;</a>
       </div>
     </div>
@@ -923,9 +925,13 @@
         <ul class="nav-links">
           <li><a href="/" class="nav-link active">Home</a></li>
           <li><a href="/users" class="nav-link">Alumni Directory</a></li>
+          <li><a href="/register" class="nav-link">➕ Register</a></li>
+          <li><a href="/login" class="nav-link">🔑 Login</a></li>
           <li><a href="/announcements" class="nav-link">Announcements</a></li>
           <li><a href="/jobs" class="nav-link">Job Board</a></li>
           <li><a href="/applications" class="nav-link">Applications</a></li>
+          <li><a href="/admin" class="nav-link">🛡️ Admin</a></li>
+          <li><a href="/logout" class="nav-link" style="color:#f87171; font-weight:700;">🚪 Çıkış Yap</a></li>
           <li><a href="/about" class="nav-link">About</a></li>
           <li><a href="/api/swagger" class="nav-link nav-cta">Swagger Docs ⚡</a></li>
         </ul>
@@ -948,7 +954,10 @@
         </p>
 
         <div class="hero-actions">
-          <a href="/users" class="btn btn-primary">
+          <a href="/register" class="btn btn-primary">
+            <span>🎓</span> Register Now
+          </a>
+          <a href="/users" class="btn btn-ghost">
             <span>👥</span> Explore Alumni Directory
           </a>
           <a href="/jobs" class="btn btn-ghost">
@@ -1347,6 +1356,84 @@
         });
       });
     }
+
+    // Dynamic Role-Based Navigation Hydration
+    (async function initDynamicNav() {
+      try {
+        const res = await fetch('/api/me');
+        if (!res.ok) return;
+        const user = await res.json();
+        if (!user || !user.email) return;
+
+        const role = String(user.role || 'alumni').toLowerCase();
+        const roleMeta = {
+          admin: { icon: '👑', label: 'Admin', pillBg: '#fee2e2', pillColor: '#991b1b' },
+          moderator: { icon: '⚖️', label: 'Moderatör', pillBg: '#fef3c7', pillColor: '#92400e' },
+          employer: { icon: '💼', label: 'İşveren', pillBg: '#faf5ff', pillColor: '#6b21a8' },
+          student: { icon: '🎓', label: 'Öğrenci', pillBg: '#ecfdf5', pillColor: '#065f46' },
+          alumni: { icon: '🎓', label: 'Mezun', pillBg: '#eff6ff', pillColor: '#1e40af' }
+        }[role] || { icon: '🎓', label: 'Mezun', pillBg: '#eff6ff', pillColor: '#1e40af' };
+
+        // 1. Update Top Bar Right
+        const topBarRight = document.querySelector('.top-bar-right');
+        if (topBarRight) {
+          let roleAction = '';
+          if (role === 'admin') {
+            roleAction = '<a href="/admin" style="color:#fde047; font-weight:700; margin-right:12px; text-decoration:none;">🛡️ Admin Paneli &rarr;</a>';
+          } else if (role === 'employer') {
+            roleAction = '<a href="/jobs#post-job-form" style="color:#a78bfa; font-weight:600; margin-right:12px; text-decoration:none;">📢 İlan Ver &rarr;</a>';
+          } else if (role === 'student') {
+            roleAction = '<a href="/applications" style="color:#34d399; font-weight:600; margin-right:12px; text-decoration:none;">📝 Başvurularım &rarr;</a>';
+          } else if (user.id || user.userId) {
+            roleAction = '<a href="/users/' + (user.id || user.userId) + '" style="color:#60a5fa; font-weight:600; margin-right:12px; text-decoration:none;">👤 Profilim &rarr;</a>';
+          }
+          topBarRight.innerHTML = `
+            <span style="color:#cbd5e1; font-weight:600; font-size:0.78rem;">
+              ${roleMeta.icon} Hoş geldiniz, <strong>${user.name || user.email}</strong>
+              <span style="background:${roleMeta.pillBg}; color:${roleMeta.pillColor}; padding:1px 6px; border-radius:999px; font-size:0.68rem; margin-left:4px;">${roleMeta.label}</span>
+            </span>
+            <span style="color:rgba(255,255,255,0.25);">|</span>
+            ${roleAction}
+            <a href="/logout" style="color:#fca5a5; font-weight:700; text-decoration:none; padding:2px 8px; border-radius:4px; background:rgba(239,68,68,0.15); border:1px solid rgba(239,68,68,0.3);">🚪 Çıkış Yap</a>
+          `;
+        }
+
+        // 2. Update Main Nav Links
+        const navList = document.querySelector('header.main-nav ul.nav-links');
+        if (navList) {
+          let lis = '';
+          if (role === 'admin') {
+            lis += '<li><a href="/admin" class="nav-link" style="color:#fde047; font-weight:750; background:rgba(234,179,8,0.15); border:1px solid rgba(234,179,8,0.35); border-radius:6px;">🛡️ Admin Panel</a></li>';
+          }
+          lis += '<li><a href="/" class="nav-link active">Home</a></li>';
+          if (role === 'employer') {
+            lis += '<li><a href="/users" class="nav-link">Yetenek Havuzu</a></li>';
+            lis += '<li><a href="/jobs" class="nav-link">Job Board</a></li>';
+            lis += '<li><a href="/jobs#post-job-form" class="nav-link">📢 İlan Ver</a></li>';
+            lis += '<li><a href="/applications" class="nav-link">📋 Adaylar & Başvurular</a></li>';
+          } else if (role === 'student') {
+            lis += '<li><a href="/users" class="nav-link">Rehber & Mentorlar</a></li>';
+            lis += '<li><a href="/jobs" class="nav-link">💼 İş & Staj</a></li>';
+            lis += '<li><a href="/applications" class="nav-link">📝 Başvurularım</a></li>';
+          } else if (role === 'alumni') {
+            lis += '<li><a href="/users" class="nav-link">Alumni Directory</a></li>';
+            lis += '<li><a href="/users/' + (user.id || user.userId) + '" class="nav-link">👤 Profilim</a></li>';
+            lis += '<li><a href="/jobs" class="nav-link">Job Board</a></li>';
+            lis += '<li><a href="/users/' + (user.id || user.userId) + '/applications" class="nav-link">📝 Başvurularım</a></li>';
+          } else {
+            lis += '<li><a href="/users" class="nav-link">Alumni Directory</a></li>';
+            lis += '<li><a href="/jobs" class="nav-link">Job Board</a></li>';
+            lis += '<li><a href="/applications" class="nav-link">Applications</a></li>';
+          }
+          lis += '<li><a href="/announcements" class="nav-link">Announcements</a></li>';
+          lis += `<li><span class="user-pill" style="display:inline-flex; align-items:center; gap:6px; background:${roleMeta.pillBg}; color:${roleMeta.pillColor}; border-radius:999px; padding:4px 12px; font-size:0.8rem; font-weight:700;">${roleMeta.icon} ${user.name || user.email} (${roleMeta.label})</span></li>`;
+          lis += '<li><a href="/logout" class="nav-link btn-logout" style="background:rgba(239,68,68,0.15); color:#fca5a5 !important; border:1px solid rgba(239,68,68,0.35); border-radius:6px; padding:6px 12px; font-weight:700; text-decoration:none;">🚪 Çıkış Yap</a></li>';
+          navList.innerHTML = lis;
+        }
+      } catch (err) {
+        // Guest mode fallback
+      }
+    })();
   </script>
 
 </body>

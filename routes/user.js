@@ -8,7 +8,17 @@ const ApplicationController = require('../controllers/ApplicationController');
 // ALL CRUD OPERATIONS ON USER ROUTE WITH VIEW
 // ==========================================
 
-// 1. CREATE (Form submission / JSON)
+// 0. AUTHENTICATION & SESSION MANAGEMENT
+router.get('/login', UserController.getLoginForm);
+router.post('/login', UserController.login);
+router.get('/logout', UserController.logout);
+router.post('/logout', UserController.logout);
+router.get('/profile', UserController.getProfile);
+router.get('/me', UserController.getProfile);
+
+// 1. CREATE & REGISTER (Form submission / Registration page / JSON)
+router.get('/register', UserController.getRegisterForm);
+router.post('/register', UserController.register);
 router.post('/', UserController.create);
 router.post('/users', UserController.create);
 

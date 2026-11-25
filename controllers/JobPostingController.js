@@ -40,9 +40,9 @@ class JobPostingController {
         }
 
         if (typeof res.render === 'function') {
-          return res.render('jobs', { jobs, message, alertType });
+          return res.render('jobs', { jobs, message, alertType, currentUser: req.user });
         }
-        return res.send(JobPostingView.renderJobs(jobs, { message, alertType }));
+        return res.send(JobPostingView.renderJobs(jobs, { message, alertType, currentUser: req.user }));
       }
 
       return res.status(200).json(jobs);
@@ -80,9 +80,9 @@ class JobPostingController {
         }
 
         if (typeof res.render === 'function') {
-          return res.render('jobDetail', { job, message, alertType });
+          return res.render('jobDetail', { job, message, alertType, currentUser: req.user });
         }
-        return res.send(JobPostingView.renderJobDetail(job, { message, alertType }));
+        return res.send(JobPostingView.renderJobDetail(job, { message, alertType, currentUser: req.user }));
       }
 
       return res.status(200).json(job);
@@ -107,9 +107,9 @@ class JobPostingController {
 
       if (req.accepts('html')) {
         if (typeof res.render === 'function') {
-          return res.render('jobEdit', { job });
+          return res.render('jobEdit', { job, currentUser: req.user });
         }
-        return res.send(JobPostingView.renderJobEdit(job));
+        return res.send(JobPostingView.renderJobEdit(job, { currentUser: req.user }));
       }
 
       return res.status(200).json(job);
@@ -236,9 +236,9 @@ class JobPostingController {
       if (req.accepts('html') && !req.xhr && !req.headers['sec-fetch-dest']?.includes('empty')) {
         const subtitle = `Career opportunities published by ${user.name} (${user.department})`;
         if (typeof res.render === 'function') {
-          return res.render('jobs', { jobs, subtitle });
+          return res.render('jobs', { jobs, subtitle, currentUser: req.user });
         }
-        return res.send(JobPostingView.renderJobs(jobs, { subtitle }));
+        return res.send(JobPostingView.renderJobs(jobs, { subtitle, currentUser: req.user }));
       }
 
       return res.status(200).json({ user, jobs });

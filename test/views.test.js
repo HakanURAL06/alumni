@@ -3,6 +3,7 @@ const assert = require('node:assert');
 const UserView = require('../views/UserView');
 const JobPostingView = require('../views/JobPostingView');
 const ApplicationView = require('../views/ApplicationView');
+const AdminView = require('../views/AdminView');
 
 test('UserView - renderUsers renders alumni list and form for POST /users', () => {
   const dummyUsers = [
@@ -148,3 +149,113 @@ test('ApplicationView - renderApplicationDetail renders candidate review card', 
   assert.ok(html.includes('Excited about distributed architecture'));
   assert.ok(html.includes('action="/applications/1/status"'));
 });
+
+test('UserView - renderRegister renders functional registration page with role selector and inputs', () => {
+  const html = UserView.renderRegister({
+    formData: {
+      name: 'Deniz Arslan',
+      email: 'deniz@alumni.edu',
+      department: 'Faculty of Law (Hukuk Fakültesi)',
+      graduationYear: 2025,
+      role: 'student',
+      title: 'Law Intern',
+      company: 'Bosphorus Legal',
+      isMentor: true
+    }
+  });
+  assert.ok(typeof html === 'string');
+  assert.ok(html.includes('Register for the Istanbul University Network'));
+  assert.ok(html.includes('action="/register" method="POST"'));
+  assert.ok(html.includes('name="role"'));
+  assert.ok(html.includes('name="name"'));
+  assert.ok(html.includes('name="email"'));
+  assert.ok(html.includes('name="password"'));
+  assert.ok(html.includes('name="confirmPassword"'));
+  assert.ok(html.includes('name="department"'));
+  assert.ok(html.includes('name="graduationYear"'));
+  assert.ok(html.includes('name="studentNumber"'));
+  assert.ok(html.includes('name="title"'));
+  assert.ok(html.includes('name="company"'));
+  assert.ok(html.includes('name="linkedinUrl"'));
+  assert.ok(html.includes('name="isMentor"'));
+  assert.ok(html.includes('value="Deniz Arslan"'));
+  assert.ok(html.includes('value="deniz@alumni.edu"'));
+});
+
+test('UserView - renderLogin renders login view with credentials inputs, options, and demo logins', () => {
+  const html = UserView.renderLogin({
+    email: 'hakan@alumni.edu',
+    returnUrl: '/users',
+    rememberMe: true
+  });
+  assert.ok(typeof html === 'string');
+  assert.ok(html.includes('Member Portal Login'));
+  assert.ok(html.includes('action="/login" method="POST"'));
+  assert.ok(html.includes('name="email"'));
+  assert.ok(html.includes('name="password"'));
+  assert.ok(html.includes('name="rememberMe"'));
+  assert.ok(html.includes('value="hakan@alumni.edu"'));
+  assert.ok(html.includes('value="/users"'));
+  assert.ok(html.includes('checked'));
+  assert.ok(html.includes('Quick Demo Sign-In'));
+  assert.ok(html.includes('/register'));
+});
+
+test('UserView - renderLogin displays error alert when error option is supplied', () => {
+  const html = UserView.renderLogin({
+    error: 'Invalid email or password.',
+    email: 'bad@alumni.edu'
+  });
+  assert.ok(typeof html === 'string');
+  assert.ok(html.includes('alert-danger'));
+  assert.ok(html.includes('Invalid email or password.'));
+  assert.ok(html.includes('value="bad@alumni.edu"'));
+});
+
+test('UserView - renderLogin displays success alert when message option is supplied', () => {
+  const html = UserView.renderLogin({
+    message: 'You have been logged out successfully. See you soon!',
+    alertType: 'success'
+  });
+  assert.ok(typeof html === 'string');
+  assert.ok(html.includes('alert-success'));
+  assert.ok(html.includes('You have been logged out successfully'));
+});
+
+test('AdminView - renderDashboard renders administration console with KPI metrics and governance controls', () => {
+  const dummyData = {
+    users: [
+      { id: 1, name: 'Hakan Ural', email: 'hakan@alumni.edu', role: 'admin', accountStatus: 'active' },
+      { id: 2, name: 'Ayşe Yılmaz', email: 'ayse@alumni.edu', role: 'student', accountStatus: 'active' }
+    ],
+    jobs: [
+      { id: 1, title: 'AI Engineer', company: 'Google', status: 'Active' }
+    ],
+    announcements: [
+      { id: 1, title: 'Alumni Reunion Gala', category: 'Event', date: '2026-12-01' }
+    ],
+    applications: [
+      { id: 1, status: 'Submitted', candidateName: 'Ayşe Yılmaz', jobTitle: 'AI Engineer' }
+    ]
+  };
+
+  const html = AdminView.renderDashboard(dummyData, {
+    message: 'Role updated successfully for User #2!',
+    alertType: 'success',
+    currentUser: { name: 'SuperAdmin', email: 'admin@istanbul.edu.tr', role: 'admin' }
+  });
+
+  assert.ok(typeof html === 'string');
+  assert.ok(html.includes('Administration Panel'));
+  assert.ok(html.includes('Role updated successfully for User #2!'));
+  assert.ok(html.includes('alert-success'));
+  assert.ok(html.includes('Hakan Ural'));
+  assert.ok(html.includes('Ayşe Yılmaz'));
+  assert.ok(html.includes('AI Engineer'));
+  assert.ok(html.includes('Alumni Reunion Gala'));
+  assert.ok(html.includes('/admin/users/1/role'));
+  assert.ok(html.includes('/admin/users/1/status'));
+  assert.ok(html.includes('/admin/manipulate'));
+  assert.ok(html.includes('Fast Direct Data Manipulation'));
+});
+

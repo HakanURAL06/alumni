@@ -1,6 +1,9 @@
 const KNOWN_ROUTES = [
   { path: '/', label: 'Home Portal', methods: ['GET'], aliases: ['/home', '/index', '/portal'] },
   { path: '/about', label: 'About Project', methods: ['GET'], aliases: ['/info'] },
+  { path: '/login', label: 'Member Login', methods: ['GET', 'POST'], aliases: ['/signin', '/auth/login', '/users/login'] },
+  { path: '/logout', label: 'Session Logout', methods: ['GET', 'POST'], aliases: ['/signout', '/auth/logout', '/users/logout'] },
+  { path: '/register', label: 'Member Registration', methods: ['GET', 'POST'], aliases: ['/signup', '/users/register', '/join', '/enroll'] },
   { path: '/users', label: 'Alumni Directory', methods: ['GET', 'POST'], aliases: ['/user', '/alumni', '/directory', '/members'] },
   { path: '/announcements', label: 'Announcements & Events', methods: ['GET', 'POST'], aliases: ['/announcement', '/news', '/events', '/notices'] },
   { path: '/jobs', label: 'Career & Job Board', methods: ['GET', 'POST'], aliases: ['/job', '/careers', '/vacancies', '/listings'] },
@@ -9,19 +12,27 @@ const KNOWN_ROUTES = [
   { path: '/hello', label: 'Greeting Endpoint', methods: ['GET'], aliases: [] },
   { path: '/api/swagger', label: 'Swagger API Docs', methods: ['GET'], aliases: ['/swagger', '/docs', '/api-docs', '/api/docs'] },
   { path: '/api/health', label: 'API Health Check', methods: ['GET', 'POST'], aliases: ['/health', '/status'] },
+  { path: '/api/login', label: 'Authentication Login API', methods: ['POST'], aliases: ['/api/auth/login'] },
+  { path: '/api/logout', label: 'Authentication Logout API', methods: ['POST'], aliases: ['/api/auth/logout'] },
+  { path: '/api/me', label: 'Authenticated Profile API', methods: ['GET'], aliases: ['/api/users/me'] },
   { path: '/api/users', label: 'Users REST API', methods: ['GET', 'POST'], aliases: ['/api/user', '/apiusers', '/apiuser'] },
   { path: '/api/announcements', label: 'Announcements REST API', methods: ['GET', 'POST'], aliases: ['/api/announcement', '/apiannouncements', '/apiannouncement'] },
   { path: '/api/jobs', label: 'Jobs REST API', methods: ['GET', 'POST'], aliases: ['/api/job', '/apijobs', '/apijob'] },
   { path: '/api/job-postings', label: 'Job Postings REST API', methods: ['GET', 'POST'], aliases: ['/api/jobpostings'] },
-  { path: '/api/applications', label: 'Applications REST API', methods: ['GET', 'POST'], aliases: ['/api/application', '/apiapplications', '/apiapplication'] }
+  { path: '/api/applications', label: 'Applications REST API', methods: ['GET', 'POST'], aliases: ['/api/application', '/apiapplications', '/apiapplication'] },
+  { path: '/admin', label: 'Administration Console', methods: ['GET', 'POST'], aliases: ['/panel', '/dashboard/admin'] },
+  { path: '/api/admin', label: 'Admin REST API', methods: ['GET', 'POST', 'PATCH', 'DELETE'], aliases: ['/api/admin/overview', '/apiadmin'] }
 ];
 
 const QUICK_NAV_LINKS = [
   { label: '🏠 Home', href: '/' },
+  { label: '🔑 Login', href: '/login' },
+  { label: '➕ Register', href: '/register' },
   { label: '👥 Alumni Directory', href: '/users' },
   { label: '📢 Announcements', href: '/announcements' },
   { label: '💼 Job Board', href: '/jobs' },
   { label: '📝 Applications', href: '/applications' },
+  { label: '🛡️ Admin Panel', href: '/admin' },
   { label: '📖 Swagger API Docs', href: '/api/swagger' },
   { label: '🩺 Health Check', href: '/api/health' }
 ];

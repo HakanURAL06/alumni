@@ -16,6 +16,10 @@ INSERT INTO users (name, department, graduation_year, email)
 SELECT 'Mehmet Demir', 'Electrical & Electronics Engineering', 2022, 'mehmet@alumni.edu'
 WHERE NOT EXISTS (SELECT 1 FROM users WHERE email = 'mehmet@alumni.edu');
 
+INSERT INTO users (name, department, graduation_year, email)
+SELECT 'Sistem Yöneticisi', 'Bilgisayar Mühendisliği', 2015, 'admin@istanbul.edu.tr'
+WHERE NOT EXISTS (SELECT 1 FROM users WHERE email = 'admin@istanbul.edu.tr');
+
 -- Seed Announcements (if table is empty)
 INSERT INTO announcements (title, content, category, author, publication_date)
 SELECT 

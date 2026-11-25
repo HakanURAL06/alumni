@@ -7,6 +7,9 @@ const apiApplicationRouter = require('./apiApplication');
 // ==========================================
 // DIRECT USER API ROUTES
 // ==========================================
+router.post('/login', ApiUserController.login);
+router.post('/logout', ApiUserController.logout);
+router.get('/me', ApiUserController.me);
 router.get('/', ApiUserController.getAll);
 router.post('/', ApiUserController.create);
 router.get('/:id', ApiUserController.getById);

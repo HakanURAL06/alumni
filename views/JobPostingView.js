@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const { injectDynamicNav } = require('./navHelper');
 
 const jobsTemplatePath = path.join(__dirname, 'jobs.html');
 const jobDetailTemplatePath = path.join(__dirname, 'jobDetail.html');
@@ -49,9 +50,10 @@ class JobPostingView {
       messageHtml = `<div class="${alertClass}">${options.message}</div>`;
     }
 
-    return template
+    const output = template
       .replace('{{JOB_ROWS}}', rows)
       .replace('{{MESSAGE}}', messageHtml);
+    return injectDynamicNav(output, { currentUser: options.currentUser, activePage: 'jobs' });
   }
 
   /**
@@ -82,7 +84,7 @@ class JobPostingView {
       messageHtml = `<div class="${alertClass}">${options.message}</div>`;
     }
 
-    return template
+    const output = template
       .replace(/{{ID}}/g, id)
       .replace(/{{TITLE}}/g, title)
       .replace(/{{COMPANY}}/g, company)
@@ -97,14 +99,16 @@ class JobPostingView {
       .replace(/{{POSTED_BY}}/g, postedBy)
       .replace(/{{POSTER_NAME}}/g, posterName)
       .replace(/{{MESSAGE}}/g, messageHtml);
+    return injectDynamicNav(output, { currentUser: options.currentUser, activePage: 'jobdetail' });
   }
 
   /**
    * Renders edit job posting form view.
    * @param {Object} job Job posting object
+   * @param {Object} options Optional context options
    * @returns {string} Fully rendered HTML string
    */
-  static renderJobEdit(job = {}) {
+  static renderJobEdit(job = {}, options = {}) {
     let template = fs.readFileSync(jobEditTemplatePath, 'utf-8');
     const id = job.id != null ? job.id : '';
     const title = job.title || '';
@@ -119,7 +123,7 @@ class JobPostingView {
     const status = job.status || 'Active';
     const postedBy = job.postedBy != null ? job.postedBy : '1';
 
-    return template
+    const output = template
       .replace(/{{ID}}/g, id)
       .replace(/{{TITLE}}/g, title)
       .replace(/{{COMPANY}}/g, company)
@@ -132,6 +136,7 @@ class JobPostingView {
       .replace(/{{DEADLINE}}/g, deadline)
       .replace(/{{STATUS}}/g, status)
       .replace(/{{POSTED_BY}}/g, postedBy);
+    return injectDynamicNav(output, { currentUser: options.currentUser, activePage: 'jobedit' });
   }
 }
 

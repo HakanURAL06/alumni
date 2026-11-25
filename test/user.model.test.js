@@ -54,3 +54,53 @@ test('User Model - delete removes user or returns null if not found', async () =
   const notFound = await User.delete(9999);
   assert.strictEqual(notFound, null);
 });
+
+test('User Model - assignRole updates role and enforces valid roles (USR-R3..USR-R6)', async () => {
+  const user = await User.create({
+    name: 'Role Test User',
+    department: 'Hukuk',
+    graduationYear: 2022,
+    email: 'role.test@alumni.edu',
+    role: 'alumni'
+  });
+
+  // Assign admin role to this specific user
+  const promoted = await User.assignRole(user.id, 'admin');
+  assert.strictEqual(promoted.role, 'admin');
+
+  // Verify retrieval reflects new role
+  const found = await User.findById(user.id);
+  assert.strictEqual(found.role, 'admin');
+
+  // Assign by email
+  const modUser = await User.assignRole('role.test@alumni.edu', 'moderator');
+  assert.strictEqual(modUser.role, 'moderator');
+
+  // Invalid role throws error
+  await assert.rejects(
+    async () => { await User.assignRole(user.id, 'invalid_role'); },
+    /Invalid role/
+  );
+});
+
+test('User Model - updateAccountStatus transitions status and enforces valid statuses', async () => {
+  const user = await User.create({
+    name: 'Status Test User',
+    department: 'İktisat',
+    graduationYear: 2020,
+    email: 'status.test@alumni.edu',
+    accountStatus: 'active'
+  });
+
+  const suspended = await User.updateAccountStatus(user.id, 'suspended');
+  assert.strictEqual(suspended.accountStatus, 'suspended');
+
+  const found = await User.findById(user.id);
+  assert.strictEqual(found.accountStatus, 'suspended');
+
+  // Invalid status throws error
+  await assert.rejects(
+    async () => { await User.updateAccountStatus(user.id, 'bogus_status'); },
+    /Invalid status/
+  );
+});
