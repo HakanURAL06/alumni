@@ -39,6 +39,9 @@
    - [Security, Input Normalization & Error Contract](#73-security-input-normalization--error-contract)
    - [Middleware Observability and Guardian Error Contract](#74-middleware-observability-and-guardian-error-contract)
    - [Authentication, Session Lifecycle & Credential Security Contract](#75-authentication-session-lifecycle--credential-security-contract)
+   - [Administration Console & Data Manipulation Governance](#76-administration-console--data-manipulation-governance)
+   - [Dynamic Role-Based Navigation & Menu System](#77-dynamic-role-based-navigation--menu-system)
+   - [Dedicated User Profile & Personal Workspace](#78-dedicated-user-profile--personal-workspace)
 8. [AI Agent Quick Reference & Query Matrix](#8-ai-agent-quick-reference--query-matrix)
 
 ---
@@ -1031,14 +1034,15 @@ The web presentation tier dynamically shapes navigation menus, quick-action cont
 | User Role | Top Brand / First Action | Primary Navigation Links | Right Action / Identity Display | Logout Action |
 | :--- | :--- | :--- | :--- | :--- |
 | **`guest`** | Home | Alumni Directory, Announcements, Job Board, Applications | `➕ Register`, `🔑 Login` (Action button) | None (Hidden) |
-| **`student`** | Home | Rehber & Mentorlar, Announcements, `💼 İş & Staj`, `📝 Başvurularım` | `🎓 <Name> (Öğrenci)` pill, `📝 Başvurularım →` | `🚪 Çıkış Yap` |
-| **`alumni`** | Home | Alumni Directory, `👤 Profilim`, Announcements, Job Board, `💼 İlanlarım`, `📝 Başvurularım` | `🎓 <Name> (Mezun)` pill, `👤 Profilim →` | `🚪 Çıkış Yap` |
-| **`employer`** | Home | `Yetenek Havuzu (Alumni)`, Job Board, `📢 İlan Ver`, `📋 Adaylar & Başvurular`, Announcements | `💼 <Name> (İşveren)` pill, `📢 İlan Ver →` | `🚪 Çıkış Yap` |
-| **`moderator`**| Home | Directory Oversight, Announcements Hub, Job Board Oversight, Applications | `⚖️ <Name> (Moderatör)` pill | `🚪 Çıkış Yap` |
-| **`admin`** | `🛡️ Admin Panel` *(Gold)* | Home, Alumni Directory, Announcements, Job Board, Applications | `👑 <Name> (Admin)` pill, `🛡️ Admin Paneli →` | `🚪 Çıkış Yap` |
+| **`student`** | Home | `👤 Profilim`, Rehber & Mentorlar, Announcements, `💼 İş & Staj`, `📝 Başvurularım` | `🎓 <Name> (Öğrenci)` pill, `👤 Profilim →`, `📝 Başvurularım →` | `🚪 Çıkış Yap` |
+| **`alumni`** | Home | `👤 Profilim`, Alumni Directory, Announcements, Job Board, `💼 İlanlarım`, `📝 Başvurularım` | `🎓 <Name> (Mezun)` pill, `👤 Profilim →` | `🚪 Çıkış Yap` |
+| **`employer`** | Home | `👤 Profilim`, `Yetenek Havuzu (Alumni)`, Job Board, `📢 İlan Ver`, `📋 Adaylar & Başvurular`, Announcements | `💼 <Name> (İşveren)` pill, `👤 Profilim →`, `📢 İlan Ver →` | `🚪 Çıkış Yap` |
+| **`moderator`**| Home | `👤 Profilim`, Directory Oversight, Announcements Hub, Job Board Oversight, Applications | `⚖️ <Name> (Moderatör)` pill, `👤 Profilim →` | `🚪 Çıkış Yap` |
+| **`admin`** | `🛡️ Admin Panel` *(Gold)* | `👤 Profilim`, Home, Alumni Directory, Announcements, Job Board, Applications | `👑 <Name> (Admin)` pill, `🛡️ Admin Paneli →`, `👤 Profilim →` | `🚪 Çıkış Yap` |
 
 #### 3. Identity Badging & Session Termination (`NAV-R3`)
 - Authenticated sessions display user name/email with a high-contrast role badge pill.
+- Every authenticated role carries `👤 Profilim` (`/profile`) in primary navigation and top-utility shortcuts.
 - The red logout button (`🚪 Çıkış Yap`) directs to `/logout`, clearing session cookies via `clearSessionCookie(res)`.
 - Prevents members from feeling trapped in an active session by guaranteeing prominent exit controls on every page.
 
@@ -1046,24 +1050,46 @@ The web presentation tier dynamically shapes navigation menus, quick-action cont
 - **Server-Side Rendered (SSR) Views:** Injected at render time by controllers via `injectDynamicNav` and `currentUser: req.user`.
 - **Static Pages (`/`, `/about`):** Client-side self-invoking script (`initDynamicNav()`) fetches `/api/me` and seamlessly updates `.top-bar-right` and `.nav-links` without page reload.
 
-### 7.8 User-Specific Pages & Personal Workspaces (`USER-PAGE-R1`..`USER-PAGE-R3`)
+### 7.8 Dedicated User Profile & Personal Workspace (`PROF-R1`..`PROF-R5`)
 
-#### 1. Direct Personal Profile Resolution (`USER-PAGE-R1`)
+#### 1. Universal Profile Workspace Resolution (`PROF-R1`)
 - **Route:** `GET /profile` and `GET /me`.
+- **View:** `views/profile.html` via `UserView.renderProfile(user, { jobs, applications, currentUser, message, error, alertType })`.
 - **Behavior:**
-  - Authenticated sessions (`req.user` present with `id` or `userId`): Issues a `302 Found` redirect directly to `/users/:id`.
+  - Authenticated sessions (`req.user` present): Fetches user record from storage alongside their published job postings (`JobPosting.findByPostedBy(user.id)`) and submitted candidate applications (`Application.findByUser(user.id)`), rendering the interactive 5-tab workspace with status code `200 OK`.
   - Unauthenticated requests: Web browsers redirect (`302`) to `/login?returnUrl=%2Fprofile`; REST API requests receive `401 Unauthorized` (`{"error": "Unauthorized: No active user session."}`).
-- **API Alias:** `GET /api/profile` delegates to `ApiUserController.me`, returning the current user payload.
+- **API Alias:** `GET /api/profile` returns `{ user, jobs, applications }` JSON payload.
 
-#### 2. Personal Workspace Dossier View (`USER-PAGE-R2`)
-- **Owner-Detection Policy:** When `(currentUser.id || currentUser.userId) == user.id`, the view layer renders an elevated Personal Workspace banner (`✨ Kişisel Profil & Çalışma Alanı`) with greeting, member ID, profile edit button, and logout action.
-- **Enriched Profile Dossier:** Includes role badge, account status pill (`Active`, `Pending Verification`, `Suspended`, `Archived`), professional title and company affiliation, and verified alumni mentor status (`isMentor = true`).
+#### 2. Profile Data Updating Contract (`PROF-R2`)
+- **Route:** `POST /profile/edit`.
+- **Validation:**
+  - `name`: Required, non-whitespace string, min 2 chars.
+  - `department`: Required, non-whitespace string, min 2 chars.
+  - `graduationYear`: Required integer within `1900..2100`.
+  - Professional title, company, studentNumber, linkedinUrl, and `isMentor` toggle are sanitized and stored.
+- **Anti-Escalation & Immutability:** User `email`, `role`, and `accountStatus` are locked from unauthorized tampering on this route; role elevation is strictly guarded by `USR-R4`.
+- **Session Re-signing:** Upon successful update, the session cookie is re-issued with the updated user name so navigation pills update instantaneously.
+- **Outcome:** Web redirects to `/profile?updated=1`; API returns `200 OK` with updated user object.
 
-#### 3. Role-Adaptive Personal Dashboards (`USER-PAGE-R3`)
-- **Student Dashboard:** Features quick links to "📝 Başvurularım & Staj Takibi" (`/users/:id/applications`), "💼 Açık İş & Staj İlanları" (`/jobs`), and "👥 Mezun Rehberleri & Mentorlar" (`/users`).
-- **Alumni Dashboard:** Features quick links to "💼 Yayınladığım İlanlar" (`/users/:id/jobs`), "📝 Başvurularım" (`/users/:id/applications`), and mentorship settings.
-- **Employer Dashboard:** Features quick links to "📢 Yeni İlan Yayınla" (`/jobs#post-job-form`), "📋 Yayınlanan İlanlarım" (`/users/:id/jobs`), and "👥 Aday Başvuruları" (`/applications`).
-- **Admin Dashboard:** Features quick links to "🛡️ Yönetim Konsolu" (`/admin`) and member activity metrics.
+#### 3. Credential Security & Password Mutation (`PROF-R3`)
+- **Route:** `POST /profile/password`.
+- **Contract:**
+  - Requires `currentPassword`, `newPassword`, and `confirmPassword`.
+  - Validates `currentPassword` against stored PBKDF2 SHA-512 hash (`User.authenticate`).
+  - Requires `newPassword.length >= 8` and `newPassword === confirmPassword`.
+  - Re-hashes new password with a fresh cryptographic salt via `User.updatePassword`.
+- **Outcome:** Web redirects to `/profile?passwordUpdated=1#tab-security`; invalid current password redirects to `/profile?error=...#tab-security`.
+
+#### 4. Interactive 5-Tab Workspace Architecture (`PROF-R4`)
+- **Tab 1 (📋 Profil Bilgileri & Düzenleme):** Overview of academic & career records + inline edit form.
+- **Tab 2 (💼 İlanlarım):** Real-time table of positions published by the member + button to `/jobs#post-job-form`.
+- **Tab 3 (📝 Başvurularım):** Candidate application tracking table with live status badges (`Submitted`, `Pending`, `Under Review`, `Accepted`, `Rejected`).
+- **Tab 4 (🔐 Güvenlik & Şifre):** Password modification form and security telemetry.
+- **Tab 5 (⚡ Rol Araçları & Eylemler):** Contextual action cards tailored for student, alumni, employer, and admin roles.
+
+#### 5. Public Alumni Directory Dossier (`PROF-R5`)
+- **Route:** `GET /users/:id` (`views/userDetail.html`).
+- Serves as the public graduate directory profile across the network. If the profile owner views their own page, a prominent Personal Workspace banner links to `/profile`.
 
 ---
 
@@ -1089,7 +1115,9 @@ This matrix provides AI agents with instant mappings between business actions, e
 | **Authentication (API)**| API Logout | `POST` | `/api/logout` | `ApiUserController.logout` | Session cookie clear |
 | **Authentication (API)**| Current User Context | `GET` | `/api/me` | `ApiUserController.me` | `req.user` Inspection |
 | **Authentication (API)**| Profile Context Alias | `GET` | `/api/profile` | `ApiUserController.me` | `req.user` Inspection |
-| **User (Web Personal)** | Personal Profile Jump | `GET` | `/profile` / `/me` | `UserController.getProfile` | Redirects to `/users/:id` |
+| **User (Web Profile)** | Dedicated Profile Workspace | `GET` | `/profile` / `/me` | `UserController.getProfile` | `UserView.renderProfile(user, {jobs, apps})` |
+| **User (Web Profile)** | Update Profile Data | `POST` | `/profile/edit` | `UserController.updateProfile` | `User.update(uid, body)` |
+| **User (Web Profile)** | Update Profile Password | `POST` | `/profile/password` | `UserController.updatePassword` | `User.updatePassword(uid, pwd)` |
 | **User (Web Registration)**| Member Registration View | `GET` | `/register` | `UserController.getRegisterForm` | `UserView.renderRegister()` |
 | **User (Web Registration)**| Register Member Action | `POST` | `/register` | `UserController.register` | `User.validateRegistration` & `User.create` |
 | :--- | :--- | :--- | :--- | :--- | :--- |

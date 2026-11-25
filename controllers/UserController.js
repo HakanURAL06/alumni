@@ -1,4 +1,6 @@
 const User = require('../models/User');
+const JobPosting = require('../models/JobPosting');
+const Application = require('../models/Application');
 const UserView = require('../views/UserView');
 const { sendResourceNotFound, sendServerError, setSessionCookie, clearSessionCookie } = require('../middleware');
 
@@ -64,18 +66,208 @@ class UserController {
 
   /**
    * CURRENT USER PROFILE: GET /profile or GET /me
-   * Directs the authenticated user to their own personal user page (/users/:id).
+   * Renders the dedicated User Profile & Personal Workspace view with the user's jobs,
+   * applications, profile edit form, and account security controls.
    * Unauthenticated requests redirect to /login?returnUrl=/profile or return 401 for JSON API.
    */
   static async getProfile(req, res) {
-    if (req.user && (req.user.id || req.user.userId)) {
+    try {
+      if (!req.user || (!req.user.id && !req.user.userId)) {
+        if (req.accepts('html') && !req.xhr && !req.headers?.accept?.includes('application/json')) {
+          return res.redirect('/login?returnUrl=%2Fprofile');
+        }
+        return res.status(401).json({ error: 'Unauthorized: No active user session.' });
+      }
+
       const uid = req.user.id || req.user.userId;
-      return res.redirect(`/users/${uid}`);
+      const user = await User.findById(uid);
+      if (!user) {
+        return sendResourceNotFound(req, res, { ...USER_NOT_FOUND_OPTS, id: uid });
+      }
+
+      const [jobs, applications] = await Promise.all([
+        JobPosting.findByPostedBy(uid),
+        Application.findByUser(uid)
+      ]);
+
+      if (req.accepts('html')) {
+        let message = null;
+        let error = null;
+        let alertType = 'success';
+
+        if (req.query) {
+          if (req.query.updated) {
+            message = 'Profil bilgileriniz başarıyla güncellendi!';
+            alertType = 'success';
+          } else if (req.query.passwordUpdated) {
+            message = 'Şifreniz başarıyla güncellendi! Yeni şifreniz aktif edilmiştir.';
+            alertType = 'success';
+          } else if (req.query.error) {
+            error = req.query.error;
+            alertType = 'danger';
+          }
+        }
+
+        if (typeof res.render === 'function') {
+          return res.render('profile', { user, jobs, applications, currentUser: req.user, message, error, alertType });
+        }
+        return res.send(UserView.renderProfile(user, { jobs, applications, currentUser: req.user, message, error, alertType }));
+      }
+
+      return res.status(200).json({ user, jobs, applications });
+    } catch (error) {
+      return sendServerError(req, res, error, {
+        operation: 'User profile workspace operation',
+        backHref: '/users',
+        backLabel: '← Back to Alumni Directory'
+      });
     }
-    if (req.accepts('html') && !req.xhr && !req.headers?.accept?.includes('application/json')) {
-      return res.redirect('/login?returnUrl=%2Fprofile');
+  }
+
+  /**
+   * UPDATE PROFILE: POST /profile/edit
+   * Updates profile information (name, department, graduationYear, title, company, studentNumber, linkedinUrl, isMentor)
+   * for the authenticated user.
+   */
+  static async updateProfile(req, res) {
+    try {
+      if (!req.user || (!req.user.id && !req.user.userId)) {
+        if (req.accepts('html')) {
+          return res.redirect('/login?returnUrl=%2Fprofile');
+        }
+        return res.status(401).json({ error: 'Unauthorized: No active user session.' });
+      }
+
+      const uid = req.user.id || req.user.userId;
+      const existingUser = await User.findById(uid);
+      if (!existingUser) {
+        return sendResourceNotFound(req, res, { ...USER_NOT_FOUND_OPTS, id: uid });
+      }
+
+      const { name, department, graduationYear, title, company, studentNumber, linkedinUrl, isMentor } = req.body || {};
+
+      const errors = [];
+      const cleanName = name ? String(name).trim() : existingUser.name;
+      if (!cleanName || cleanName.length < 2) {
+        errors.push('Ad Soyad alanı en az 2 karakter olmalıdır.');
+      }
+
+      const cleanDept = department ? String(department).trim() : existingUser.department;
+      if (!cleanDept || cleanDept.length < 2) {
+        errors.push('Fakülte / Bölüm alanı en az 2 karakter olmalıdır.');
+      }
+
+      let cleanYear = graduationYear ? Number(graduationYear) : existingUser.graduationYear;
+      if (!cleanYear || isNaN(cleanYear) || cleanYear < 1900 || cleanYear > 2100) {
+        errors.push('Geçerli bir mezuniyet yılı belirtilmelidir (1900-2100).');
+      }
+
+      if (errors.length > 0) {
+        if (req.accepts('html')) {
+          return res.redirect(`/profile?error=${encodeURIComponent(errors.join(' '))}`);
+        }
+        return res.status(400).json({ error: errors.join(' ') });
+      }
+
+      const updateData = {
+        name: cleanName,
+        department: cleanDept,
+        graduationYear: cleanYear,
+        title: title !== undefined ? String(title).trim() : existingUser.title,
+        company: company !== undefined ? String(company).trim() : existingUser.company,
+        studentNumber: studentNumber !== undefined ? String(studentNumber).trim() : existingUser.studentNumber,
+        linkedinUrl: linkedinUrl !== undefined ? String(linkedinUrl).trim() : existingUser.linkedinUrl,
+        isMentor: isMentor === true || isMentor === 'true' || isMentor === '1' || isMentor === 'on'
+      };
+
+      const updatedUser = await User.update(uid, updateData);
+
+      // Re-sign session cookie so updated name is immediately reflected in top-bar/pill
+      if (updatedUser) {
+        const token = User.createSessionToken(updatedUser);
+        setSessionCookie(res, token);
+      }
+
+      if (req.accepts('html')) {
+        return res.redirect('/profile?updated=1');
+      }
+      return res.status(200).json({ message: 'Profile updated successfully', user: updatedUser });
+    } catch (error) {
+      return sendServerError(req, res, error, {
+        operation: 'Update profile operation',
+        backHref: '/profile',
+        backLabel: '← Back to Profile'
+      });
     }
-    return res.status(401).json({ error: 'Unauthorized: No active user session.' });
+  }
+
+  /**
+   * UPDATE PASSWORD: POST /profile/password
+   * Securely validates the current password and hashes the new password with PBKDF2 SHA-512.
+   */
+  static async updatePassword(req, res) {
+    try {
+      if (!req.user || (!req.user.id && !req.user.userId)) {
+        if (req.accepts('html')) {
+          return res.redirect('/login?returnUrl=%2Fprofile');
+        }
+        return res.status(401).json({ error: 'Unauthorized: No active user session.' });
+      }
+
+      const uid = req.user.id || req.user.userId;
+      const existingUser = await User.findById(uid);
+      if (!existingUser) {
+        return sendResourceNotFound(req, res, { ...USER_NOT_FOUND_OPTS, id: uid });
+      }
+
+      const { currentPassword, newPassword, confirmPassword } = req.body || {};
+
+      if (!currentPassword || !newPassword || !confirmPassword) {
+        const msg = 'Lütfen tüm şifre alanlarını doldurunuz.';
+        if (req.accepts('html')) {
+          return res.redirect(`/profile?error=${encodeURIComponent(msg)}#tab-security`);
+        }
+        return res.status(400).json({ error: msg });
+      }
+
+      if (String(newPassword).length < 8) {
+        const msg = 'Yeni şifreniz en az 8 karakter uzunluğunda olmalıdır.';
+        if (req.accepts('html')) {
+          return res.redirect(`/profile?error=${encodeURIComponent(msg)}#tab-security`);
+        }
+        return res.status(400).json({ error: msg });
+      }
+
+      if (newPassword !== confirmPassword) {
+        const msg = 'Yeni şifre ve şifre tekrarı birbiriyle eşleşmiyor.';
+        if (req.accepts('html')) {
+          return res.redirect(`/profile?error=${encodeURIComponent(msg)}#tab-security`);
+        }
+        return res.status(400).json({ error: msg });
+      }
+
+      const authCheck = await User.authenticate(existingUser.email, currentPassword);
+      if (!authCheck.success) {
+        const msg = 'Mevcut şifreniz hatalı. Lütfen kontrol edip tekrar deneyiniz.';
+        if (req.accepts('html')) {
+          return res.redirect(`/profile?error=${encodeURIComponent(msg)}#tab-security`);
+        }
+        return res.status(400).json({ error: msg });
+      }
+
+      await User.updatePassword(uid, newPassword);
+
+      if (req.accepts('html')) {
+        return res.redirect('/profile?passwordUpdated=1#tab-security');
+      }
+      return res.status(200).json({ message: 'Password updated successfully' });
+    } catch (error) {
+      return sendServerError(req, res, error, {
+        operation: 'Update password operation',
+        backHref: '/profile',
+        backLabel: '← Back to Profile'
+      });
+    }
   }
 
   /**

@@ -60,6 +60,8 @@ test('navHelper - getNavItems for Admin role injects prominent Admin Panel and u
 
   assert.ok(labels.includes('🛡️ Admin Panel'));
   assert.ok(items.find(i => i.label === '🛡️ Admin Panel').highlight);
+  assert.ok(labels.includes('👤 Profilim'));
+  assert.strictEqual(items.find(i => i.label === '👤 Profilim').href, '/profile');
   assert.ok(labels.includes('Home'));
   assert.ok(labels.includes('Alumni Directory'));
   assert.ok(labels.includes('Announcements'));
@@ -72,12 +74,25 @@ test('navHelper - getNavItems for Admin role injects prominent Admin Panel and u
   assert.ok(!labels.includes('➕ Register'));
 });
 
+test('navHelper - getNavItems provides universal 👤 Profilim (/profile) link for all authenticated roles', () => {
+  const roles = ['student', 'alumni', 'employer', 'moderator', 'admin'];
+  for (const role of roles) {
+    const user = { id: 99, name: `Test ${role}`, email: `${role}@istanbul.edu.tr`, role };
+    const items = getNavItems(user, 'home');
+    const profileItem = items.find(i => i.label === '👤 Profilim');
+    assert.ok(profileItem, `Role ${role} must have '👤 Profilim' nav link`);
+    assert.strictEqual(profileItem.href, '/profile');
+  }
+});
+
 test('navHelper - getNavItems for Student role contains student-tailored menu labels', () => {
   const studentUser = { id: 2, name: 'Ayşe Yılmaz', email: 'ayse@alumni.edu', role: 'student' };
   const items = getNavItems(studentUser, 'jobs');
   const labels = items.map(i => i.label);
 
   assert.ok(labels.includes('Rehber & Mentorlar'));
+  assert.ok(labels.includes('👤 Profilim'));
+  assert.strictEqual(items.find(i => i.label === '👤 Profilim').href, '/profile');
   assert.ok(labels.includes('💼 İş & Staj'));
   assert.ok(labels.includes('📝 Başvurularım'));
   assert.ok(labels.some(l => l.includes('Ayşe Yılmaz')));
@@ -93,6 +108,8 @@ test('navHelper - getNavItems for Employer role includes talent pool and candida
   const labels = items.map(i => i.label);
 
   assert.ok(labels.includes('Yetenek Havuzu (Alumni)'));
+  assert.ok(labels.includes('👤 Profilim'));
+  assert.strictEqual(items.find(i => i.label === '👤 Profilim').href, '/profile');
   assert.ok(labels.includes('Job Board'));
   assert.ok(labels.includes('📢 İlan Ver'));
   assert.ok(labels.includes('📋 Adaylar & Başvurular'));
@@ -115,7 +132,7 @@ test('navHelper - getNavItems for Alumni role includes profile and personal jobs
   assert.ok(labels.includes('🚪 Çıkış Yap'));
 
   const profileItem = items.find(i => i.label === '👤 Profilim');
-  assert.strictEqual(profileItem.href, '/users/4');
+  assert.strictEqual(profileItem.href, '/profile');
 
   const jobsItem = items.find(i => i.label === '💼 İlanlarım');
   assert.strictEqual(jobsItem.href, '/users/4/jobs');
@@ -139,7 +156,7 @@ test('navHelper - renderTopBarRightHtml renders login buttons for guests and use
   const memberHtml = renderTopBarRightHtml(memberUser);
   assert.ok(memberHtml.includes('Zeynep Kaya'));
   assert.ok(memberHtml.includes('Mezun'));
-  assert.ok(memberHtml.includes('/users/5'));
+  assert.ok(memberHtml.includes('/profile'));
   assert.ok(memberHtml.includes('🚪 Çıkış Yap'));
   assert.ok(memberHtml.includes('/logout'));
 });
@@ -251,7 +268,7 @@ test('Integration - Web requests dynamically reflect authentication state and us
   }
 });
 
-test('User-Specific Pages - GET /profile redirects authenticated members to their profile and unauthenticated to /login', async () => {
+test('User-Specific Pages - GET /profile renders dedicated personal workspace and POST /profile/edit & password work', async () => {
   const server = app.listen(0);
   const { port } = server.address();
 
@@ -264,33 +281,75 @@ test('User-Specific Pages - GET /profile redirects authenticated members to thei
     assert.strictEqual(unauthRes.status, 302);
     assert.ok(unauthRes.headers.get('location').includes('/login'));
 
-    // 2. Authenticated GET /profile redirects to /users/:id
-    const user = { id: 2, name: 'Ayşe Yılmaz', email: 'ayse@alumni.edu', role: 'student' };
+    // 2. Authenticated GET /profile renders dedicated personal profile workspace (200 OK)
+    const user = { id: 2, name: 'Ayşe Yılmaz', email: 'ayse@alumni.edu', role: 'student', department: 'Industrial Engineering', graduationYear: 2023 };
     const token = User.createSessionToken(user);
 
     const authRes = await fetch(`http://127.0.0.1:${port}/profile`, {
       headers: {
         Accept: 'text/html',
         Cookie: `session=${token}`
+      }
+    });
+    assert.strictEqual(authRes.status, 200);
+    const authHtml = await authRes.text();
+    assert.ok(authHtml.includes('Kişisel Profilim (Ayşe Yılmaz)'));
+    assert.ok(authHtml.includes('Profil Bilgileri &amp; Düzenleme'));
+    assert.ok(authHtml.includes('İlanlarım'));
+    assert.ok(authHtml.includes('Başvurularım'));
+    assert.ok(authHtml.includes('Güvenlik &amp; Şifre'));
+    assert.ok(authHtml.includes('action="/profile/edit"'));
+    assert.ok(authHtml.includes('action="/profile/password"'));
+
+    // 3. Authenticated POST /profile/edit updates profile fields and redirects with updated=1
+    const editRes = await fetch(`http://127.0.0.1:${port}/profile/edit`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Accept': 'text/html',
+        Cookie: `session=${token}`
       },
+      body: new URLSearchParams({
+        name: 'Ayşe Yılmaz (Updated)',
+        department: 'Advanced Industrial Engineering',
+        graduationYear: '2023',
+        title: 'Operations Analyst',
+        company: 'Logistics Global',
+        isMentor: 'true'
+      }),
       redirect: 'manual'
     });
-    assert.strictEqual(authRes.status, 302);
-    assert.ok(authRes.headers.get('location').includes('/users/2'));
+    assert.strictEqual(editRes.status, 302);
+    assert.ok(editRes.headers.get('location').includes('/profile?updated=1'));
 
-    // 3. User viewing their own profile sees Personal Workspace banner and role-specific cards
-    const profileRes = await fetch(`http://127.0.0.1:${port}/users/2`, {
+    // 4. Authenticated POST /profile/password with correct current password succeeds
+    const pwdRes = await fetch(`http://127.0.0.1:${port}/profile/password`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Accept': 'text/html',
+        Cookie: `session=${token}`
+      },
+      body: new URLSearchParams({
+        currentPassword: 'Alumni2024!',
+        newPassword: 'NewSecurePassword123!',
+        confirmPassword: 'NewSecurePassword123!'
+      }),
+      redirect: 'manual'
+    });
+    assert.strictEqual(pwdRes.status, 302);
+    assert.ok(pwdRes.headers.get('location').includes('passwordUpdated=1'));
+
+    // 5. User viewing directory profile /users/2 still works smoothly
+    const directoryRes = await fetch(`http://127.0.0.1:${port}/users/2`, {
       headers: {
         Accept: 'text/html',
         Cookie: `session=${token}`
       }
     });
-    assert.strictEqual(profileRes.status, 200);
-    const profileHtml = await profileRes.text();
-    assert.ok(profileHtml.includes('Personal Workspace'));
-    assert.ok(profileHtml.includes('Ayşe Yılmaz'));
-    assert.ok(profileHtml.includes('Mezun Aktiviteleri'));
-    assert.ok(profileHtml.includes('/users/2/applications'));
+    assert.strictEqual(directoryRes.status, 200);
+    const directoryHtml = await directoryRes.text();
+    assert.ok(directoryHtml.includes('Detail View'));
   } finally {
     await new Promise((resolve) => server.close(resolve));
   }

@@ -57,6 +57,10 @@ app.engine('html', (filePath, options, callback) => {
       const output = UserView.renderLogin(options);
       return callback(null, output);
     }
+    if (filePath.endsWith('profile.html')) {
+      const output = UserView.renderProfile(options.user || {}, options);
+      return callback(null, output);
+    }
     if (filePath.endsWith('announcements.html')) {
       const output = AnnouncementView.renderAnnouncements(options.announcements || [], options);
       return callback(null, output);
@@ -125,6 +129,8 @@ app.post(['/logout', '/signout'], UserController.logout);
 app.get(['/register', '/signup'], UserController.getRegisterForm);
 app.post(['/register', '/signup', '/api/register'], UserController.register);
 app.get(['/profile', '/me'], UserController.getProfile);
+app.post('/profile/edit', UserController.updateProfile);
+app.post('/profile/password', UserController.updatePassword);
 
 // ApiUser routes -> ApiUserController (RESTful API)
 app.use('/apiuser', apiUserRoutes);

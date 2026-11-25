@@ -594,6 +594,9 @@ class UserModel {
         studentNumber,
         linkedinUrl
       });
+      if (updateData.password) {
+        this._recordCredentials(res.rows[0], updateData.password);
+      }
       const updatedUser = this._enrichUser(res.rows[0]);
 
       // Mirror to in-memory cache
@@ -627,8 +630,29 @@ class UserModel {
       if (updateData.linkedinUrl !== undefined) user.linkedinUrl = updateData.linkedinUrl;
 
       this._recordMeta(user);
+      if (updateData.password) {
+        this._recordCredentials(user, updateData.password);
+      }
       return this._enrichUser(user);
     }
+  }
+
+  /**
+   * UPDATE PASSWORD: Securely updates user password using PBKDF2 with SHA-512 and cryptographic salt
+   * @param {number|string} idOrEmail User ID or Email
+   * @param {string} newPassword Plaintext new password
+   * @returns {Promise<Object|null>} The user record or null if not found
+   */
+  async updatePassword(idOrEmail, newPassword) {
+    let user = null;
+    if (typeof idOrEmail === 'number' || /^\d+$/.test(String(idOrEmail))) {
+      user = await this.findById(Number(idOrEmail));
+    } else {
+      user = await this.findByEmail(String(idOrEmail));
+    }
+    if (!user) return null;
+    this._recordCredentials(user, newPassword);
+    return user;
   }
 
   /**

@@ -193,7 +193,7 @@ The current release (**v2.0.0**) establishes the core MVC architecture, persiste
 
 ---
 
-## 10. Complete Front-End Experience & Page Ecosystem (17 Screens)
+## 10. Complete Front-End Experience & Page Ecosystem (18 Screens)
 
 Every screen across the Istanbul University Alumni Tracking System shares a unified brand header (`İstanbul Üniversitesi • Mezun Portalı`), a real-time service status bar, dynamic role-tailored navigation menus, semantic color coding aligned with its community pillar, and responsive accessibility:
 
@@ -203,7 +203,8 @@ Every screen across the Istanbul University Alumni Tracking System shares a unif
 | **About & Heritage** (`/about`) | [`public/about.html`](./public/about.html) | **Institutional Legacy** &bull; *IU Golden Amber & Cobalt* | Celebrates the 1453 Beyazıt heritage, explains platform purpose across faculties, and documents the full MVC + PostgreSQL 16 + Guardian tech stack. |
 | **Member Registration** (`/register`, `/signup`) | [`views/register.html`](./views/register.html) | **Member Onboarding** &bull; *Bosphorus Cobalt & Gold* | Interactive onboarding with role cards (*Alumni, Student, Employer*), 14 faculty selectors, graduation cohort validation, and mentorship toggle. |
 | **Member Portal Login** (`/login`) | [`views/login.html`](./views/login.html) | **Authentication** &bull; *IU Navy & Cobalt* | Secure sign-in with email normalization, password visibility toggle, 30-day Remember Me session persistence, and one-click demo credentials. |
-| **Personal Profile & Workspace** (`/profile`, `/me`, `/users/:id`) | [`views/userDetail.html`](./views/userDetail.html) | **Pillar 1: Directory & Workspace** &bull; *Cobalt & Navy* | Graduate profile dossier with role/status badges, personal workspace banner for owners, professional headline, and role-adaptive activity cards. |
+| **User Profile & Personal Workspace** (`/profile`, `/me`) | [`views/profile.html`](./views/profile.html) | **Personal Workspace** &bull; *IU Cobalt & Navy* | Dedicated personal dashboard for every authenticated member featuring 5 tabs: Profile Info & Inline Edit, My Job Postings, My Applications, Security & Password Change, and Role Tools. |
+| **Alumni Directory Profile Dossier** (`/users/:id`) | [`views/userDetail.html`](./views/userDetail.html) | **Pillar 1: Directory** &bull; *Cobalt & Navy* | Public graduate profile dossier with role/status badges, personal workspace banner for profile owner, professional headline, and role-adaptive activity cards. |
 | **Alumni Directory** (`/users`) | [`views/users.html`](./views/users.html) | **Pillar 1: Directory** &bull; *Bosphorus Cobalt (`#2563eb`)* | Live client-side cohort/faculty search toolbar, verified graduate table, and `USR-R1`–`USR-R2` compliant graduate enrollment form. |
 | **Edit Alumni Profile** (`/users/:id/edit`) | [`views/userEdit.html`](./views/userEdit.html) | **Pillar 1: Directory** &bull; *Golden Amber & Cobalt* | Breadcrumb-guided profile update form with pre-populated cohort and faculty fields. |
 | **Central Admin Console** (`/admin`) | [`views/admin.html`](./views/admin.html) | **Platform Governance** &bull; *Royal Purple & Crimson Rose* | Executive administration console with 4 KPI metrics cards, member RBAC delegation, account status lifecycle, content moderation, and fast data manipulation engine. |

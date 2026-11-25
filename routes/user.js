@@ -15,6 +15,8 @@ router.get('/logout', UserController.logout);
 router.post('/logout', UserController.logout);
 router.get('/profile', UserController.getProfile);
 router.get('/me', UserController.getProfile);
+router.post('/profile/edit', UserController.updateProfile);
+router.post('/profile/password', UserController.updatePassword);
 
 // 1. CREATE & REGISTER (Form submission / Registration page / JSON)
 router.get('/register', UserController.getRegisterForm);

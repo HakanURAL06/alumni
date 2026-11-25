@@ -231,9 +231,9 @@ Layered box-shadow tokens provide realistic physical depth without muddying dark
 
 ---
 
-## 8. Complete Page-by-Page Design Specification (All 15 Front-End Screens)
+## 8. Complete Page-by-Page Design Specification (All 16 Front-End Screens)
 
-All 14 front-end screens across `public/`, `views/`, and `middleware/guardianShared.js` implement the Refero Styles & `VoltAgent/awesome-design-md` token architecture with zero external CDN dependencies:
+All 16 front-end screens across `public/`, `views/`, and `middleware/guardianShared.js` implement the Refero Styles & `VoltAgent/awesome-design-md` token architecture with zero external CDN dependencies:
 
 ### 8.1 Static Portal & Heritage Screens (`public/`)
 - **[`public/index.html`](./public/index.html) (`GET /`) — Unified Portal Homepage:**
@@ -241,14 +241,26 @@ All 14 front-end screens across `public/`, `views/`, and `middleware/guardianSha
 - **[`public/about.html`](./public/about.html) (`GET /about`) — Institutional Heritage & Tech Stack:**
   - **Layout:** Top utility bar + sticky navbar + Golden-Amber accented hero + 2-column 1453 Beyazıt Heritage banner with 4 stat tiles (`1453`, `MVC`, `v2.0`, `100%`) + 2-column Purpose & Tech Stack cards + quick-action button bar + footer.
 
-### 8.2 Alumni Directory & Profile Screens (`views/users*.html` & `views/UserView.js`)
+### 8.2 Alumni Directory & Profile Screens (`views/users*.html`, `views/profile.html` & `views/UserView.js`)
+- **[`views/profile.html`](./views/profile.html) (`GET /profile`, `/me`) — Dedicated User Profile & Personal Workspace:**
+  - **Accent Theme:** Bosphorus Cobalt (`--iu-cobalt-600: #2563eb`) & IU Deep Navy (`--iu-navy-950: #020617`).
+  - **Layout & Visual Hierarchy:**
+    - Top utility bar with live status indicator and `👤 Profilim` quick shortcut.
+    - Profile Hero Header Card with circular role-emblem avatar (`👑`, `⚖️`, `💼`, `🎓`), verified badges (`Role`, `Account Status`, `Mentorship`), and public profile preview shortcut (`/users/{{ID}}`).
+    - **Interactive 5-Tab Navigation System:**
+      1. *Tab 1: 📋 Profil Bilgileri & Düzenleme:* Responsive 2-column inline edit form (`POST /profile/edit`) with name, department, cohort year, title, company, student number, portfolio URL, and verified mentorship toggle.
+      2. *Tab 2: 💼 İlanlarım:* Real-time data table showing career listings created by the member (`JobPosting.findByPostedBy`), status badges, deadlines, and direct creation shortcut (`/jobs#post-job-form`).
+      3. *Tab 3: 📝 Başvurularım:* Real-time candidate application tracker (`Application.findByUser`) with semantic status pills, cover note excerpts, and resume links.
+      4. *Tab 4: 🔐 Güvenlik & Şifre:* Password update form (`POST /profile/password`) with PBKDF2 SHA-512 encryption and cryptographic security notes.
+      5. *Tab 5: ⚡ Rol Araçları & Eylemler:* Quick action cards customized dynamically for the member's canonical role (`student`, `employer`, `alumni`, or `admin`).
+    - Smooth client-side tab switching script with deep URL hash support (`#tab-security`, `#tab-jobs`).
 - **[`views/users.html`](./views/users.html) (`GET /users`, `/user`) — Alumni Directory & Enrollment:**
   - **Accent Theme:** Bosphorus Cobalt (`--iu-cobalt-600: #2563eb`).
   - **Interactive UX:** Client-side real-time search input (`#directory-search`) filtering `tbody tr` rows by name, faculty/department, cohort year, or email with live counter (`#directory-count`), responsive data table, and cobalt-accented `POST /users` enrollment card (`#enroll-form`).
-- **[`views/userDetail.html`](./views/userDetail.html) (`GET /users/:id`, `/profile`, `/me`) — Single Alumni Profile & Personal Workspace Dossier:**
+- **[`views/userDetail.html`](./views/userDetail.html) (`GET /users/:id`) — Single Alumni Profile Dossier:**
   - **Layout & Visual Hierarchy:**
     - Breadcrumb trail (`Home / Alumni Directory / {{NAME}} (#{{ID}})`).
-    - **Personal Workspace Banner:** Elevated dark-indigo banner (`linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%)`) shown exclusively when members view their own profile, featuring personalized greeting, member ID, profile editing button, and logout action.
+    - **Personal Workspace Banner:** Elevated dark-indigo banner (`linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%)`) shown when members view their own profile, linking directly to the dedicated `/profile` dashboard.
     - Dark gradient profile hero with circular role emblem avatar (`👑`, `⚖️`, `💼`, `🎓`), contextual role badge pill, account status pill (`Active`, `Pending`, `Suspended`, `Archived`), and verified mentor badge (`🌟 Verified Mentor`).
     - Professional headline (e.g. `🏢 Senior Software Engineer at Google`) when title/company are present.
     - 2-column layout pairing the Academic & Contact Dossier card with the **Role-Adaptive Activity Dashboard**:

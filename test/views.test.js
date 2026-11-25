@@ -52,6 +52,37 @@ test('UserView - renderUserEdit renders alumni edit form view', () => {
   assert.ok(html.includes('value="can@alumni.edu"'));
 });
 
+test('UserView - renderProfile renders dedicated personal profile workspace with tabs and forms', () => {
+  const user = {
+    id: 1,
+    name: 'Hakan Ural',
+    department: 'Computer Engineering',
+    graduationYear: 2024,
+    email: 'hakan@istanbul.edu.tr',
+    role: 'admin',
+    accountStatus: 'active',
+    isMentor: true
+  };
+  const jobs = [
+    { id: 10, title: 'Lead Architect', company: 'IU Tech', jobType: 'Full-time', location: 'Istanbul', status: 'Active' }
+  ];
+  const applications = [
+    { id: 20, jobPostingId: 10, jobTitle: 'Lead Architect', jobCompany: 'IU Tech', status: 'Accepted', appliedAt: '2026-11-01' }
+  ];
+
+  const html = UserView.renderProfile(user, { jobs, applications, message: 'Profil başarıyla güncellendi' });
+  assert.ok(typeof html === 'string');
+  assert.ok(html.includes('Hakan Ural'));
+  assert.ok(html.includes('hakan@istanbul.edu.tr'));
+  assert.ok(html.includes('Computer Engineering'));
+  assert.ok(html.includes('2024'));
+  assert.ok(html.includes('action="/profile/edit"'));
+  assert.ok(html.includes('action="/profile/password"'));
+  assert.ok(html.includes('Lead Architect'));
+  assert.ok(html.includes('Profil başarıyla güncellendi'));
+  assert.ok(html.includes('Verified Mentor'));
+});
+
 test('JobPostingView - renderJobs renders job postings board and creation form', () => {
   const dummyJobs = [
     { id: 1, title: 'Senior Backend Engineer', company: 'TechCorp', location: 'Remote', jobType: 'Full-time', salary: '₺85,000', status: 'Active' },

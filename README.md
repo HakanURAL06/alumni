@@ -383,24 +383,29 @@ The system enforces 6 canonical actor personas with strictly segregated domain c
 
 ## 👤 User-Specific Pages & Personal Workspaces
 
-The platform provides tailored, user-specific pages and personalized workspaces based on the viewing member's identity and active role:
+The platform provides tailored, user-specific pages and personalized workspaces based on the viewing member's identity and active role (`student`, `alumni`, `employer`, `moderator`, `admin`):
 
-### 1. Personal Profile & Workspace (`/profile`, `/me`, `/users/:id`)
-- **Direct Jump (`/profile` & `/me`):** Authenticated users visiting `/profile` or `/me` are immediately redirected (`302`) to their own individual dossier (`/users/:id`). Unauthenticated visitors are redirected to `/login?returnUrl=/profile`.
-- **Personal Workspace Banner:** When members view their own profile, a high-contrast dark indigo banner (`✨ Kişisel Profil & Çalışma Alanı`) welcomes them by name, displays their member ID, and provides quick shortcuts to edit their profile (`/users/:id/edit`) or sign out (`/logout`).
-- **Role-Adaptive Activity Widgets:**
-  - **Student View:** Displays "📝 Başvurularım & Staj Takibi" (`/users/:id/applications`), "💼 Açık İş & Staj İlanları" (`/jobs`), and "👥 Mezun Rehberleri & Mentorlar" (`/users`).
-  - **Alumni View:** Displays "💼 Yayınladığım İlanlar" (`/users/:id/jobs`), "📝 Başvurularım" (`/users/:id/applications`), and mentorship status.
-  - **Employer View:** Displays "📢 Yeni İlan Yayınla" (`/jobs#post-job-form`), "📋 Yayınlanan İlanlarım" (`/users/:id/jobs`), and "👥 Aday Başvuruları" (`/applications`).
-  - **Admin View:** Displays "🛡️ Yönetim Konsolu" (`/admin`) and links to user activity logs.
-- **Contextual Badging:** Displays role badge (`👑`, `⚖️`, `💼`, `🎓`), account status badge (`● Active`, `⏳ Pending`, `⚠️ Suspended`), and verified alumni mentor badge.
-- **Professional Headline:** Automatically displays company and title (e.g. `🏢 Senior Software Engineer at Google`) when populated.
+### 1. Dedicated User Profile & Personal Workspace (`/profile`, `/me`, `views/profile.html`)
+- **Universal Access & Navigation:** Every authenticated user sees a prominent **`👤 Profilim`** link in the sticky main header navigation and top utility bar pointing to `/profile`. Unauthenticated visitors accessing `/profile` are redirected to `/login?returnUrl=/profile` (or receive `401 Unauthorized` for JSON API requests).
+- **Interactive 5-Tab Workspace Architecture:**
+  - **Tab 1: 📋 Profil Bilgileri & Düzenleme (Profile Info & Inline Edit):** Displays full academic and career metadata (Name, locked Email, Department, Graduation Cohort, Student Number, Title, Company, LinkedIn URL, and verified Mentorship status). Includes an inline update form submitting to `POST /profile/edit` with real-time feedback and session re-signing.
+  - **Tab 2: 💼 İlanlarım (My Job Postings):** Real-time table and metrics of all career and internship positions posted by the logged-in member (`JobPosting.findByPostedBy(user.id)`), with status badges (`Active` / `Closed`), deadlines, candidate review shortcuts, and a prominent "📢 Yeni İlan Yayınla" button.
+  - **Tab 3: 📝 Başvurularım (My Applications):** Comprehensive candidate tracking table showing all submitted job applications (`Application.findByUser(user.id)`), featuring semantic status pills (`Submitted`, `Pending`, `Under Review`, `Accepted`, `Rejected`), cover note excerpts, resume document links, and direct links to job postings.
+  - **Tab 4: 🔐 Güvenlik & Şifre Değiştir (Security & Password Update):** Secure password modification form submitting to `POST /profile/password`, requiring the verified current password and validating that new passwords are at least 8 characters long, protected by PBKDF2 with SHA-512 and cryptographic salt.
+  - **Tab 5: ⚡ Rol Araçları & Eylemler (Role Quick Actions):** Role-tailored action cards customized for the user's canonical role (`student`, `employer`, `alumni`, or `admin`).
+- **Profile Header Hero:** Featuring high-contrast dark indigo styling, role-emblem avatar (`👑`, `⚖️`, `💼`, `🎓`), live badges for Role, Account Status (`● Aktif Hesap`, `⏳ Onay Bekliyor`, `⚠️ Askıya Alındı`), Verified Mentor indicator (`🌟 Verified Mentor`), and professional headline (`🏢 Senior Software Engineer at Google`).
+- **RESTful Profile API (`GET /api/profile`, `GET /api/me`):** Returns complete JSON payload containing `{ user, jobs, applications }` for modern front-end clients.
 
-### 2. Nested User Job Listings (`/users/:userId/jobs`)
+### 2. Public Alumni Directory Profile Dossier (`/users/:id`, `views/userDetail.html`)
+- Individual directory view for any alumnus member in the public Istanbul University network.
+- When an authenticated user visits their own directory page (`/users/:id`), a prominent Personal Workspace banner invites them to access their dedicated `/profile` dashboard.
+- Displays academic faculty, graduation year, contact information, role badge, mentorship status, and nested activity links.
+
+### 3. Nested User Job Listings (`/users/:userId/jobs`)
 - Displays all career opportunities published by the specific user.
 - If viewed by the publisher themselves, displays owner-tailored subtitles and quick actions to add new positions.
 
-### 3. Nested User Applications Tracker (`/users/:userId/applications`)
+### 4. Nested User Applications Tracker (`/users/:userId/applications`)
 - Displays candidate applications submitted by the member across all job postings.
 - Shows real-time application status badges (`Submitted`, `Under Review`, `Accepted`, `Rejected`) and cover note review.
 
@@ -592,7 +597,9 @@ Database operations utilize the PostgreSQL client pool (`pg.Pool`):
 | `/login` | `GET` | `UserController.getLoginForm` | Member portal login page with quick credentials | `views/login.html` |
 | `/login` | `POST` | `UserController.login` | Authenticates user & issues session cookie (`Set-Cookie`) | Flash redirect / Token |
 | `/logout` | `GET` / `POST` | `UserController.logout` | Terminates session, clears cookie, redirects to `/login` | Flash redirect |
-| `/profile` / `/me` | `GET` | `UserController.getProfile` | Redirects authenticated member to their profile dossier (`/users/:id`) | `302` Redirect |
+| `/profile` / `/me` | `GET` | `UserController.getProfile` | Dedicated User Profile & Personal Workspace (5 tabs) | `views/profile.html` |
+| `/profile/edit` | `POST` | `UserController.updateProfile` | Updates personal academic & career info for current user | Flash redirect (`/profile?updated=1`) |
+| `/profile/password` | `POST` | `UserController.updatePassword` | Securely changes password via PBKDF2 SHA-512 | Flash redirect (`/profile?passwordUpdated=1`) |
 | `/users` / `/user` | `GET` | `UserController.getAll` | Alumni directory list with creation form | `views/users.html` |
 | `/users/:id` | `GET` | `UserController.getById` | Alumni profile card view | `views/userDetail.html` |
 | `/users/:id/edit` | `GET` | `UserController.getEditForm` | Alumni edit form view | `views/userEdit.html` |

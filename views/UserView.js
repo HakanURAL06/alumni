@@ -7,6 +7,7 @@ const userDetailTemplatePath = path.join(__dirname, 'userDetail.html');
 const userEditTemplatePath = path.join(__dirname, 'userEdit.html');
 const registerTemplatePath = path.join(__dirname, 'register.html');
 const loginTemplatePath = path.join(__dirname, 'login.html');
+const profileTemplatePath = path.join(__dirname, 'profile.html');
 
 function escapeAttr(val) {
   return String(val ?? '')
@@ -339,6 +340,379 @@ class UserView {
       .replace(/{{GRADUATION_YEAR}}/g, grad)
       .replace(/{{EMAIL}}/g, email);
     return injectDynamicNav(output, { currentUser: options.currentUser, activePage: 'useredit' });
+  }
+
+  /**
+   * Renders the dedicated User Profile & Personal Workspace view (views/profile.html).
+   * Accessible to all authenticated users (students, alumni, employers, moderators, admins).
+   * @param {Object} user Current authenticated user record
+   * @param {Object} options Jobs, applications, flash alerts, and context
+   * @returns {string} Fully rendered HTML string
+   */
+  static renderProfile(user = {}, options = {}) {
+    let template = fs.readFileSync(profileTemplatePath, 'utf-8');
+
+    const id = user.id != null ? user.id : '';
+    const name = escapeAttr(user.name || 'Kullanıcı Profili');
+    const dept = escapeAttr(user.department || '');
+    const grad = user.graduationYear != null ? user.graduationYear : '';
+    const email = escapeAttr(user.email || '');
+    const title = escapeAttr(user.title || '');
+    const company = escapeAttr(user.company || '');
+    const studentNumber = escapeAttr(user.studentNumber || '');
+    const linkedinUrl = escapeAttr(user.linkedinUrl || '');
+    const isMentorChecked = user.isMentor ? 'checked' : '';
+
+    const role = String(user.role || 'alumni').toLowerCase();
+    const roleMeta = getRoleMeta(role);
+    const avatarIcon = roleMeta.icon || '👤';
+
+    const roleBadge = `<span class="badge" style="background:${roleMeta.pillBg}; color:${roleMeta.pillColor}; border:1px solid ${roleMeta.pillBorder};">${roleMeta.icon} ${roleMeta.label}</span>`;
+
+    const status = String(user.accountStatus || 'active').toLowerCase();
+    let statusBadge = '<span class="badge" style="background:#ecfdf5; color:#065f46; border:1px solid #a7f3d0;">● Aktif Hesap</span>';
+    if (status === 'pending_verification') {
+      statusBadge = '<span class="badge" style="background:#fef3c7; color:#92400e; border:1px solid #fde68a;">⏳ Onay Bekliyor</span>';
+    } else if (status === 'suspended') {
+      statusBadge = '<span class="badge" style="background:#fee2e2; color:#991b1b; border:1px solid #fecaca;">⚠️ Askıya Alındı</span>';
+    } else if (status === 'archived') {
+      statusBadge = '<span class="badge" style="background:#f1f5f9; color:#475569; border:1px solid #cbd5e1;">📁 Arşivlendi</span>';
+    }
+
+    let mentorBadge = '';
+    if (user.isMentor) {
+      mentorBadge = '<span class="badge" style="background:#faf5ff; color:#6b21a8; border:1px solid #e9d5ff;">🌟 Verified Mentor</span>';
+    }
+
+    let headlineInfo = '';
+    if (user.title || user.company) {
+      const parts = [];
+      if (user.title) parts.push(`<strong>${escapeAttr(user.title)}</strong>`);
+      if (user.company) parts.push(`at <strong>${escapeAttr(user.company)}</strong>`);
+      headlineInfo = `<div style="font-size:0.9rem; color:#93c5fd; margin-top:6px;">🏢 ${parts.join(' ')}</div>`;
+    }
+
+    // Flash Messages & Errors
+    let messageHtml = '';
+    if (options.message) {
+      const alertClass = options.alertType ? `alert-${options.alertType}` : 'alert-success';
+      messageHtml = `<div class="${alertClass}">${escapeAttr(options.message)}</div>`;
+    }
+
+    let errorHtml = '';
+    if (options.error) {
+      errorHtml = `<div class="alert-danger"><strong>Hata:</strong> ${escapeAttr(options.error)}</div>`;
+    }
+
+    // Format Jobs
+    const jobs = Array.isArray(options.jobs) ? options.jobs : [];
+    let jobsContent = '';
+    if (jobs.length === 0) {
+      jobsContent = `
+        <div class="empty-state">
+          <div class="empty-icon">💼</div>
+          <div class="empty-title">Henüz Yayınlanmış İlanınız Yok</div>
+          <div class="empty-desc">İstanbul Üniversitesi öğrencileri ve mezunları ile şirketinizdeki açık pozisyonları buluşturmak için yeni bir ilan yayınlayabilirsiniz.</div>
+          <a href="/jobs#post-job-form" class="btn btn-primary">📢 İlk İlanınızı Yayınlayın</a>
+        </div>
+      `;
+    } else {
+      const rows = jobs.map(j => {
+        const jId = j.id != null ? j.id : '';
+        const jTitle = escapeAttr(j.title || 'Pozisyon');
+        const jCompany = escapeAttr(j.company || '');
+        const jType = escapeAttr(j.jobType || 'Full-time');
+        const jLocation = escapeAttr(j.location || 'Remote');
+        const jSalary = escapeAttr(j.salary || 'Belirtilmedi');
+        const jDeadline = escapeAttr(j.applicationDeadline || '-');
+        const jStatus = escapeAttr(j.status || 'Active');
+        const statusClass = String(jStatus).toLowerCase() === 'active' ? 'background:#ecfdf5; color:#065f46; border:1px solid #a7f3d0;' : 'background:#f1f5f9; color:#475569; border:1px solid #cbd5e1;';
+
+        return `
+          <tr>
+            <td><strong>#${jId}</strong></td>
+            <td>
+              <div style="font-weight:750; color:#0f172a;">${jTitle}</div>
+              <div style="font-size:0.8rem; color:#64748b;">${jCompany}</div>
+            </td>
+            <td>
+              <div>${jType}</div>
+              <div style="font-size:0.78rem; color:#64748b;">📍 ${jLocation}</div>
+            </td>
+            <td>${jSalary}</td>
+            <td><span class="badge" style="${statusClass}">${jStatus}</span></td>
+            <td>${jDeadline}</td>
+            <td>
+              <div style="display:flex; gap:6px;">
+                <a href="/jobs/${jId}" class="btn-sm btn-secondary" style="text-decoration:none;">👁️ İncele</a>
+                <a href="/jobs/${jId}/edit" class="btn-sm btn-secondary" style="text-decoration:none;">✏️ Düzenle</a>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      jobsContent = `
+        <div class="data-table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Pozisyon &amp; Şirket</th>
+                <th>Tür &amp; Konum</th>
+                <th>Maaş</th>
+                <th>Durum</th>
+                <th>Son Başvuru</th>
+                <th>Eylemler</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${rows}
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
+
+    // Format Applications
+    const applications = Array.isArray(options.applications) ? options.applications : [];
+    let applicationsContent = '';
+    if (applications.length === 0) {
+      applicationsContent = `
+        <div class="empty-state">
+          <div class="empty-icon">📝</div>
+          <div class="empty-title">Henüz Başvuru Yapmadınız</div>
+          <div class="empty-desc">İstanbul Üniversitesi kariyer panosundaki güncel açık pozisyonları inceleyip hemen başvuruda bulunabilirsiniz.</div>
+          <a href="/jobs" class="btn btn-primary">💼 Açık Pozisyonları İncele</a>
+        </div>
+      `;
+    } else {
+      const rows = applications.map(app => {
+        const aId = app.id != null ? app.id : '';
+        const jTitle = escapeAttr(app.jobPosting?.title || app.jobTitle || `İlan #${app.jobPostingId}`);
+        const jCompany = escapeAttr(app.jobPosting?.company || app.jobCompany || '');
+        const aDate = app.appliedAt ? escapeAttr(String(app.appliedAt).split('T')[0]) : '-';
+        const aStatus = String(app.status || 'Pending');
+
+        let stStyle = 'background:#fef3c7; color:#92400e; border:1px solid #fde68a;';
+        let stIcon = '⏳';
+        if (aStatus.toLowerCase() === 'reviewed' || aStatus.toLowerCase() === 'under review') {
+          stStyle = 'background:#eff6ff; color:#1e40af; border:1px solid #bfdbfe;';
+          stIcon = '🔍';
+        } else if (aStatus.toLowerCase() === 'accepted') {
+          stStyle = 'background:#ecfdf5; color:#065f46; border:1px solid #a7f3d0;';
+          stIcon = '✅';
+        } else if (aStatus.toLowerCase() === 'rejected') {
+          stStyle = 'background:#fee2e2; color:#991b1b; border:1px solid #fecaca;';
+          stIcon = '❌';
+        }
+
+        const noteSnippet = app.coverNote ? escapeAttr(app.coverNote.length > 50 ? app.coverNote.substring(0, 50) + '...' : app.coverNote) : '<span style="color:#94a3b8;">Not yok</span>';
+        const resumeLink = app.resumeUrl ? `<a href="${escapeAttr(app.resumeUrl)}" target="_blank" rel="noopener" style="color:#2563eb; font-weight:600; text-decoration:none;">📄 Özgeçmiş (CV)</a>` : '<span style="color:#94a3b8;">Belirtilmedi</span>';
+
+        return `
+          <tr>
+            <td><strong>#${aId}</strong></td>
+            <td>
+              <div style="font-weight:750; color:#0f172a;">${jTitle}</div>
+              <div style="font-size:0.8rem; color:#64748b;">${jCompany}</div>
+            </td>
+            <td>${aDate}</td>
+            <td><span class="badge" style="${stStyle}">${stIcon} ${escapeAttr(aStatus)}</span></td>
+            <td style="max-width:200px; font-size:0.82rem; color:#475569;">${noteSnippet}</td>
+            <td>${resumeLink}</td>
+            <td>
+              <a href="/jobs/${app.jobPostingId}" class="btn-sm btn-secondary" style="text-decoration:none;">İlanı Gör &rarr;</a>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      applicationsContent = `
+        <div class="data-table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Başvurulan İlan</th>
+                <th>Başvuru Tarihi</th>
+                <th>Durum</th>
+                <th>Ön Yazı Özeti</th>
+                <th>Özgeçmiş</th>
+                <th>Eylem</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${rows}
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
+
+    // Format Role Tools Content
+    let roleToolsContent = '';
+    if (role === 'student') {
+      roleToolsContent = `
+        <div class="quick-actions-grid">
+          <div class="quick-card" style="border-left: 4px solid #10b981;">
+            <div>
+              <h3>💼 Açık İş &amp; Staj İlanları</h3>
+              <p>Mezunlar ve kurumsal ortaklar tarafından açılan güncel staj ve tam zamanlı pozisyonları keşfedin.</p>
+            </div>
+            <a href="/jobs">İlan Panosuna Git (/jobs) &rarr;</a>
+          </div>
+          <div class="quick-card" style="border-left: 4px solid #3b82f6;">
+            <div>
+              <h3>🤝 Mezun Rehberleri &amp; Mentorlar</h3>
+              <p>Farklı sektörlerde deneyim kazanmış İstanbul Üniversitesi mezunlarıyla iletişime geçin.</p>
+            </div>
+            <a href="/users">Mentor Havuzunu Keşfet (/users) &rarr;</a>
+          </div>
+          <div class="quick-card" style="border-left: 4px solid #8b5cf6;">
+            <div>
+              <h3>📝 Başvuru Takip Paneli</h3>
+              <p>Yaptığınız tüm başvuruların durumunu ve işveren geri bildirimlerini anlık olarak takip edin.</p>
+            </div>
+            <a href="/applications">Başvurularımı İncele (/applications) &rarr;</a>
+          </div>
+          <div class="quick-card" style="border-left: 4px solid #f59e0b;">
+            <div>
+              <h3>📢 Kampüs &amp; Kariyer Duyuruları</h3>
+              <p>Kariyer günleri, staj seminerleri ve mezunlar derneği etkinliklerini takip edin.</p>
+            </div>
+            <a href="/announcements">Duyuruları İncele (/announcements) &rarr;</a>
+          </div>
+        </div>
+      `;
+    } else if (role === 'employer') {
+      roleToolsContent = `
+        <div class="quick-actions-grid">
+          <div class="quick-card" style="border-left: 4px solid #8b5cf6;">
+            <div>
+              <h3>📢 Yeni İlan Yayınla</h3>
+              <p>Şirketiniz adına yeni staj, part-time veya tam zamanlı kariyer fırsatı yayınlayın.</p>
+            </div>
+            <a href="/jobs#post-job-form">Yeni İlan Oluştur (/jobs) &rarr;</a>
+          </div>
+          <div class="quick-card" style="border-left: 4px solid #3b82f6;">
+            <div>
+              <h3>👥 Aday Değerlendirme Paneli</h3>
+              <p>İlanlarınıza başvuran adayların CV'lerini, ön yazılarını ve yetkinliklerini değerlendirin.</p>
+            </div>
+            <a href="/applications">Adayları Yönet (/applications) &rarr;</a>
+          </div>
+          <div class="quick-card" style="border-left: 4px solid #10b981;">
+            <div>
+              <h3>🎓 Yetenek Havuzu (Alumni Directory)</h3>
+              <p>İstanbul Üniversitesi'nden mezun mühendis, yönetici ve uzman profil havuzunu inceleyin.</p>
+            </div>
+            <a href="/users">Yetenek Havuzuna Git (/users) &rarr;</a>
+          </div>
+          <div class="quick-card" style="border-left: 4px solid #f59e0b;">
+            <div>
+              <h3>📢 Kurumsal Etkinlik &amp; Duyuru</h3>
+              <p>Şirketinizin kariyer günleri ve workshop etkinliklerini duyuru olarak paylaşın.</p>
+            </div>
+            <a href="/announcements">Duyurulara Git (/announcements) &rarr;</a>
+          </div>
+        </div>
+      `;
+    } else if (role === 'admin') {
+      roleToolsContent = `
+        <div class="quick-actions-grid">
+          <div class="quick-card" style="border-left: 4px solid #ef4444;">
+            <div>
+              <h3>🛡️ Merkezi Yönetim Konsolu (Admin)</h3>
+              <p>Tüm kullanıcıları, rolleri, hesap statülerini ve veri manipülasyon işlemlerini yönetin.</p>
+            </div>
+            <a href="/admin">Yönetim Konsolunu Aç (/admin) &rarr;</a>
+          </div>
+          <div class="quick-card" style="border-left: 4px solid #3b82f6;">
+            <div>
+              <h3>👥 Kullanıcı Rol &amp; Statü Denetimi</h3>
+              <p>Kullanıcıların rollerini (student, alumni, employer, moderator, admin) atayın ve denetleyin.</p>
+            </div>
+            <a href="/admin#users-table">Kullanıcı Yönetimi &rarr;</a>
+          </div>
+          <div class="quick-card" style="border-left: 4px solid #10b981;">
+            <div>
+              <h3>💼 İlan &amp; Başvuru Moderasyonu</h3>
+              <p>Sistemdeki tüm kariyer ilanlarını ve yapılan başvuruları merkezi olarak denetleyin.</p>
+            </div>
+            <a href="/admin#governance-forms">Yönetim Araçları &rarr;</a>
+          </div>
+          <div class="quick-card" style="border-left: 4px solid #8b5cf6;">
+            <div>
+              <h3>📖 Swagger API Dokümantasyonu</h3>
+              <p>Tüm RESTful uç noktalarının OpenAPI / Swagger teknik dokümantasyonunu inceleyin.</p>
+            </div>
+            <a href="/api/swagger" target="_blank" rel="noopener">Swagger Dokümantasyonu &rarr;</a>
+          </div>
+        </div>
+      `;
+    } else {
+      // Alumni default
+      roleToolsContent = `
+        <div class="quick-actions-grid">
+          <div class="quick-card" style="border-left: 4px solid #3b82f6;">
+            <div>
+              <h3>💼 Mezun Kariyer Panosu</h3>
+              <p>İstanbul Üniversitesi mezunlarına özel kariyer fırsatlarını ve açık pozisyonları inceleyin.</p>
+            </div>
+            <a href="/jobs">Kariyer Panosuna Git (/jobs) &rarr;</a>
+          </div>
+          <div class="quick-card" style="border-left: 4px solid #10b981;">
+            <div>
+              <h3>🤝 Öğrencilere Mentorluk Verin</h3>
+              <p>Deneyimlerinizi ve sektör tecrübenizi yeni mezunlar ve üniversite öğrencileri ile paylaşın.</p>
+            </div>
+            <a href="#tab-overview" onclick="document.querySelector('[data-tab=tab-overview]').click();">Mentorluk Ayarları &rarr;</a>
+          </div>
+          <div class="quick-card" style="border-left: 4px solid #8b5cf6;">
+            <div>
+              <h3>👥 Mezunlar Ağı &amp; Rehber</h3>
+              <p>Dönem arkadaşlarınızı bulun ve profesyonel ağınızı İstanbul Üniversitesi mezunlarıyla büyütün.</p>
+            </div>
+            <a href="/users">Mezunlar Rehberine Git (/users) &rarr;</a>
+          </div>
+          <div class="quick-card" style="border-left: 4px solid #f59e0b;">
+            <div>
+              <h3>📢 Mezunlar Derneği Duyuruları</h3>
+              <p>Geleneksel mezun buluşmaları, akademik etkinlikler ve haberlerden anında haberdar olun.</p>
+            </div>
+            <a href="/announcements">Duyuruları İncele (/announcements) &rarr;</a>
+          </div>
+        </div>
+      `;
+    }
+
+    const output = template
+      .replace(/{{ID}}/g, id)
+      .replace(/{{NAME}}/g, name)
+      .replace(/{{DEPARTMENT}}/g, dept)
+      .replace(/{{GRADUATION_YEAR}}/g, grad)
+      .replace(/{{EMAIL}}/g, email)
+      .replace(/{{TITLE}}/g, title)
+      .replace(/{{COMPANY}}/g, company)
+      .replace(/{{STUDENT_NUMBER}}/g, studentNumber)
+      .replace(/{{LINKEDIN_URL}}/g, linkedinUrl)
+      .replace(/{{IS_MENTOR_CHECKED}}/g, isMentorChecked)
+      .replace(/{{AVATAR_ICON}}/g, avatarIcon)
+      .replace(/{{ROLE_BADGE}}/g, roleBadge)
+      .replace(/{{STATUS_BADGE}}/g, statusBadge)
+      .replace(/{{MENTOR_BADGE}}/g, mentorBadge)
+      .replace(/{{HEADLINE_INFO}}/g, headlineInfo)
+      .replace(/{{ROLE_NAME_TR}}/g, roleMeta.label)
+      .replace(/{{JOBS_COUNT}}/g, jobs.length)
+      .replace(/{{APPLICATIONS_COUNT}}/g, applications.length)
+      .replace(/{{MY_JOBS_CONTENT}}/g, jobsContent)
+      .replace(/{{MY_APPLICATIONS_CONTENT}}/g, applicationsContent)
+      .replace(/{{ROLE_TOOLS_CONTENT}}/g, roleToolsContent)
+      .replace(/{{MESSAGE}}/g, messageHtml)
+      .replace(/{{ERROR}}/g, errorHtml);
+
+    return injectDynamicNav(output, { currentUser: options.currentUser || user, activePage: 'profile' });
   }
 }
 

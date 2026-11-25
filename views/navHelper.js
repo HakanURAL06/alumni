@@ -90,12 +90,12 @@ function getNavItems(currentUser = null, activePage = '') {
     });
   }
 
-  // 4. MY PROFILE (For Alumni)
-  if (role === 'alumni' && userId) {
+  // 4. DEDICATED USER PROFILE & WORKSPACE (For all authenticated users: student, alumni, employer, moderator, admin)
+  if (isAuthenticated) {
     items.push({
       label: '👤 Profilim',
-      href: `/users/${userId}`,
-      active: normActive === 'userdetail'
+      href: '/profile',
+      active: normActive === 'profile' || normActive === 'me'
     });
   }
 
@@ -185,7 +185,7 @@ function getNavItems(currentUser = null, activePage = '') {
     items.push({
       label: `${meta.icon} ${escapeHtml(displayName)}`,
       subLabel: meta.label,
-      href: userId ? `/users/${userId}` : '#',
+      href: '/profile',
       isPill: true,
       roleMeta: meta
     });
@@ -260,10 +260,9 @@ function renderTopBarRightHtml(currentUser = null) {
       roleAction = '<a href="/jobs#post-job-form" style="color:#a78bfa; font-weight:600; margin-right:12px; text-decoration:none;">📢 İlan Ver &rarr;</a>';
     } else if (role === 'student') {
       roleAction = '<a href="/applications" style="color:#34d399; font-weight:600; margin-right:12px; text-decoration:none;">📝 Başvurularım &rarr;</a>';
-    } else if (currentUser?.userId || currentUser?.id) {
-      const uid = currentUser.userId || currentUser.id;
-      roleAction = `<a href="/users/${uid}" style="color:#60a5fa; font-weight:600; margin-right:12px; text-decoration:none;">👤 Profilim &rarr;</a>`;
     }
+
+    const profileLink = '<a href="/profile" style="color:#60a5fa; font-weight:600; margin-right:12px; text-decoration:none;">👤 Profilim &rarr;</a>';
 
     return `
       <div style="display:inline-flex; align-items:center; flex-wrap:wrap; gap:8px;">
@@ -273,6 +272,7 @@ function renderTopBarRightHtml(currentUser = null) {
         </span>
         <span style="color:rgba(255,255,255,0.25);">|</span>
         ${roleAction}
+        ${profileLink}
         <a href="/logout" style="color:#fca5a5; font-weight:700; text-decoration:none; padding:2px 8px; border-radius:4px; background:rgba(239,68,68,0.15); border:1px solid rgba(239,68,68,0.3);">🚪 Çıkış Yap</a>
       </div>
     `;
