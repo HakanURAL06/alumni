@@ -149,7 +149,7 @@ The Istanbul University Alumni Tracking System communicates with a distinct voic
 The front-end design system reflects the official corporate, fresh, and modern design standards of Istanbul University's primary student and administrative portals (**AKSİS & ÖYS**):
 
 ### Institutional Vector Emblem & Identity
-- **Official Emblem (`/images/iu-logo.svg`):** Scalable vector seal featuring the historical founding year (**1453**), the iconic Beyazıt campus entrance gate arch, and gold & deep navy academic accents.
+- **Official Emblem (`/images/iu-logo.png`):** Scalable vector seal featuring the historical founding year (**1453**), the iconic Beyazıt campus entrance gate arch, and gold & deep navy academic accents.
 - **Sidebar Brand Header:** Prominently placed in the upper-left sidebar with the official emblem and uppercase institutional title: `"İSTANBUL ÜNİVERSİTESİ - Mezun Takip Sistemi"`.
 
 ### Corporate Color Palette

@@ -97,7 +97,7 @@ A comprehensive, production-grade UI design specification modeled on the corpora
 👉 **[Read the Full Design System Specification (design.md)](./design.md)**
 
 ### Key Highlights Covered in `design.md`:
-1. **İÜ AKSİS & ÖYS Visual Identity:** Clean corporate architecture featuring the official Istanbul University vector seal emblem ([`public/images/iu-logo.svg`](./public/images/iu-logo.svg)), 1453 founding heritage, and high data-ink layout standards.
+1. **İÜ AKSİS & ÖYS Visual Identity:** Clean corporate architecture featuring the official Istanbul University vector seal emblem ([`public/images/iu-logo.png`](./public/images/iu-logo.png)), 1453 founding heritage, and high data-ink layout standards.
 2. **Corporate Design Tokens (`public/css/portal.css`):**
    - **Primary Brand Accent:** Corporate Blue (`#1D8CF8` / `#0F7AE5`) for active navigation, active tabs, and primary action buttons.
    - **Surfaces & Canvas:** Cool light gray canvas (`#F4F6F9`), pure white card surfaces (`#FFFFFF`), and soft gray input backgrounds (`#F5F7FA`).

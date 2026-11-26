@@ -65,7 +65,7 @@ The design system of the **Istanbul University Alumni Tracking System** is model
 ### The Three Foundational Pillars
 
 1. **Corporate Institutional Clarity (İÜ AKSİS / ÖYS Aesthetic):**
-   - High-contrast typography, generous negative space, crisp white cards on a cool light gray background (`#F4F6F9`), and the official Istanbul University seal emblem (`/images/iu-logo.svg`) reflecting the university's **1453 heritage**.
+   - High-contrast typography, generous negative space, crisp white cards on a cool light gray background (`#F4F6F9`), and the official Istanbul University seal emblem (`/images/iu-logo.png`) reflecting the university's **1453 heritage**.
 2. **Predictable Visual Hierarchy & Ergonomics:**
    - Fixed, collapsible vertical sidebar navigation on the left (`#FFFFFF`, thin right border `#E5E7EB`).
    - Clean top utility header bar with page title on the left and member role pill/quick actions on the right.
@@ -188,7 +188,7 @@ All screens follow a unified layout structure wrapped in `.app-layout`:
   <!-- 1. Collapsible Left Sidebar -->
   <aside class="app-sidebar" id="appSidebar">
     <div class="sidebar-brand">
-      <img src="/images/iu-logo.svg" alt="İÜ Logo" class="sidebar-logo">
+      <img src="/images/iu-logo.png" alt="İÜ Logo" class="sidebar-logo">
       <div class="sidebar-brand-text">
         <span class="sidebar-brand-sub">İSTANBUL ÜNİVERSİTESİ</span>
         <span class="sidebar-brand-title">Mezun Takip Sistemi</span>
@@ -225,7 +225,7 @@ All screens follow a unified layout structure wrapped in `.app-layout`:
 
 ### 3.1 Collapsible Left Sidebar (`#appSidebar`)
 - **Background & Border:** Pure white (`#FFFFFF`) with a clean right border (`#E5E7EB`).
-- **Brand Header:** Official Istanbul University vector emblem (`/images/iu-logo.svg`) paired with "İSTANBUL ÜNİVERSİTESİ" (uppercase bold, 11px) and "Mezun Takip Sistemi" (14px semibold).
+- **Brand Header:** Official Istanbul University vector emblem (`/images/iu-logo.png`) paired with "İSTANBUL ÜNİVERSİTESİ" (uppercase bold, 11px) and "Mezun Takip Sistemi" (14px semibold).
 - **Navigation Items:** Vertical items with muted gray icons (`#64748B`). When active, items switch to corporate blue text (`#1D8CF8`), soft blue background (`#EBF5FF`), and a 3px solid blue left border indicator.
 
 ### 3.2 White Top Header Bar (`.app-header`)
