@@ -144,27 +144,54 @@ The Istanbul University Alumni Tracking System communicates with a distinct voic
 
 ---
 
-## 7. Visual Identity & Design System
+## 7. Visual Identity & Design System (İÜ AKSİS & ÖYS Standard)
 
-The visual design system draws inspiration from Istanbul University's historical campus architecture, the Bosphorus, and modern enterprise interface standards:
+The front-end design system reflects the official corporate, fresh, and modern design standards of Istanbul University's primary student and administrative portals (**AKSİS & ÖYS**):
 
-### Color Palette
+### Institutional Vector Emblem & Identity
+- **Official Emblem (`/images/iu-logo.svg`):** Scalable vector seal featuring the historical founding year (**1453**), the iconic Beyazıt campus entrance gate arch, and gold & deep navy academic accents.
+- **Sidebar Brand Header:** Prominently placed in the upper-left sidebar with the official emblem and uppercase institutional title: `"İSTANBUL ÜNİVERSİTESİ - Mezun Takip Sistemi"`.
 
-- **IU Navy Blue (`#0f172a`, `#1e293b`):** Primary brand anchor representing academic rigor, stability, and century-old institutional trust.
-- **Bosphorus Cobalt (`#2563eb`, `#1d4ed8`):** Dynamic primary accent symbolizing modern innovation, digital connectivity, and forward progress.
-- **IU Golden Amber (`#d97706`, `#f59e0b`):** Warm ceremonial accent evoking the iconic gilded gates of Beyazıt Square and academic achievement.
-- **Emerald Green (`#059669`, `#10b981`):** Career opportunity, verified status, and application success.
-- **Crimson Rose (`#e11d48`, `#be123c`):** Guardian alert accent for incident tracking and diagnostic notices.
-- **Slate Canvas (`#f8fafc`, `#ffffff`, `#e2e8f0`):** Ultra-clean, accessible background enabling high-contrast readability.
+### Corporate Color Palette
 
-### Typography
-- **Primary Stack:** `-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif`
-- **Monospace Code Stack:** `ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace` (used for IDs, API paths, and HTTP telemetry)
+| Token / Color | Hex Value | Role & Usage |
+| :--- | :--- | :--- |
+| **Primary Corporate Accent** | `#1D8CF8` / `#0F7AE5` | Active tabs, primary action buttons, active navigation indicator bar |
+| **Cool Gray Canvas** | `#F4F6F9` | Main content body background across all screens |
+| **Card & Sidebar Surface** | `#FFFFFF` | Collapsible left sidebar, top header bar, and elevated content cards |
+| **Soft Input Gray** | `#F5F7FA` | Form inputs, select dropdowns, search bars, and table header rows |
+| **Subtle Border** | `#E5E7EB` | Sidebar right border, top header bottom border, card divider lines |
+| **Text Primary (Anthracite)** | `#1E293B` | High-contrast headings, card titles, key KPI numbers |
+| **Text Secondary** | `#334155` | Regular body copy, table row data, form labels |
+| **Text Muted** | `#64748B` | Secondary metadata, dates, breadcrumbs, role subtitles |
+| **Accent Green** | `#2E7D32` (`#E8F5E9`) | Career listings, active opportunities, success status badges |
+| **Accent Orange** | `#F59E0B` (`#FEF3C7`) | Announcements, campus events, warning badges |
+| **Accent Purple** | `#7C3AED` (`#F3E8FF`) | ATS candidate applications, academic programs |
+| **Accent Navy** | `#1E293B` (`#F1F5F9`) | System governance, administrative controls, dark badges |
+| **Accent Red** | `#DC2626` (`#FEE2E2`) | Delete actions, session logout, error and rejection alerts |
+| **Accent Sky Blue** | `#0284C7` (`#E0F2FE`) | Alumni directory, general institutional information |
+| **Accent Coral** | `#F88379` (`#FFF1F0`) | Student programs, verified mentorship indicators |
 
-### UI Principles
-- **Elevated Surfaces:** Soft layered shadows (`box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05)`) with rounded card corners (`border-radius: 12px–16px`).
-- **Visual Feedback:** Interactive button hover states, micro-animations, and live API status pings.
-- **Mobile Responsiveness:** Fluid grid columns adapting from single-column mobile viewports to expansive desktop layouts.
+### Page Layout & Component Architecture
+
+1. **Collapsible Left Sidebar (`#appSidebar`):**
+   - Fixed 260px vertical menu with `#FFFFFF` background and thin right border (`#E5E7EB`).
+   - Top brand header featuring the vector IU logo and system title.
+   - Clean navigation links with subtle gray icons; active item highlighted in corporate blue (`#1D8CF8`) with soft blue background and blue indicator border.
+2. **Top Header Bar (`.app-header`):**
+   - Clean white bar (`#FFFFFF`) with thin bottom border (`#E5E7EB`).
+   - Left side hosts the mobile hamburger toggle and current page title/breadcrumb.
+   - Right side hosts live system status, authenticated role pill/avatar, and quick action buttons.
+3. **Cool Light Gray Main Content Canvas (`.app-content-body`):**
+   - High-contrast `#F4F6F9` canvas wrapping all content in rounded white cards (`#FFFFFF`, `8px-12px` border radius, subtle drop shadow).
+4. **Dashboard & Quick-Access Cards:**
+   - 2 or 3 column responsive grid; each card features a colored square icon box on the left, title and description in the middle, and subtle rightward arrow (`>`) on the right.
+5. **Profile, Detail & Form Cards:**
+   - Horizontal tabs with corporate blue underline for active tab.
+   - 2-column input forms on soft gray `#F5F7FA` background with smooth rounded corners (`8px`).
+   - Standardized button hierarchy: primary filled blue (`#1D8CF8`), secondary outline (`#D1D5DB`), and danger red (`#FEE2E2` / `#DC2626`) right-aligned with consistent spacing.
+6. **Spacious Data Tables:**
+   - Generous cell padding (14px-18px), soft gray headers (`#F8FAFC`), and subtle hover row highlight (`#F8FAFC`).
 
 ---
 

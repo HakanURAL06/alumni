@@ -1,478 +1,177 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Announcements Management — Istanbul University Portal</title>
-  <style>
-    :root {
-      --iu-navy-950: #020617;
-      --iu-navy-900: #0f172a;
-      --iu-navy-700: #334155;
-      --iu-cobalt-600: #2563eb;
-      --iu-gold-600: #d97706;
-      --iu-gold-500: #f59e0b;
-      --surface-canvas: #f8fafc;
-      --surface-card: #ffffff;
-      --surface-subtle: #f1f5f9;
-      --border-subtle: #e2e8f0;
-      --border-strong: #cbd5e1;
-      --text-primary: #0f172a;
-      --text-secondary: #475569;
-      --text-muted: #94a3b8;
-      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08);
-      --radius-sm: 6px;
-      --radius-md: 10px;
-      --radius-lg: 16px;
-      --radius-full: 9999px;
-    }
-
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      color: var(--text-primary);
-      background-color: var(--surface-canvas);
-      line-height: 1.55;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      -webkit-font-smoothing: antialiased;
-    }
-
-    .wrapper { max-width: 1140px; margin: 0 auto; padding: 0 24px; width: 100%; }
-
-    .top-bar {
-      background: var(--iu-navy-950);
-      color: var(--text-muted);
-      font-size: 0.8rem;
-      padding: 7px 0;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    }
-    .top-bar-inner { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
-    .status-indicator { display: inline-flex; align-items: center; gap: 6px; color: #fbbf24; font-weight: 600; }
-    .status-dot { width: 7px; height: 7px; background: #fbbf24; border-radius: 50%; box-shadow: 0 0 8px #fbbf24; }
-    .top-bar a { color: #cbd5e1; text-decoration: none; }
-
-    header.main-nav {
-      background: rgba(15, 23, 42, 0.95);
-      backdrop-filter: blur(12px);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-      box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.2);
-    }
-    .nav-container { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; gap: 16px; }
-    .brand-logo { display: flex; align-items: center; gap: 12px; text-decoration: none; color: #ffffff; }
-    .logo-emblem {
-      width: 42px;
-      height: 42px;
-      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-      border-radius: var(--radius-md);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.4rem;
-    }
-    .brand-text { display: flex; flex-direction: column; }
-    .brand-title { font-size: 1.15rem; font-weight: 850; color: #ffffff; line-height: 1.2; }
-    .brand-subtitle { font-size: 0.72rem; color: var(--text-muted); font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
-    .nav-links { display: flex; align-items: center; gap: 6px; list-style: none; flex-wrap: wrap; }
-    .nav-link { color: #cbd5e1; text-decoration: none; font-size: 0.88rem; font-weight: 500; padding: 8px 14px; border-radius: var(--radius-sm); }
-    .nav-link:hover { color: #ffffff; background: rgba(255, 255, 255, 0.08); }
-    .nav-link.active { color: #fbbf24; background: rgba(245, 158, 11, 0.14); font-weight: 600; }
-    .nav-cta { background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: #ffffff !important; font-weight: 600 !important; }
-
-    /* Page Banner */
-    .page-banner {
-      background: linear-gradient(135deg, #0b1120 0%, #1e293b 55%, #451a03 100%);
-      color: #ffffff;
-      padding: 40px 0;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    }
-    .banner-flex { display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 20px; }
-    .badge-header {
-      display: inline-block;
-      background: rgba(245, 158, 11, 0.18);
-      border: 1px solid rgba(245, 158, 11, 0.4);
-      color: #fbbf24;
-      padding: 4px 12px;
-      border-radius: var(--radius-full);
-      font-size: 0.78rem;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      margin-bottom: 12px;
-    }
-    .page-banner h1 { font-size: 2.2rem; font-weight: 850; letter-spacing: -0.025em; margin-bottom: 6px; color: #ffffff; }
-    p.subtitle { color: #cbd5e1; font-size: 1rem; max-width: 680px; }
-    .btn-jump {
-      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-      color: #ffffff;
-      text-decoration: none;
-      padding: 11px 20px;
-      border-radius: var(--radius-md);
-      font-size: 0.9rem;
-      font-weight: 700;
-      box-shadow: 0 4px 12px rgba(217, 119, 6, 0.35);
-    }
-
-    main.main-content { flex: 1; padding: 36px 0 64px; }
-
-    .alert-success {
-      background: #dcfce7;
-      border: 1px solid #86efac;
-      border-left: 4px solid #16a34a;
-      color: #166534;
-      padding: 14px 18px;
-      border-radius: var(--radius-md);
-      margin-bottom: 24px;
-      font-weight: 600;
-    }
-    .alert-info {
-      background: #e0f2fe;
-      border: 1px solid #7dd3fc;
-      border-left: 4px solid #0284c7;
-      color: #0369a1;
-      padding: 14px 18px;
-      border-radius: var(--radius-md);
-      margin-bottom: 24px;
-      font-weight: 600;
-    }
-    .alert-danger {
-      background: #fee2e2;
-      border: 1px solid #fca5a5;
-      border-left: 4px solid #dc2626;
-      color: #991b1b;
-      padding: 14px 18px;
-      border-radius: var(--radius-md);
-      margin-bottom: 24px;
-      font-weight: 600;
-    }
-
-    .toolbar-card {
-      background: var(--surface-card);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-lg);
-      padding: 16px 20px;
-      margin-bottom: 24px;
-      box-shadow: var(--shadow-sm);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 14px;
-    }
-    .search-box { flex: 1; min-width: 240px; position: relative; }
-    .search-box input {
-      width: 100%;
-      padding: 10px 14px 10px 38px;
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-md);
-      background: var(--surface-canvas);
-      font-size: 0.9rem;
-    }
-    .search-box::before { content: "🔍"; position: absolute; left: 12px; top: 50%; transform: translateY(-50%); }
-    .chip-group { display: flex; gap: 6px; flex-wrap: wrap; }
-    .filter-btn {
-      background: var(--surface-subtle);
-      border: 1px solid transparent;
-      color: var(--text-secondary);
-      padding: 6px 12px;
-      border-radius: var(--radius-full);
-      font-size: 0.78rem;
-      font-weight: 600;
-      cursor: pointer;
-    }
-    .filter-btn.active, .filter-btn:hover {
-      background: #fffbeb;
-      color: #b45309;
-      border-color: #fde68a;
-    }
-
-    .container {
-      background: var(--surface-card);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-lg);
-      padding: 28px;
-      box-shadow: var(--shadow-sm);
-    }
-    .table-wrap {
-      overflow-x: auto;
-      margin-bottom: 32px;
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-md);
-    }
-    table { width: 100%; border-collapse: collapse; }
-    th, td {
-      padding: 14px 16px;
-      text-align: left;
-      border-bottom: 1px solid var(--border-subtle);
-      vertical-align: middle;
-      font-size: 0.92rem;
-    }
-    th {
-      background: var(--surface-subtle);
-      color: var(--text-secondary);
-      font-weight: 700;
-      font-size: 0.78rem;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-    }
-    tbody tr:last-child td { border-bottom: none; }
-    tbody tr:hover { background: #f8fafc; }
-
-    .category-badge {
-      display: inline-block;
-      padding: 3px 10px;
-      border-radius: var(--radius-full);
-      font-size: 0.76rem;
-      font-weight: 700;
-      background: var(--surface-subtle);
-      color: var(--iu-navy-700);
-    }
-    .category-Event { background: #e0e7ff; color: #3730a3; }
-    .category-Career { background: #dcfce7; color: #166534; }
-    .category-Academic { background: #fae8ff; color: #86198f; }
-    .category-General { background: #fffbeb; color: #b45309; }
-
-    .actions-cell { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
-    .btn-sm {
-      padding: 6px 11px;
-      border-radius: var(--radius-sm);
-      font-size: 0.78rem;
-      font-weight: 600;
-      text-decoration: none;
-      cursor: pointer;
-      border: 1px solid transparent;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      transition: all 0.15s ease;
-    }
-    .btn-view { background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; }
-    .btn-view:hover { background: #2563eb; color: #ffffff; }
-    .btn-edit { background: #fffbeb; color: #b45309; border-color: #fde68a; }
-    .btn-edit:hover { background: #d97706; color: #ffffff; }
-    .btn-delete { background: #fff1f2; color: #be123c; border-color: #fecdd3; }
-    .btn-delete:hover { background: #e11d48; color: #ffffff; }
-
-    .card-form {
-      background: linear-gradient(180deg, #fffbeb 0%, #ffffff 100%);
-      border: 1px solid #fde68a;
-      border-top: 4px solid var(--iu-gold-600);
-      border-radius: var(--radius-lg);
-      padding: 28px;
-      margin-top: 12px;
-    }
-    .card-form h2 { font-size: 1.3rem; font-weight: 800; color: var(--text-primary); margin-bottom: 6px; }
-    .form-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 16px;
-      margin-bottom: 16px;
-      margin-top: 16px;
-    }
-    .form-group { display: flex; flex-direction: column; }
-    .form-group-full { grid-column: 1 / -1; display: flex; flex-direction: column; margin-bottom: 18px; }
-    label { font-size: 0.84rem; font-weight: 600; margin-bottom: 6px; color: var(--iu-navy-700); }
-    input, select, textarea {
-      padding: 10px 13px;
-      border: 1px solid var(--border-strong);
-      border-radius: var(--radius-sm);
-      font-size: 0.92rem;
-      background: #ffffff;
-      color: var(--text-primary);
-      font-family: inherit;
-    }
-    textarea { resize: vertical; min-height: 90px; }
-    input:focus, select:focus, textarea:focus {
-      outline: none;
-      border-color: var(--iu-gold-500);
-      box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15);
-    }
-    button.btn-primary {
-      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-      color: #ffffff;
-      border: none;
-      padding: 11px 24px;
-      border-radius: var(--radius-md);
-      font-size: 0.92rem;
-      font-weight: 700;
-      cursor: pointer;
-      box-shadow: 0 4px 10px rgba(217, 119, 6, 0.25);
-    }
-    button.btn-primary:hover { background: #b45309; }
-
-    .nav-links {
-      margin-top: 28px;
-      padding-top: 20px;
-      border-top: 1px solid var(--border-subtle);
-      display: flex;
-      gap: 18px;
-      flex-wrap: wrap;
-    }
-    .nav-links a { color: var(--iu-cobalt-600); text-decoration: none; font-size: 0.88rem; font-weight: 600; }
-
-    footer.main-footer {
-      background: var(--iu-navy-950);
-      color: var(--text-muted);
-      border-top: 1px solid rgba(255, 255, 255, 0.08);
-      padding: 32px 0;
-      margin-top: auto;
-      font-size: 0.84rem;
-    }
-    .footer-inner { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; }
-  </style>
+  <title>Duyurular — İstanbul Üniversitesi Mezun Takip Sistemi</title>
+  <link rel="stylesheet" href="/css/portal.css">
 </head>
 <body>
 
-  <div class="top-bar">
-    <div class="wrapper top-bar-inner">
-      <div class="status-indicator">
-        <span class="status-dot"></span>
-        <span>Istanbul University &bull; Campus Bulletins &amp; Beyazıt Homecoming</span>
+  <div class="app-layout">
+    <!-- Sol Menü (Sidebar) -->
+    <aside class="app-sidebar" id="appSidebar">
+      <div class="sidebar-header">
+        <a href="/" class="sidebar-brand">
+          <img src="/images/iu-logo.svg" alt="İstanbul Üniversitesi Logo" class="brand-logo-img">
+          <div class="brand-titles">
+            <span class="brand-main-title">İSTANBUL ÜNİVERSİTESİ</span>
+            <span class="brand-sub-title">Mezun Takip Sistemi</span>
+          </div>
+        </a>
       </div>
-      <div>
-        <a href="/admin" style="color:#38bdf8; margin-right:12px;">🛡️ Admin Panel</a>
-        <a href="/logout" style="color:#fca5a5; font-weight:700; margin-right:12px;">🚪 Çıkış Yap</a>
-        <a href="/api/announcements">JSON Endpoint (/api/announcements) &rarr;</a>
+      <div class="sidebar-nav-container">
+        {{DYNAMIC_NAV_LINKS}}
       </div>
+      <div class="sidebar-footer">
+        <div class="sidebar-footer-links">
+          <a href="/about">Hakkında</a> &bull;
+          <a href="/api/swagger">Swagger</a>
+        </div>
+        <div class="sidebar-badge">İÜ AKSİS &bull; ÖYS 1453</div>
+      </div>
+    </aside>
+
+    <!-- Ana İçerik Alanı -->
+    <div class="app-main-wrapper">
+      <header class="app-header">
+        <div class="header-left">
+          <button class="sidebar-toggle-btn" id="sidebarToggleBtn" aria-label="Menüyü Aç/Kapat" title="Menü">☰</button>
+          <div class="header-title-box">
+            <h1 class="page-header-title">Announcements Management</h1>
+            <span class="page-header-desc">Resmi Üniversite Bültenleri, Mezunlar Günü ve Akademik Etkinlikler</span>
+          </div>
+        </div>
+        <div class="header-right">
+          {{DYNAMIC_TOP_BAR_RIGHT}}
+        </div>
+      </header>
+
+      <main class="app-content-body">
+        <div class="content-container">
+
+          {{MESSAGE}}
+
+          <!-- Arama & Kategori Filtre Çubuğu -->
+          <div class="card" style="margin-bottom: 20px; padding: 18px 24px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
+              <div style="flex: 1; min-width: 280px; position: relative;">
+                <input type="text" id="ann-search" class="form-input" style="padding-left: 40px;" placeholder="Başlık, yazar, kategori veya tarih ile ara..." autocomplete="off">
+                <span style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 0.95rem;">🔍</span>
+              </div>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+                <button type="button" class="btn btn-sm btn-outline filter-btn active" data-cat="">Tümü</button>
+                <button type="button" class="btn btn-sm btn-outline filter-btn" data-cat="Event">Etkinlik (Event)</button>
+                <button type="button" class="btn btn-sm btn-outline filter-btn" data-cat="Career">Kariyer</button>
+                <button type="button" class="btn btn-sm btn-outline filter-btn" data-cat="Academic">Akademik</button>
+                <button type="button" class="btn btn-sm btn-outline filter-btn" data-cat="General">Genel</button>
+                <a href="#publish-form" class="btn btn-primary btn-sm" style="margin-left: 6px;">➕ Yeni Duyuru Yayınla</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Duyuru Tablosu Kartı -->
+          <div class="card" style="margin-bottom: 24px;">
+            <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <h2 class="card-title" style="font-size: 1.15rem;">📢 Yayınlanan Üniversite Bültenleri &amp; Haberler</h2>
+                <p class="card-subtitle">İstanbul Üniversitesi Rektörlüğü ve Mezunlar Ofisi resmi duyuruları.</p>
+              </div>
+              <a href="/api/announcements" class="btn btn-outline btn-sm" target="_blank" rel="noopener">JSON Veri (/api/announcements) &rarr;</a>
+            </div>
+
+            <div class="table-container">
+              <table id="ann-table" class="portal-table">
+                <thead>
+                  <tr>
+                    <th style="width: 70px;">ID</th>
+                    <th>Duyuru Başlığı</th>
+                    <th>Kategori</th>
+                    <th>Yayınlayan Birim</th>
+                    <th>Tarih</th>
+                    <th style="text-align: right; width: 220px;">İşlemler</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {{ANNOUNCEMENT_ROWS}}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Yeni Duyuru Form Kartı -->
+          <div class="card" id="publish-form">
+            <div class="card-header">
+              <h2 class="card-title">➕ Yeni Bir Duyuru Oluştur</h2>
+              <p class="card-subtitle">İstanbul Üniversitesi Mezun Portalı bültenine yeni etkinlik, kariyer veya akademik duyuru ekleyin.</p>
+            </div>
+
+            <form action="/announcements" method="POST">
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="title" class="form-label required">Duyuru Başlığı *</label>
+                  <input type="text" id="title" name="title" class="form-input" placeholder="Örn: Geleneksel Beyazıt Mezunlar Buluşması" required />
+                </div>
+                <div class="form-group">
+                  <label for="category" class="form-label required">Kategori *</label>
+                  <select id="category" name="category" class="form-select">
+                    <option value="Event">Etkinlik (Event)</option>
+                    <option value="Career">Kariyer (Career)</option>
+                    <option value="Academic">Akademik (Academic)</option>
+                    <option value="General">Genel (General)</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="author" class="form-label required">Yayınlayan Birim / Yazar *</label>
+                  <input type="text" id="author" name="author" class="form-input" placeholder="Örn: Mezunlar Koordinatörlüğü" required />
+                </div>
+                <div class="form-group">
+                  <label for="date" class="form-label">Yayın Tarihi</label>
+                  <input type="date" id="date" name="date" class="form-input" />
+                </div>
+              </div>
+
+              <div class="form-group" style="margin-top: 16px;">
+                <label for="content" class="form-label required">Duyuru Metni &amp; Ayrıntılar *</label>
+                <textarea id="content" name="content" class="form-textarea" rows="4" placeholder="Duyuru metnini ve etkinlik detaylarını buraya giriniz..." required></textarea>
+              </div>
+
+              <div class="form-actions" style="margin-top: 24px;">
+                <a href="/announcements" class="btn btn-secondary">Vazgeç</a>
+                <button type="submit" class="btn btn-primary">Duyuruyu Yayınla</button>
+              </div>
+            </form>
+          </div>
+
+        </div>
+      </main>
+
+      <footer class="app-footer">
+        <div class="app-footer-inner">
+          <div>&copy; 2026 İstanbul Üniversitesi Mezun Takip Sistemi &bull; Kuruluş 1453</div>
+          <div class="footer-nav">
+            <a href="/">Ana Sayfa</a>
+            <a href="/users">Mezunlar</a>
+            <a href="/announcements">Duyurular</a>
+            <a href="/jobs">Kariyer</a>
+            <a href="/applications">Başvurular</a>
+            <a href="/about">Hakkında</a>
+          </div>
+        </div>
+      </footer>
     </div>
   </div>
 
-  <header class="main-nav">
-    <div class="wrapper nav-container">
-      <a href="/" class="brand-logo">
-        <div class="logo-emblem">🎓</div>
-        <div class="brand-text">
-          <span class="brand-title">Alumni Tracking System</span>
-          <span class="brand-subtitle">İstanbul Üniversitesi &bull; Mezun Portalı</span>
-        </div>
-      </a>
-      <nav>
-        <ul class="nav-links" style="margin:0; padding:0; border:none;">
-          <li><a href="/" class="nav-link">Home</a></li>
-          <li><a href="/users" class="nav-link">Alumni Directory</a></li>
-          <li><a href="/register" class="nav-link">➕ Register</a></li>
-          <li><a href="/login" class="nav-link">🔑 Login</a></li>
-          <li><a href="/announcements" class="nav-link active">Announcements</a></li>
-          <li><a href="/jobs" class="nav-link">Job Board</a></li>
-          <li><a href="/applications" class="nav-link">Applications</a></li>
-          <li><a href="/admin" class="nav-link">🛡️ Admin</a></li>
-          <li><a href="/logout" class="nav-link" style="color:#f87171; font-weight:700;">🚪 Çıkış Yap</a></li>
-          <li><a href="/api/swagger" class="nav-link nav-cta">Swagger Docs ⚡</a></li>
-        </ul>
-      </nav>
-    </div>
-  </header>
-
-  <section class="page-banner">
-    <div class="wrapper banner-flex">
-      <div>
-        <span class="badge-header">MVC View Layer &bull; Announcement Management</span>
-        <h1>📢 Announcements Management</h1>
-        <p class="subtitle">Publish, manage, and view official Istanbul University alumni bulletins, Beyazıt Homecoming events, academic seminars, and career symposia.</p>
-      </div>
-      <a href="#publish-form" class="btn-jump">➕ Publish Bulletin</a>
-    </div>
-  </section>
-
-  <main class="main-content">
-    <div class="wrapper">
-
-      <div class="toolbar-card">
-        <div class="search-box">
-          <input type="text" id="ann-search" placeholder="Search bulletins by title, author, category, or date..." autocomplete="off">
-        </div>
-        <div class="chip-group">
-          <button type="button" class="filter-btn active" data-cat="">All</button>
-          <button type="button" class="filter-btn" data-cat="Event">Event</button>
-          <button type="button" class="filter-btn" data-cat="Career">Career</button>
-          <button type="button" class="filter-btn" data-cat="Academic">Academic</button>
-          <button type="button" class="filter-btn" data-cat="General">General</button>
-        </div>
-      </div>
-
-      <div class="container">
-        {{MESSAGE}}
-
-        <div class="table-wrap">
-          <table id="ann-table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Title</th>
-                <th>Category</th>
-                <th>Author</th>
-                <th>Date</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {{ANNOUNCEMENT_ROWS}}
-            </tbody>
-          </table>
-        </div>
-
-        <div class="card-form" id="publish-form">
-          <h2>➕ Create New Announcement</h2>
-          <form action="/announcements" method="POST">
-            <div class="form-grid">
-              <div class="form-group">
-                <label for="title">Title</label>
-                <input type="text" id="title" name="title" placeholder="e.g. Annual Beyazıt Alumni Reunion" required />
-              </div>
-              <div class="form-group">
-                <label for="category">Category</label>
-                <select id="category" name="category">
-                  <option value="Event">Event</option>
-                  <option value="Career">Career</option>
-                  <option value="Academic">Academic</option>
-                  <option value="General">General</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label for="author">Author / Department</label>
-                <input type="text" id="author" name="author" placeholder="e.g. Alumni Relations Office" required />
-              </div>
-              <div class="form-group">
-                <label for="date">Publish Date</label>
-                <input type="date" id="date" name="date" />
-              </div>
-            </div>
-
-            <div class="form-group-full">
-              <label for="content">Announcement Content</label>
-              <textarea id="content" name="content" placeholder="Write the announcement description and details here..." required></textarea>
-            </div>
-
-            <button type="submit" class="btn-primary">Publish Announcement</button>
-          </form>
-        </div>
-
-        <div class="nav-links">
-          <a href="/">← Return to Home</a>
-          <a href="/users">Alumni Directory (/users)</a>
-          <a href="/api/announcements">API JSON View (/api/announcements)</a>
-          <a href="/api/swagger">Swagger Documentation</a>
-        </div>
-      </div>
-
-    </div>
-  </main>
-
-  <footer class="main-footer">
-    <div class="wrapper footer-inner">
-      <div>&copy; 2026 Istanbul University Alumni Tracking System &bull; Founded 1453</div>
-      <div><a href="/" style="color:#94a3b8; text-decoration:none;">← Return to Portal Home</a></div>
-    </div>
-  </footer>
-
   <script>
     (function() {
+      const toggleBtn = document.getElementById('sidebarToggleBtn');
+      const sidebar = document.getElementById('appSidebar');
+      if (toggleBtn && sidebar) {
+        toggleBtn.addEventListener('click', function() {
+          sidebar.classList.toggle('sidebar-collapsed');
+        });
+      }
+
       const searchInput = document.getElementById('ann-search');
       const filterBtns = document.querySelectorAll('.filter-btn');
       const rows = Array.from(document.querySelectorAll('#ann-table tbody tr'));

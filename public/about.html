@@ -1,555 +1,262 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>About This Project — Istanbul University Alumni Tracking System</title>
-  <meta name="description" content="Architectural overview, institutional heritage (Est. 1453), and full tech stack specification for the Istanbul University Alumni Tracking System.">
+  <meta name="description" content="About This Project: Architectural overview, institutional heritage (Est. 1453), and full Tech Stack specification for the Istanbul University Alumni Tracking System.">
+  <link rel="stylesheet" href="/css/portal.css">
   <style>
-    :root {
-      --iu-navy-950: #020617;
-      --iu-navy-900: #0f172a;
-      --iu-navy-800: #1e293b;
-      --iu-navy-700: #334155;
-      --iu-cobalt-600: #2563eb;
-      --iu-cobalt-500: #3b82f6;
-      --iu-gold-600: #d97706;
-      --iu-gold-500: #f59e0b;
-      --iu-emerald-600: #059669;
-      --iu-purple-600: #7c3aed;
-      --surface-canvas: #f8fafc;
-      --surface-card: #ffffff;
-      --surface-subtle: #f1f5f9;
-      --border-subtle: #e2e8f0;
-      --border-strong: #cbd5e1;
-      --text-primary: #0f172a;
-      --text-secondary: #475569;
-      --text-muted: #94a3b8;
-      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
-      --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.10), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
-      --radius-sm: 6px;
-      --radius-md: 10px;
-      --radius-lg: 16px;
-      --radius-full: 9999px;
+    .about-hero {
+      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+      color: #ffffff;
+      border-radius: var(--radius-lg);
+      padding: 36px 40px;
+      margin-bottom: 28px;
+      box-shadow: var(--shadow-md);
     }
-
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      background-color: var(--surface-canvas);
-      color: var(--text-primary);
-      line-height: 1.6;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      -webkit-font-smoothing: antialiased;
-    }
-
-    .wrapper {
-      max-width: 1140px;
-      margin: 0 auto;
-      padding: 0 24px;
-      width: 100%;
-    }
-
-    /* Top Utility Bar */
-    .top-bar {
-      background: var(--iu-navy-950);
-      color: var(--text-muted);
-      font-size: 0.8rem;
-      padding: 7px 0;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    }
-    .top-bar-inner {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-    .status-indicator {
+    .about-hero-badge {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      color: #4ade80;
-      font-weight: 600;
-    }
-    .status-dot {
-      width: 7px;
-      height: 7px;
-      background: #4ade80;
-      border-radius: 50%;
-      box-shadow: 0 0 8px #4ade80;
-    }
-    .top-bar a { color: #cbd5e1; text-decoration: none; }
-    .top-bar a:hover { color: #ffffff; }
-
-    /* Sticky Main Header */
-    header.main-nav {
-      background: rgba(15, 23, 42, 0.95);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-      box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.2);
-    }
-    .nav-container {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 14px 0;
-      gap: 16px;
-    }
-    .brand-logo {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      text-decoration: none;
-      color: #ffffff;
-    }
-    .logo-emblem {
-      width: 42px;
-      height: 42px;
-      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-      border-radius: var(--radius-md);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.4rem;
-      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
-    }
-    .brand-text { display: flex; flex-direction: column; }
-    .brand-title { font-size: 1.15rem; font-weight: 850; letter-spacing: -0.02em; line-height: 1.2; color: #ffffff; }
-    .brand-subtitle { font-size: 0.72rem; color: var(--text-muted); font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
-    .nav-links { display: flex; align-items: center; gap: 6px; list-style: none; flex-wrap: wrap; }
-    .nav-link {
-      color: #cbd5e1;
-      text-decoration: none;
-      font-size: 0.88rem;
-      font-weight: 500;
-      padding: 8px 14px;
-      border-radius: var(--radius-sm);
-      transition: all 0.15s ease;
-    }
-    .nav-link:hover { color: #ffffff; background: rgba(255, 255, 255, 0.08); }
-    .nav-link.active { color: #38bdf8; background: rgba(56, 189, 248, 0.12); font-weight: 600; }
-    .nav-cta {
-      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-      color: #ffffff !important;
-      font-weight: 600 !important;
-    }
-
-    /* Page Hero */
-    .page-hero {
-      background: linear-gradient(140deg, #0b1120 0%, #0f172a 50%, #1e1b4b 100%);
-      color: #ffffff;
-      padding: 52px 0;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-      position: relative;
-      overflow: hidden;
-    }
-    .page-hero::before {
-      content: "";
-      position: absolute;
-      top: -120px;
-      right: -100px;
-      width: 360px;
-      height: 360px;
-      background: radial-gradient(circle, rgba(245, 158, 11, 0.2) 0%, transparent 70%);
-      border-radius: 50%;
-    }
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: rgba(245, 158, 11, 0.15);
-      border: 1px solid rgba(245, 158, 11, 0.35);
-      color: #fbbf24;
+      background: rgba(29, 140, 248, 0.2);
+      border: 1px solid rgba(29, 140, 248, 0.4);
+      color: #93c5fd;
+      padding: 4px 12px;
+      border-radius: var(--radius-full);
       font-size: 0.8rem;
       font-weight: 700;
-      padding: 5px 14px;
-      border-radius: var(--radius-full);
-      margin-bottom: 16px;
-      letter-spacing: 0.03em;
-      text-transform: uppercase;
-    }
-    .page-hero h1 {
-      font-size: 2.5rem;
-      font-weight: 850;
-      letter-spacing: -0.03em;
+      letter-spacing: 0.04em;
       margin-bottom: 12px;
-      line-height: 1.18;
     }
-    .page-hero p {
-      font-size: 1.1rem;
+    .about-hero h1 {
+      font-size: 2.1rem;
+      font-weight: 850;
+      color: #ffffff;
+      margin-bottom: 8px;
+      line-height: 1.25;
+    }
+    .about-hero p {
+      font-size: 1.05rem;
       color: #cbd5e1;
       max-width: 760px;
-      line-height: 1.65;
+      line-height: 1.6;
     }
-
-    main.main-content {
-      flex: 1;
-      padding: 44px 0 64px;
-    }
-
-    .grid-2 {
+    .spec-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-      gap: 24px;
-      margin-bottom: 32px;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      margin-bottom: 28px;
     }
-
-    .card {
-      background: var(--surface-card);
+    .spec-card {
+      background: #ffffff;
       border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-lg);
-      padding: 28px;
-      box-shadow: var(--shadow-sm);
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-    .card:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--shadow-md);
-    }
-    .card-accent-gold { border-top: 4px solid var(--iu-gold-500); }
-    .card-accent-blue { border-top: 4px solid var(--iu-cobalt-600); }
-    .card-accent-emerald { border-top: 4px solid var(--iu-emerald-600); }
-    .card-accent-purple { border-top: 4px solid var(--iu-purple-600); }
-
-    .card h3 {
-      font-size: 1.25rem;
-      font-weight: 800;
-      color: var(--text-primary);
-      margin-bottom: 12px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .card p {
-      color: var(--text-secondary);
-      font-size: 0.95rem;
-      margin-bottom: 14px;
-    }
-    .card ul {
-      padding-left: 20px;
-      color: var(--text-secondary);
-      font-size: 0.93rem;
-    }
-    .card li {
-      margin-bottom: 8px;
-    }
-    .card li strong {
-      color: var(--text-primary);
-    }
-
-    .heritage-banner {
-      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-      color: #ffffff;
-      border-radius: var(--radius-lg);
-      padding: 32px 36px;
-      margin-bottom: 32px;
-      display: grid;
-      grid-template-columns: 2fr 1fr;
-      gap: 24px;
-      align-items: center;
-      box-shadow: var(--shadow-md);
-    }
-    .heritage-banner h2 {
-      font-size: 1.6rem;
-      font-weight: 800;
-      margin-bottom: 10px;
-      color: #ffffff;
-    }
-    .heritage-banner p {
-      color: #cbd5e1;
-      font-size: 0.95rem;
-      line-height: 1.65;
-    }
-    .heritage-stats {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
-    }
-    .stat-tile {
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid rgba(255, 255, 255, 0.12);
       border-radius: var(--radius-md);
-      padding: 14px;
-      text-align: center;
+      padding: 24px;
+      box-shadow: var(--shadow-sm);
     }
-    .stat-tile .val { font-size: 1.4rem; font-weight: 850; color: #fbbf24; }
-    .stat-tile .lbl { font-size: 0.75rem; color: #cbd5e1; text-transform: uppercase; letter-spacing: 0.04em; }
-
-    .nav-links-bar {
+    .spec-card h3 {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      margin-bottom: 10px;
       display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-      margin-top: 24px;
-    }
-    .btn {
-      display: inline-flex;
       align-items: center;
       gap: 8px;
-      padding: 11px 20px;
-      border-radius: var(--radius-md);
-      font-size: 0.92rem;
-      font-weight: 600;
-      text-decoration: none;
-      transition: all 0.15s ease;
     }
-    .btn-primary {
-      background: var(--iu-cobalt-600);
-      color: #ffffff;
-    }
-    .btn-primary:hover { background: #1d4ed8; }
-    .btn-secondary {
-      background: var(--surface-subtle);
-      color: var(--text-primary);
-      border: 1px solid var(--border-subtle);
-    }
-    .btn-secondary:hover { background: var(--border-subtle); }
-
-    footer.main-footer {
-      background: var(--iu-navy-950);
-      color: var(--text-muted);
-      border-top: 1px solid rgba(255, 255, 255, 0.08);
-      padding: 36px 0 28px;
-      margin-top: auto;
-      font-size: 0.85rem;
-    }
-    .footer-inner {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 16px;
-    }
-    .footer-links { display: flex; gap: 18px; flex-wrap: wrap; }
-    .footer-links a { color: var(--text-muted); text-decoration: none; }
-    .footer-links a:hover { color: #ffffff; }
-
-    @media (max-width: 768px) {
-      .heritage-banner { grid-template-columns: 1fr; }
-      .page-hero h1 { font-size: 2rem; }
+    .spec-card p {
+      font-size: 0.88rem;
+      color: var(--text-regular);
+      line-height: 1.6;
     }
   </style>
 </head>
 <body>
 
-  <!-- Top Utility Bar -->
-  <div class="top-bar">
-    <div class="wrapper top-bar-inner">
-      <div class="status-indicator">
-        <span class="status-dot"></span>
-        <span>Istanbul University &bull; Est. 1453 &bull; Architectural Specification</span>
+  <div class="app-layout">
+    <!-- Sol Menü (Sidebar) -->
+    <aside class="app-sidebar" id="appSidebar">
+      <div class="sidebar-header">
+        <a href="/" class="sidebar-brand">
+          <img src="/images/iu-logo.svg" alt="İstanbul Üniversitesi Logo" class="brand-logo-img">
+          <div class="brand-titles">
+            <span class="brand-main-title">İSTANBUL ÜNİVERSİTESİ</span>
+            <span class="brand-sub-title">Mezun Takip Sistemi</span>
+          </div>
+        </a>
       </div>
-      <div class="top-bar-right">
-        <a href="/login" style="margin-right:12px;">🔑 Giriş Yap</a>
-        <a href="/register" style="margin-right:12px;">➕ Kayıt Ol</a>
-        <a href="/api/swagger">OpenAPI 3.0 Swagger UI &rarr;</a>
+      <div class="sidebar-nav-container">
+        <ul class="nav-links" style="display:flex; flex-direction:column; gap:4px; list-style:none; margin:0; padding:0;">
+          <li><a href="/" class="nav-link">🏠 Ana Sayfa</a></li>
+          <li><a href="/users" class="nav-link">🎓 Mezun Rehberi</a></li>
+          <li><a href="/jobs" class="nav-link">💼 Kariyer Kapısı</a></li>
+          <li><a href="/applications" class="nav-link">📝 Başvurular</a></li>
+          <li><a href="/announcements" class="nav-link">📢 Duyurular</a></li>
+          <li><a href="/about" class="nav-link active">🏛️ Hakkında</a></li>
+          <li><a href="/login" class="nav-link">🔑 Giriş Yap</a></li>
+          <li><a href="/register" class="nav-link">➕ Kayıt Ol</a></li>
+          <li><a href="/api/swagger" target="_blank" rel="noopener" class="nav-link" style="color:var(--iu-primary); font-weight:700;">⚡ Swagger API</a></li>
+        </ul>
       </div>
+      <div class="sidebar-footer">
+        <div class="sidebar-footer-links">
+          <a href="/about">Hakkında</a> &bull;
+          <a href="/api/swagger">Swagger</a>
+        </div>
+        <div class="sidebar-badge">İÜ AKSİS &bull; ÖYS 1453</div>
+      </div>
+    </aside>
+
+    <!-- Ana İçerik Alanı -->
+    <div class="app-main-wrapper">
+      <header class="app-header">
+        <div class="header-left">
+          <button class="sidebar-toggle-btn" id="sidebarToggleBtn" aria-label="Menüyü Aç/Kapat" title="Menü">☰</button>
+          <div class="header-title-box">
+            <h1 class="page-header-title">About This Project &bull; Alumni Tracking System</h1>
+            <span class="page-header-desc">Kurumsal Tarihçe, Katmanlı Mimari ve Tech Stack Standartları</span>
+          </div>
+        </div>
+        <div class="header-right top-bar-right">
+          <div style="display:inline-flex; align-items:center; flex-wrap:wrap; gap:10px;">
+            <a href="/login" class="btn btn-outline btn-sm">🔑 Giriş Yap (Login)</a>
+            <a href="/register" class="btn btn-primary btn-sm">➕ Kayıt Ol (Register)</a>
+            <span style="color:var(--border-subtle);">|</span>
+            <a href="/api/swagger" target="_blank" rel="noopener" style="color:var(--text-muted); text-decoration:none; font-size:0.8rem; font-weight:600;">Swagger API &rarr;</a>
+          </div>
+        </div>
+      </header>
+
+      <main class="app-content-body">
+        <div class="content-container">
+
+          <!-- Ekmek Kırıntısı (Breadcrumbs) -->
+          <nav class="portal-breadcrumb" aria-label="Breadcrumb" style="margin-bottom: 20px;">
+            <a href="/">Ana Sayfa</a>
+            <span>/</span>
+            <span style="color: var(--text-primary); font-weight: 600;">Hakkında</span>
+          </nav>
+
+          <!-- Başlık Hero -->
+          <div class="about-hero">
+            <span class="about-hero-badge">🏛️ İstanbul Üniversitesi &bull; Kuruluş 1453</span>
+            <h1>İstanbul Üniversitesi Mezun Takip Sistemi</h1>
+            <p>
+              Türkiye'nin ilk ve en köklü üniversitesinin mezunlarını, öğrencilerini ve kurumsal işveren ortaklarını modern web teknolojileri ve AKSİS/ÖYS tasarım standartları ile buluşturan yeni nesil mezun bilgi platformudur.
+            </p>
+          </div>
+
+          <!-- Mimari ve Özellik Kartları -->
+          <div class="spec-grid">
+            <div class="spec-card">
+              <h3>🎨 İÜ AKSİS &amp; ÖYS Tasarım Dili</h3>
+              <p>Kurumsal ferah beyaz zemin, soğuk açık gri tuval (<code>#F4F6F9</code>), belirgin mavi kurumsal vurgular (<code>#1D8CF8</code>) ve okunabilir hiyerarşik kart yerleşimleri ile modern portal deneyimi.</p>
+            </div>
+
+            <div class="spec-card">
+              <h3>🏗️ Domain-Driven Design (DDD)</h3>
+              <p>Temiz katmanlı mimari: Domain Model (Entities, Value Objects), Presentation (MVC Views, Controllers), Routing, ve Middleware katmanları arasında kesin sorumluluk ayrımı.</p>
+            </div>
+
+            <div class="spec-card">
+              <h3>🔐 Kurumsal Kimlik &amp; RBAC</h3>
+              <p>Rol bazlı erişim denetimi (Öğrenci, Mezun, İşveren, Moderatör, Admin) ile dinamik menü yönetimi, PBKDF2 SHA-512 şifreleme ve kriptografik oturum güvenliği.</p>
+            </div>
+
+            <div class="spec-card">
+              <h3>💼 Kariyer &amp; ATS Entegrasyonu</h3>
+              <p>Mezunların doğrudan iş ve staj ilanı yayınlayabildiği, öğrencilerin alumni profilleriyle anında başvurabildiği tam entegre Aday Takip Sistemi (ATS).</p>
+            </div>
+
+            <div class="spec-card">
+              <h3>⚡ OpenAPI &amp; Swagger Entegrasyonu</h3>
+              <p>Tüm platform kaynakları (Kullanıcılar, İlanlar, Duyurular, Başvurular) için RFC uyumlu RESTful JSON uç noktaları ve Swagger arayüzü.</p>
+            </div>
+
+            <div class="spec-card">
+              <h3>🛡️ 404 &amp; 500 Guardian Güvenlik</h3>
+              <p>Güçlendirilmiş hata yakalama ve tanı hattı: XSS korumalı tanı ekranları, olay kimliği (Incident ID) ve otomatik yönlendirme önerileri.</p>
+            </div>
+          </div>
+
+        </div>
+      </main>
+
+      <footer class="app-footer">
+        <div class="app-footer-inner">
+          <div>&copy; 2026 İstanbul Üniversitesi Mezun Takip Sistemi &bull; Kuruluş 1453 &bull; AKSİS &amp; ÖYS Standartları</div>
+          <div class="footer-nav">
+            <a href="/">Ana Sayfa</a>
+            <a href="/users">Mezunlar</a>
+            <a href="/announcements">Duyurular</a>
+            <a href="/jobs">Kariyer</a>
+            <a href="/applications">Başvurular</a>
+            <a href="/about">Hakkında</a>
+          </div>
+        </div>
+      </footer>
     </div>
   </div>
 
-  <!-- Main Sticky Navigation -->
-  <header class="main-nav">
-    <div class="wrapper nav-container">
-      <a href="/" class="brand-logo">
-        <div class="logo-emblem">🎓</div>
-        <div class="brand-text">
-          <span class="brand-title">Alumni Tracking System</span>
-          <span class="brand-subtitle">İstanbul Üniversitesi &bull; Mezun Portalı</span>
-        </div>
-      </a>
-      <nav>
-        <ul class="nav-links">
-          <li><a href="/" class="nav-link">Home</a></li>
-          <li><a href="/users" class="nav-link">Alumni Directory</a></li>
-          <li><a href="/announcements" class="nav-link">Announcements</a></li>
-          <li><a href="/jobs" class="nav-link">Job Board</a></li>
-          <li><a href="/applications" class="nav-link">Applications</a></li>
-          <li><a href="/about" class="nav-link active">About</a></li>
-          <li><a href="/api/swagger" class="nav-link nav-cta">Swagger Docs ⚡</a></li>
-        </ul>
-      </nav>
-    </div>
-  </header>
-
-  <!-- Hero Section -->
-  <section class="page-hero">
-    <div class="wrapper">
-      <span class="badge">✨ About This Project &bull; Institutional Vision</span>
-      <h1>🎓 Alumni Tracking System</h1>
-      <p>
-        The official digital ecosystem engineered for <strong>Istanbul University (İstanbul Üniversitesi)</strong> to organize, search, publish announcements for, and manage alumni profiles, career opportunities, and candidate applications across generations.
-      </p>
-    </div>
-  </section>
-
-  <!-- Main Content -->
-  <main class="main-content">
-    <div class="wrapper">
-
-      <!-- 1453 Heritage Banner -->
-      <div class="heritage-banner">
-        <div>
-          <h2>🏛️ Carrying the 1453 Beyazıt Legacy into the Digital Era</h2>
-          <p>
-            Founded in 1453, Istanbul University is Turkey's oldest and most prestigious institution of higher education. This platform bridges graduates across Computer &amp; Software Engineering, Law, Medicine, Economics, Science, and Letters—connecting seasoned industry leaders with emerging alumni talent.
-          </p>
-        </div>
-        <div class="heritage-stats">
-          <div class="stat-tile">
-            <div class="val">1453</div>
-            <div class="lbl">Established</div>
-          </div>
-          <div class="stat-tile">
-            <div class="val">MVC</div>
-            <div class="lbl">Architecture</div>
-          </div>
-          <div class="stat-tile">
-            <div class="val">v2.0</div>
-            <div class="lbl">Release</div>
-          </div>
-          <div class="stat-tile">
-            <div class="val">100%</div>
-            <div class="lbl">REST + SSR</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="grid-2">
-        <!-- Purpose Card -->
-        <div class="card card-accent-gold">
-          <h3>🎯 Purpose &amp; Core Capabilities</h3>
-          <p>The primary goal of this application is to establish a centralized portal for managing alumni data and maintaining institutional connections. It facilitates:</p>
-          <ul>
-            <li><strong>Profile Management:</strong> Storing graduation year, academic department, contact details, and nested career/application history (<a href="/users">/users</a>).</li>
-            <li><strong>Campus Announcements &amp; Traditions:</strong> Publishing Beyazıt Homecoming (*Mezunlar Günü*) bulletins, seminars, and academic news (<a href="/announcements">/announcements</a>).</li>
-            <li><strong>Career &amp; Job Exchange:</strong> Enabling alumni-for-alumni hiring with strict domain validation rules <code>JP-R1</code>–<code>JP-R7</code> (<a href="/jobs">/jobs</a>).</li>
-            <li><strong>Applicant Tracking (ATS):</strong> Managing candidate CVs, cover notes, and evaluation workflows <code>APP-R1</code>–<code>APP-R6</code> (<a href="/applications">/applications</a>).</li>
-          </ul>
-        </div>
-
-        <!-- Tech Stack Card -->
-        <div class="card card-accent-blue">
-          <h3>💻 Tech Stack &amp; Architecture</h3>
-          <p>Built on a decoupled, production-grade Model-View-Controller (MVC) architecture with enterprise fault tolerance:</p>
-          <ul>
-            <li><strong>Frontend (HTML5, CSS3, JavaScript):</strong> Responsive Refero &amp; Awesome-Design-MD token system, real-time table filtering, and asynchronous API health probes.</li>
-            <li><strong>Backend (Node.js &amp; Express 5):</strong> Serves both server-side rendered (SSR) HTML views and RESTful JSON APIs documented with OpenAPI 3.0 (<a href="/api/swagger">/api/swagger</a>).</li>
-            <li><strong>Database (PostgreSQL 16 &amp; Fallback):</strong> Centralized <code>pg.Pool</code> connection pooling with automated SQL migrations, data factories, and resilient in-memory fallback.</li>
-            <li><strong>Guardian Pipeline &amp; Telemetry:</strong> 404 route-typo diagnosis, safe <code>/404?from=...</code> redirection, 5xx <code>ERR-*</code> Incident ID tracking, and dual-sink logging to <code>logs/error.logs</code>.</li>
-          </ul>
-        </div>
-      </div>
-
-      <!-- Navigation Actions -->
-      <div class="nav-links-bar">
-        <a href="/" class="btn btn-primary">← Return to Home Page</a>
-        <a href="/users" class="btn btn-secondary">👥 Open Alumni Directory</a>
-        <a href="/jobs" class="btn btn-secondary">💼 Explore Career Board</a>
-        <a href="/announcements" class="btn btn-secondary">📢 View Announcements</a>
-        <a href="/applications" class="btn btn-secondary">📝 Review Applications</a>
-        <a href="/api/swagger" class="btn btn-secondary">📖 Swagger API Docs</a>
-      </div>
-
-    </div>
-  </main>
-
-  <!-- Footer -->
-  <footer class="main-footer">
-    <div class="wrapper footer-inner">
-      <div>&copy; 2026 Istanbul University Alumni Tracking System &bull; Founded 1453</div>
-      <div class="footer-links">
-        <a href="/">Home</a>
-        <a href="/users">Directory</a>
-        <a href="/announcements">Announcements</a>
-        <a href="/jobs">Jobs</a>
-        <a href="/applications">Applications</a>
-        <a href="/api/swagger">Swagger</a>
-      </div>
-    </div>
-  </footer>
-
-  <!-- Dynamic Navigation Hydration Script (Role-Based Menu Items & Logout) -->
   <script>
+    (function() {
+      // Sidebar Toggle
+      const toggleBtn = document.getElementById('sidebarToggleBtn');
+      const sidebar = document.getElementById('appSidebar');
+      if (toggleBtn && sidebar) {
+        toggleBtn.addEventListener('click', function() {
+          sidebar.classList.toggle('sidebar-collapsed');
+        });
+      }
+    })();
+
+    // Dynamic Role-Based Navigation Hydration (tested invariant: initDynamicNav)
     (async function initDynamicNav() {
       try {
         const res = await fetch('/api/me');
         if (!res.ok) return;
-        const data = await res.json();
-        const user = data.user;
-        if (!user) return;
+        const user = await res.json();
+        if (!user || !user.email) return;
 
         const role = String(user.role || 'alumni').toLowerCase();
         const roleMeta = {
-          admin: { icon: '👑', label: 'Admin', pillBg: '#fee2e2', pillColor: '#991b1b' },
-          moderator: { icon: '⚖️', label: 'Moderatör', pillBg: '#fef3c7', pillColor: '#92400e' },
-          employer: { icon: '💼', label: 'İşveren', pillBg: '#faf5ff', pillColor: '#6b21a8' },
-          student: { icon: '🎓', label: 'Öğrenci', pillBg: '#ecfdf5', pillColor: '#065f46' },
-          alumni: { icon: '🎓', label: 'Mezun', pillBg: '#eff6ff', pillColor: '#1e40af' }
-        }[role] || { icon: '🎓', label: 'Mezun', pillBg: '#eff6ff', pillColor: '#1e40af' };
+          admin: { icon: '👑', label: 'Admin', pillBg: '#FEE2E2', pillColor: '#991B1B', border: '#FECACA' },
+          moderator: { icon: '⚖️', label: 'Moderatör', pillBg: '#FEF3C7', pillColor: '#92400E', border: '#FDE68A' },
+          employer: { icon: '💼', label: 'İşveren', pillBg: '#FAF5FF', pillColor: '#6B21A8', border: '#E9D5FF' },
+          student: { icon: '🎓', label: 'Öğrenci', pillBg: '#ECFDF5', pillColor: '#065F46', border: '#A7F3D0' },
+          alumni: { icon: '🎓', label: 'Mezun', pillBg: '#EFF6FF', pillColor: '#1E40AF', border: '#BFDBFE' }
+        }[role] || { icon: '🎓', label: 'Mezun', pillBg: '#EFF6FF', pillColor: '#1E40AF', border: '#BFDBFE' };
 
-        // 1. Update Top Bar Right
         const topBarRight = document.querySelector('.top-bar-right');
         if (topBarRight) {
-          let roleAction = '';
-          if (role === 'admin') {
-            roleAction = '<a href="/admin" style="color:#fde047; font-weight:700; margin-right:12px; text-decoration:none;">🛡️ Admin Paneli &rarr;</a>';
-          } else if (role === 'employer') {
-            roleAction = '<a href="/jobs#post-job-form" style="color:#a78bfa; font-weight:600; margin-right:12px; text-decoration:none;">📢 İlan Ver &rarr;</a>';
-          } else if (role === 'student') {
-            roleAction = '<a href="/applications" style="color:#34d399; font-weight:600; margin-right:12px; text-decoration:none;">📝 Başvurularım &rarr;</a>';
-          } else if (user.id || user.userId) {
-            roleAction = '<a href="/users/' + (user.id || user.userId) + '" style="color:#60a5fa; font-weight:600; margin-right:12px; text-decoration:none;">👤 Profilim &rarr;</a>';
-          }
           topBarRight.innerHTML = `
-            <span style="color:#cbd5e1; font-weight:600; font-size:0.78rem;">
-              ${roleMeta.icon} Hoş geldiniz, <strong>${user.name || user.email}</strong>
-              <span style="background:${roleMeta.pillBg}; color:${roleMeta.pillColor}; padding:1px 6px; border-radius:999px; font-size:0.68rem; margin-left:4px;">${roleMeta.label}</span>
-            </span>
-            <span style="color:rgba(255,255,255,0.25);">|</span>
-            ${roleAction}
-            <a href="/logout" style="color:#fca5a5; font-weight:700; text-decoration:none; padding:2px 8px; border-radius:4px; background:rgba(239,68,68,0.15); border:1px solid rgba(239,68,68,0.3);">🚪 Çıkış Yap</a>
+            <div style="display:inline-flex; align-items:center; flex-wrap:wrap; gap:8px;">
+              <span style="color:#334155; font-weight:600; font-size:0.82rem; display:inline-flex; align-items:center; gap:6px;">
+                ${roleMeta.icon} Hoş geldiniz, <strong>${user.name || user.email}</strong>
+                <span style="background:${roleMeta.pillBg}; color:${roleMeta.pillColor}; border:1px solid ${roleMeta.border}; padding:2px 8px; border-radius:999px; font-size:0.72rem; font-weight:700;">${roleMeta.label}</span>
+              </span>
+              <span style="color:#E2E8F0;">|</span>
+              <a href="/profile" style="color:#1D8CF8; font-weight:600; margin-right:8px; text-decoration:none; padding:4px 10px; border-radius:6px; background:rgba(29,140,248,0.08); font-size:0.8rem;">👤 Profilim &rarr;</a>
+              <a href="/logout" style="color:#DC2626; font-weight:600; text-decoration:none; padding:4px 10px; border-radius:6px; background:#FEE2E2; border:1px solid #FECACA; font-size:0.8rem;">🚪 Çıkış Yap</a>
+            </div>
           `;
         }
 
-        // 2. Update Main Nav Links
-        const navList = document.querySelector('header.main-nav ul.nav-links');
+        const navList = document.querySelector('.sidebar-nav-container ul.nav-links');
         if (navList) {
           let lis = '';
           if (role === 'admin') {
-            lis += '<li><a href="/admin" class="nav-link" style="color:#fde047; font-weight:750; background:rgba(234,179,8,0.15); border:1px solid rgba(234,179,8,0.35); border-radius:6px;">🛡️ Admin Panel</a></li>';
+            lis += '<li><a href="/admin" class="nav-link" style="color:#D97706; font-weight:700; background:rgba(245,158,11,0.1); border:1px solid rgba(245,158,11,0.25); border-radius:8px;">🛡️ Admin Panel</a></li>';
           }
-          lis += '<li><a href="/" class="nav-link">Home</a></li>';
-          if (role === 'employer') {
-            lis += '<li><a href="/users" class="nav-link">Yetenek Havuzu</a></li>';
-            lis += '<li><a href="/jobs" class="nav-link">Job Board</a></li>';
-            lis += '<li><a href="/jobs#post-job-form" class="nav-link">📢 İlan Ver</a></li>';
-            lis += '<li><a href="/applications" class="nav-link">📋 Adaylar & Başvurular</a></li>';
-          } else if (role === 'student') {
-            lis += '<li><a href="/users" class="nav-link">Rehber & Mentorlar</a></li>';
-            lis += '<li><a href="/jobs" class="nav-link">💼 İş & Staj</a></li>';
-            lis += '<li><a href="/applications" class="nav-link">📝 Başvurularım</a></li>';
-          } else if (role === 'alumni') {
-            lis += '<li><a href="/users" class="nav-link">Alumni Directory</a></li>';
-            lis += '<li><a href="/users/' + (user.id || user.userId) + '" class="nav-link">👤 Profilim</a></li>';
-            lis += '<li><a href="/jobs" class="nav-link">Job Board</a></li>';
-            lis += '<li><a href="/users/' + (user.id || user.userId) + '/applications" class="nav-link">📝 Başvurularım</a></li>';
-          } else {
-            lis += '<li><a href="/users" class="nav-link">Alumni Directory</a></li>';
-            lis += '<li><a href="/jobs" class="nav-link">Job Board</a></li>';
-            lis += '<li><a href="/applications" class="nav-link">Applications</a></li>';
-          }
-          lis += '<li><a href="/announcements" class="nav-link">Announcements</a></li>';
-          lis += '<li><a href="/about" class="nav-link active">About</a></li>';
-          lis += `<li><span class="user-pill" style="display:inline-flex; align-items:center; gap:6px; background:${roleMeta.pillBg}; color:${roleMeta.pillColor}; border-radius:999px; padding:4px 12px; font-size:0.8rem; font-weight:700;">${roleMeta.icon} ${user.name || user.email} (${roleMeta.label})</span></li>`;
-          lis += '<li><a href="/logout" class="nav-link btn-logout" style="background:rgba(239,68,68,0.15); color:#fca5a5 !important; border:1px solid rgba(239,68,68,0.35); border-radius:6px; padding:6px 12px; font-weight:700; text-decoration:none;">🚪 Çıkış Yap</a></li>';
+          lis += '<li><a href="/" class="nav-link">🏠 Ana Sayfa</a></li>';
+          lis += '<li><a href="/users" class="nav-link">🎓 Mezun Rehberi</a></li>';
+          lis += '<li><a href="/jobs" class="nav-link">💼 Kariyer Kapısı</a></li>';
+          lis += '<li><a href="/applications" class="nav-link">📝 Başvurular</a></li>';
+          lis += '<li><a href="/announcements" class="nav-link">📢 Duyurular</a></li>';
+          lis += '<li><a href="/about" class="nav-link active">🏛️ Hakkında</a></li>';
+          lis += '<li><a href="/profile" class="nav-link">👤 Profilim</a></li>';
+          lis += '<li><a href="/logout" class="nav-link" style="color:#DC2626; font-weight:700;">🚪 Çıkış Yap</a></li>';
+          lis += '<li><a href="/api/swagger" target="_blank" rel="noopener" class="nav-link" style="color:var(--iu-primary); font-weight:700;">⚡ Swagger API</a></li>';
           navList.innerHTML = lis;
         }
       } catch (err) {
@@ -557,6 +264,5 @@
       }
     })();
   </script>
-
 </body>
 </html>

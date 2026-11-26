@@ -1,372 +1,23 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Member Portal Login — Istanbul University Alumni Tracking System</title>
-  <meta name="description" content="Secure member login for Istanbul University alumni, students, and employers to manage profiles, job postings, and applications.">
+  <title>Giriş Yap — İstanbul Üniversitesi Mezun Takip Sistemi</title>
+  <meta name="description" content="İstanbul Üniversitesi Mezun Bilgi Sistemi üye giriş ekranı.">
+  <link rel="stylesheet" href="/css/portal.css">
   <style>
-    :root {
-      --iu-navy-950: #020617;
-      --iu-navy-900: #0f172a;
-      --iu-navy-800: #1e293b;
-      --iu-navy-700: #334155;
-      --iu-cobalt-600: #2563eb;
-      --iu-cobalt-500: #3b82f6;
-      --iu-gold-600: #d97706;
-      --iu-emerald-600: #059669;
-      --iu-purple-600: #7c3aed;
-      --surface-canvas: #f8fafc;
-      --surface-card: #ffffff;
-      --surface-subtle: #f1f5f9;
-      --border-subtle: #e2e8f0;
-      --border-strong: #cbd5e1;
-      --text-primary: #0f172a;
-      --text-secondary: #475569;
-      --text-muted: #94a3b8;
-      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.04);
-      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
-      --radius-sm: 6px;
-      --radius-md: 10px;
-      --radius-lg: 16px;
-      --radius-full: 9999px;
-    }
-
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      color: var(--text-primary);
-      background-color: var(--surface-canvas);
-      line-height: 1.55;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      -webkit-font-smoothing: antialiased;
-    }
-
-    .wrapper { max-width: 1080px; margin: 0 auto; padding: 0 24px; width: 100%; }
-
-    /* Top Utility Bar */
-    .top-bar {
-      background: var(--iu-navy-950);
-      color: var(--text-muted);
-      font-size: 0.8rem;
-      padding: 7px 0;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    }
-    .top-bar-inner { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
-    .status-indicator { display: inline-flex; align-items: center; gap: 6px; color: #4ade80; font-weight: 600; }
-    .status-dot { width: 7px; height: 7px; background: #4ade80; border-radius: 50%; box-shadow: 0 0 8px #4ade80; }
-    .top-bar a { color: #cbd5e1; text-decoration: none; }
-
-    /* Sticky Main Header */
-    header.main-nav {
-      background: rgba(15, 23, 42, 0.95);
-      backdrop-filter: blur(12px);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-      box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.2);
-    }
-    .nav-container { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; gap: 16px; }
-    .brand-logo { display: flex; align-items: center; gap: 12px; text-decoration: none; color: #ffffff; }
-    .logo-emblem {
-      width: 42px;
-      height: 42px;
-      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-      border-radius: var(--radius-md);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.4rem;
-    }
-    .brand-text { display: flex; flex-direction: column; }
-    .brand-title { font-size: 1.15rem; font-weight: 850; color: #ffffff; line-height: 1.2; }
-    .brand-subtitle { font-size: 0.72rem; color: var(--text-muted); font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
-    .nav-links { display: flex; align-items: center; gap: 6px; list-style: none; flex-wrap: wrap; }
-    .nav-link { color: #cbd5e1; text-decoration: none; font-size: 0.88rem; font-weight: 500; padding: 8px 14px; border-radius: var(--radius-sm); transition: all 0.15s ease; }
-    .nav-link:hover { color: #ffffff; background: rgba(255, 255, 255, 0.08); }
-    .nav-link.active { color: #38bdf8; background: rgba(56, 189, 248, 0.14); font-weight: 600; }
-    .nav-cta { background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: #ffffff !important; font-weight: 600 !important; }
-
-    /* Page Hero Banner */
-    .page-banner {
-      background: linear-gradient(135deg, #0b1120 0%, #0f172a 50%, #1e3a8a 100%);
-      color: #ffffff;
-      padding: 40px 0;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    }
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: rgba(56, 189, 248, 0.15);
-      border: 1px solid rgba(56, 189, 248, 0.35);
-      color: #38bdf8;
-      padding: 4px 12px;
-      border-radius: var(--radius-full);
-      font-size: 0.78rem;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      margin-bottom: 12px;
-    }
-    .page-banner h1 { font-size: 2.15rem; font-weight: 850; letter-spacing: -0.025em; margin-bottom: 8px; color: #ffffff; }
-    .page-banner p.subtitle { color: #cbd5e1; font-size: 0.98rem; max-width: 680px; }
-
-    main.main-content { flex: 1; padding: 40px 0 64px; }
-
-    /* Alerts */
-    .alert-success {
-      background: #dcfce7;
-      border: 1px solid #86efac;
-      border-left: 4px solid #16a34a;
-      color: #166534;
-      padding: 14px 18px;
-      border-radius: var(--radius-md);
-      margin-bottom: 24px;
-      font-weight: 600;
-    }
-    .alert-danger {
-      background: #fee2e2;
-      border: 1px solid #fca5a5;
-      border-left: 4px solid #dc2626;
-      color: #991b1b;
-      padding: 14px 18px;
-      border-radius: var(--radius-md);
-      margin-bottom: 24px;
-      font-weight: 600;
-    }
-    .alert-info {
-      background: #eff6ff;
-      border: 1px solid #bfdbfe;
-      border-left: 4px solid #2563eb;
-      color: #1e40af;
-      padding: 14px 18px;
-      border-radius: var(--radius-md);
-      margin-bottom: 24px;
-      font-weight: 600;
-    }
-
-    /* Login Layout */
-    .login-container {
+    .auth-layout-grid {
       display: grid;
       grid-template-columns: 1.25fr 1fr;
       gap: 32px;
-      align-items: start;
-      max-width: 980px;
+      max-width: 1040px;
       margin: 0 auto;
     }
-
-    .login-card {
-      background: var(--surface-card);
+    .demo-btn-item {
+      background: var(--surface-input);
       border: 1px solid var(--border-subtle);
-      border-top: 4px solid var(--iu-cobalt-600);
-      border-radius: var(--radius-lg);
-      padding: 36px 32px;
-      box-shadow: var(--shadow-md);
-    }
-    .login-card-header {
-      margin-bottom: 24px;
-    }
-    .login-card-header h2 {
-      font-size: 1.45rem;
-      font-weight: 850;
-      color: var(--text-primary);
-      margin-bottom: 6px;
-    }
-    .login-card-header p {
-      color: var(--text-secondary);
-      font-size: 0.88rem;
-    }
-
-    .form-group {
-      margin-bottom: 20px;
-    }
-    .form-group label {
-      display: block;
-      font-size: 0.86rem;
-      font-weight: 700;
-      color: var(--iu-navy-800);
-      margin-bottom: 7px;
-    }
-    .input-wrapper {
-      position: relative;
-      display: flex;
-      align-items: center;
-    }
-    .input-icon {
-      position: absolute;
-      left: 14px;
-      color: var(--text-muted);
-      font-size: 1rem;
-      pointer-events: none;
-    }
-    .form-control {
-      width: 100%;
-      padding: 12px 14px 12px 42px;
-      font-size: 0.94rem;
-      border: 1px solid var(--border-strong);
-      border-radius: var(--radius-md);
-      background: #ffffff;
-      color: var(--text-primary);
-      transition: all 0.15s ease;
-    }
-    .form-control:focus {
-      outline: none;
-      border-color: var(--iu-cobalt-600);
-      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
-    }
-    .form-helper {
-      font-size: 0.76rem;
-      color: var(--text-muted);
-      margin-top: 5px;
-    }
-
-    .toggle-pwd-btn {
-      position: absolute;
-      right: 12px;
-      background: none;
-      border: none;
-      color: var(--text-secondary);
-      cursor: pointer;
-      font-size: 0.95rem;
-      padding: 4px;
-    }
-
-    .options-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 24px;
-      font-size: 0.84rem;
-    }
-    .remember-label {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      cursor: pointer;
-      color: var(--text-secondary);
-      font-weight: 500;
-    }
-    .remember-label input[type="checkbox"] {
-      width: 16px;
-      height: 16px;
-      accent-color: var(--iu-cobalt-600);
-      cursor: pointer;
-    }
-    .support-link {
-      color: var(--iu-cobalt-600);
-      text-decoration: none;
-      font-weight: 600;
-    }
-    .support-link:hover { text-decoration: underline; }
-
-    button.btn-primary {
-      width: 100%;
-      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-      color: #ffffff;
-      border: none;
-      padding: 13px 20px;
-      border-radius: var(--radius-md);
-      font-size: 1rem;
-      font-weight: 700;
-      cursor: pointer;
-      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
-      transition: all 0.15s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    }
-    button.btn-primary:hover {
-      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-      transform: translateY(-1px);
-    }
-
-    .card-divider {
-      position: relative;
-      text-align: center;
-      margin: 28px 0 20px;
-    }
-    .card-divider::before {
-      content: "";
-      position: absolute;
-      top: 50%;
-      left: 0;
-      right: 0;
-      height: 1px;
-      background: var(--border-subtle);
-    }
-    .divider-text {
-      position: relative;
-      background: var(--surface-card);
-      padding: 0 12px;
-      font-size: 0.78rem;
-      color: var(--text-muted);
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    .register-cta {
-      display: block;
-      width: 100%;
-      text-align: center;
-      background: #eff6ff;
-      color: var(--iu-cobalt-600);
-      border: 1px solid #bfdbfe;
-      padding: 12px 16px;
-      border-radius: var(--radius-md);
-      font-size: 0.92rem;
-      font-weight: 700;
-      text-decoration: none;
-      transition: all 0.15s ease;
-    }
-    .register-cta:hover {
-      background: #dbeafe;
-      border-color: #93c5fd;
-    }
-
-    /* Side Info & Demo Panel */
-    .side-info {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-    .demo-card {
-      background: var(--surface-card);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-lg);
-      padding: 24px;
-      box-shadow: var(--shadow-sm);
-    }
-    .demo-card h3 {
-      font-size: 1rem;
-      font-weight: 800;
-      color: var(--text-primary);
-      margin-bottom: 8px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .demo-card p {
-      font-size: 0.84rem;
-      color: var(--text-secondary);
-      margin-bottom: 16px;
-    }
-    .demo-buttons {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-    .demo-btn {
-      background: var(--surface-canvas);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-md);
+      border-radius: var(--radius-sm);
       padding: 10px 14px;
       text-align: left;
       cursor: pointer;
@@ -374,294 +25,245 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      width: 100%;
     }
-    .demo-btn:hover {
-      background: #eff6ff;
-      border-color: #bfdbfe;
+    .demo-btn-item:hover {
+      background: var(--surface-card);
+      border-color: var(--iu-primary);
       transform: translateX(2px);
     }
-    .demo-role {
-      font-size: 0.85rem;
-      font-weight: 700;
-      color: var(--text-primary);
-    }
-    .demo-email {
-      font-size: 0.76rem;
-      color: var(--text-muted);
-    }
-    .demo-pill {
-      font-size: 0.7rem;
-      font-weight: 700;
-      padding: 2px 8px;
-      border-radius: var(--radius-full);
-      text-transform: uppercase;
-    }
-    .pill-alumni { background: #eff6ff; color: #1d4ed8; }
-    .pill-mentor { background: #ecfdf5; color: #047857; }
-    .pill-employer { background: #faf5ff; color: #7e22ce; }
-    .pill-admin { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
-
-    .security-card {
-      background: #f8fafc;
-      border: 1px dashed var(--border-strong);
-      border-radius: var(--radius-lg);
-      padding: 20px;
-      font-size: 0.82rem;
-      color: var(--text-secondary);
-    }
-    .security-card h4 {
-      font-size: 0.88rem;
-      font-weight: 750;
-      color: var(--iu-navy-800);
-      margin-bottom: 8px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .security-list {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-    .security-list li::before {
-      content: "🛡️ ";
-      font-size: 0.75rem;
-    }
-
-    footer.main-footer {
-      background: var(--iu-navy-950);
-      color: var(--text-muted);
-      border-top: 1px solid rgba(255, 255, 255, 0.08);
-      padding: 28px 0;
-      margin-top: auto;
-      font-size: 0.84rem;
-    }
-    .footer-inner { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; }
-
-    @media (max-width: 840px) {
-      .login-container { grid-template-columns: 1fr; }
+    @media (max-width: 860px) {
+      .auth-layout-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
 
-  <!-- Top Utility Bar -->
-  <div class="top-bar">
-    <div class="wrapper top-bar-inner">
-      <div class="status-indicator">
-        <span class="status-dot"></span>
-        <span>Istanbul University &bull; Official Alumni, Student &amp; Employer Portal</span>
+  <div class="app-layout">
+    <!-- Sol Menü (Sidebar) -->
+    <aside class="app-sidebar" id="appSidebar">
+      <div class="sidebar-header">
+        <a href="/" class="sidebar-brand">
+          <img src="/images/iu-logo.svg" alt="İstanbul Üniversitesi Logo" class="brand-logo-img">
+          <div class="brand-titles">
+            <span class="brand-main-title">İSTANBUL ÜNİVERSİTESİ</span>
+            <span class="brand-sub-title">Mezun Takip Sistemi</span>
+          </div>
+        </a>
       </div>
-      <div>
-        <a href="/register">Don't have an account? Register &rarr;</a>
+      <div class="sidebar-nav-container">
+        {{DYNAMIC_NAV_LINKS}}
       </div>
+      <div class="sidebar-footer">
+        <div class="sidebar-footer-links">
+          <a href="/about">Hakkında</a> &bull;
+          <a href="/api/swagger">Swagger</a>
+        </div>
+        <div class="sidebar-badge">İÜ AKSİS &bull; ÖYS 1453</div>
+      </div>
+    </aside>
+
+    <!-- Ana İçerik Alanı -->
+    <div class="app-main-wrapper">
+      <header class="app-header">
+        <div class="header-left">
+          <button class="sidebar-toggle-btn" id="sidebarToggleBtn" aria-label="Menüyü Aç/Kapat" title="Menü">☰</button>
+          <div class="header-title-box">
+            <h1 class="page-header-title">Member Portal Login</h1>
+            <span class="page-header-desc">İstanbul Üniversitesi Mezun, Öğrenci ve İşveren Giriş Portalı</span>
+          </div>
+        </div>
+        <div class="header-right">
+          {{DYNAMIC_TOP_BAR_RIGHT}}
+        </div>
+      </header>
+
+      <main class="app-content-body">
+        <div class="content-container">
+
+          <!-- Giriş ve Demo Grid Düzeni -->
+          <div class="auth-layout-grid">
+            
+            <!-- Sol Kolon: Giriş Formu Kartı -->
+            <div class="card">
+              <div class="card-header" style="margin-bottom: 20px;">
+                <h2 class="card-title">🔑 Member Portal Login</h2>
+                <p class="card-subtitle">İstanbul Üniversitesi kurumsal veya kayıtlı e-posta adresiniz ile giriş yapın.</p>
+              </div>
+
+              {{MESSAGE}}
+
+              <form action="/login" method="POST" id="login-form">
+                <input type="hidden" name="returnUrl" value="{{RETURN_URL}}">
+
+                <div class="form-group" style="margin-bottom: 18px;">
+                  <label for="email" class="form-label required">E-posta Adresi (Email) *</label>
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    class="form-input"
+                    placeholder="Örn: hakan@alumni.edu"
+                    value="{{FORM_EMAIL}}"
+                    required
+                    autofocus
+                    autocomplete="username"
+                  >
+                  <span class="form-hint">Kayıtlı kurumsal veya kişisel e-posta adresiniz.</span>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 18px;">
+                  <label for="password" class="form-label required">Şifre (Password) *</label>
+                  <div style="position: relative;">
+                    <input
+                      type="password"
+                      id="password"
+                      name="password"
+                      class="form-input"
+                      placeholder="••••••••"
+                      required
+                      minlength="8"
+                      autocomplete="current-password"
+                      style="padding-right: 42px;"
+                    >
+                    <button type="button" id="toggle-pwd" aria-label="Şifreyi Göster/Gizle" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--text-muted); font-size: 1rem;">👁️</button>
+                  </div>
+                  <span class="form-hint">En az 8 karakter uzunluğunda.</span>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; font-size: 0.85rem;">
+                  <label class="form-checkbox-label">
+                    <input type="checkbox" id="rememberMe" name="rememberMe" value="true" {{REMEMBER_CHECKED}}>
+                    <span>Beni 30 gün boyunca hatırla</span>
+                  </label>
+                  <a href="mailto:mezun@istanbul.edu.tr?subject=Sifre%20Sifirlama" style="color: var(--iu-primary); text-decoration: none; font-weight: 600;">Şifremi Unuttum</a>
+                </div>
+
+                <button type="submit" class="btn btn-primary" id="login-submit-btn" style="width: 100%; justify-content: center; padding: 12px;">
+                  Giriş Yap &rarr;
+                </button>
+              </form>
+
+              <div style="margin: 28px 0 20px; text-align: center; position: relative;">
+                <hr style="border: none; border-top: 1px solid var(--border-subtle);">
+                <span style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: #ffffff; padding: 0 14px; font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">Sistemde Kaydınız Yok mu?</span>
+              </div>
+
+              <a href="/register" class="btn btn-outline" style="width: 100%; justify-content: center; padding: 11px;">
+                🎓 Yeni Hesap Oluştur (Register &rarr;)
+              </a>
+            </div>
+
+            <!-- Sağ Kolon: Quick Demo Sign-In & Güvenlik Özellikleri -->
+            <div style="display: flex; flex-direction: column; gap: 20px;">
+              
+              <!-- Quick Demo Sign-In -->
+              <div class="card">
+                <div class="card-header" style="margin-bottom: 16px;">
+                  <h3 class="card-title" style="font-size: 1.05rem;">⚡ Quick Demo Sign-In</h3>
+                  <p class="card-subtitle">Test hesapları ile tek tıkla form alanlarını doldurabilirsiniz:</p>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                  <button type="button" class="demo-btn-item" onclick="fillCredentials('hakan@alumni.edu', 'Password123!')">
+                    <div>
+                      <strong style="color: var(--text-primary); font-size: 0.9rem; display: block;">Hakan Ural</strong>
+                      <span style="font-size: 0.78rem; color: var(--text-muted);">hakan@alumni.edu</span>
+                    </div>
+                    <span class="badge badge-danger">👑 Admin</span>
+                  </button>
+
+                  <button type="button" class="demo-btn-item" onclick="fillCredentials('ayse@alumni.edu', 'Password123!')">
+                    <div>
+                      <strong style="color: var(--text-primary); font-size: 0.9rem; display: block;">Ayşe Yılmaz</strong>
+                      <span style="font-size: 0.78rem; color: var(--text-muted);">ayse@alumni.edu</span>
+                    </div>
+                    <span class="badge badge-success">Mentor</span>
+                  </button>
+
+                  <button type="button" class="demo-btn-item" onclick="fillCredentials('mehmet@alumni.edu', 'Password123!')">
+                    <div>
+                      <strong style="color: var(--text-primary); font-size: 0.9rem; display: block;">Mehmet Demir</strong>
+                      <span style="font-size: 0.78rem; color: var(--text-muted);">mehmet@alumni.edu</span>
+                    </div>
+                    <span class="badge badge-info">İşveren</span>
+                  </button>
+
+                  <button type="button" class="demo-btn-item" onclick="fillCredentials('admin@istanbul.edu.tr', 'Password123!')">
+                    <div>
+                      <strong style="color: var(--text-primary); font-size: 0.9rem; display: block;">Sistem Yöneticisi</strong>
+                      <span style="font-size: 0.78rem; color: var(--text-muted);">admin@istanbul.edu.tr</span>
+                    </div>
+                    <span class="badge badge-danger">SuperAdmin</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Güvenlik Özellikleri -->
+              <div class="card" style="background: var(--surface-input);">
+                <h4 style="font-size: 0.92rem; font-weight: 700; color: var(--text-primary); margin-bottom: 10px;">🔐 Güvenlik ve Oturum Standartları</h4>
+                <ul style="list-style: none; display: flex; flex-direction: column; gap: 8px; font-size: 0.84rem; color: var(--text-regular);">
+                  <li>🛡️ Kriptografik HMAC-SHA256 imzalı durumsuz (stateless) oturum anahtarları.</li>
+                  <li>🍪 <code>HttpOnly</code> ve <code>SameSite=Lax</code> güvenlik bayraklı çerezler.</li>
+                  <li>🔑 Tuzlanmış PBKDF2 SHA-512 şifreleme ile korunan kullanıcı parolaları.</li>
+                  <li>⚡ Rol tabanlı erişim kontrolü (RBAC: Mezun, Öğrenci, İşveren, Yönetici).</li>
+                </ul>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+      </main>
+
+      <footer class="app-footer">
+        <div class="app-footer-inner">
+          <div>&copy; 2026 İstanbul Üniversitesi Mezun Takip Sistemi &bull; Kuruluş 1453</div>
+          <div class="footer-nav">
+            <a href="/">Ana Sayfa</a>
+            <a href="/users">Mezunlar</a>
+            <a href="/announcements">Duyurular</a>
+            <a href="/jobs">Kariyer</a>
+            <a href="/register">Kayıt Ol</a>
+            <a href="/about">Hakkında</a>
+          </div>
+        </div>
+      </footer>
     </div>
   </div>
 
-  <!-- Main Sticky Navigation -->
-  <header class="main-nav">
-    <div class="wrapper nav-container">
-      <a href="/" class="brand-logo">
-        <div class="logo-emblem">🎓</div>
-        <div class="brand-text">
-          <span class="brand-title">Alumni Tracking System</span>
-          <span class="brand-subtitle">İstanbul Üniversitesi &bull; Mezun Portalı</span>
-        </div>
-      </a>
-      <nav>
-        <ul class="nav-links">
-          <li><a href="/" class="nav-link">Home</a></li>
-          <li><a href="/users" class="nav-link">Alumni Directory</a></li>
-          <li><a href="/register" class="nav-link">➕ Register</a></li>
-          <li><a href="/announcements" class="nav-link">Announcements</a></li>
-          <li><a href="/jobs" class="nav-link">Job Board</a></li>
-          <li><a href="/applications" class="nav-link">Applications</a></li>
-          <li><a href="/login" class="nav-link active">🔑 Login</a></li>
-          <li><a href="/api/swagger" class="nav-link nav-cta">Swagger Docs ⚡</a></li>
-        </ul>
-      </nav>
-    </div>
-  </header>
-
-  <!-- Page Banner -->
-  <section class="page-banner">
-    <div class="wrapper">
-      <span class="badge">🔐 Institutional Access &bull; Istanbul University Identity Gate</span>
-      <h1>🔑 Member Portal Login</h1>
-      <p class="subtitle">Sign in to access your verified alumni profile, browse exclusive career opportunities, publish job openings, and connect with mentors across the Istanbul University global network.</p>
-    </div>
-  </section>
-
-  <!-- Main Content Area -->
-  <main class="main-content">
-    <div class="wrapper">
-      <div class="login-container">
-        
-        <!-- Login Form Card -->
-        <div class="login-card">
-          <div class="login-card-header">
-            <h2>Welcome Back</h2>
-            <p>Please enter your registered alumni or university credentials.</p>
-          </div>
-
-          {{MESSAGE}}
-
-          <form action="/login" method="POST" id="login-form">
-            <input type="hidden" name="returnUrl" value="{{RETURN_URL}}">
-
-            <div class="form-group">
-              <label for="email">Institutional or Alumni Email Address *</label>
-              <div class="input-wrapper">
-                <span class="input-icon">✉️</span>
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  class="form-control"
-                  placeholder="e.g. hakan@alumni.edu"
-                  value="{{FORM_EMAIL}}"
-                  required
-                  autofocus
-                  autocomplete="username"
-                >
-              </div>
-              <div class="form-helper">Official @alumni.edu, @istanbul.edu.tr, or registered personal email.</div>
-            </div>
-
-            <div class="form-group">
-              <label for="password">Password *</label>
-              <div class="input-wrapper">
-                <span class="input-icon">🔒</span>
-                <input
-                  type="password"
-                  id="password"
-                  name="password"
-                  class="form-control"
-                  placeholder="••••••••"
-                  required
-                  minlength="8"
-                  autocomplete="current-password"
-                >
-                <button type="button" class="toggle-pwd-btn" id="toggle-pwd" title="Show or hide password">👁️</button>
-              </div>
-              <div class="form-helper">Minimum 8 characters. Case-sensitive.</div>
-            </div>
-
-            <div class="options-row">
-              <label class="remember-label">
-                <input type="checkbox" id="rememberMe" name="rememberMe" value="true" {{REMEMBER_CHECKED}}>
-                <span>Keep me signed in for 30 days</span>
-              </label>
-              <a href="mailto:mezun@istanbul.edu.tr?subject=Password%20Reset%20Request" class="support-link">Forgot password?</a>
-            </div>
-
-            <button type="submit" class="btn-primary" id="login-submit-btn">
-              <span>Sign In to Member Portal</span>
-              <span>&rarr;</span>
-            </button>
-          </form>
-
-          <div class="card-divider">
-            <span class="divider-text">New to the Network?</span>
-          </div>
-
-          <a href="/register" class="register-cta">
-            🎓 Register as an Alumni, Student or Employer (/register)
-          </a>
-        </div>
-
-        <!-- Side Info & Quick Demo Login Card -->
-        <div class="side-info">
-          
-          <div class="demo-card">
-            <h3>⚡ Quick Demo Sign-In</h3>
-            <p>Click below to prefill credentials for seeded platform accounts:</p>
-            <div class="demo-buttons">
-              <button type="button" class="demo-btn" onclick="fillCredentials('hakan@alumni.edu', 'Password123!')">
-                <div>
-                  <div class="demo-role">Hakan Ural</div>
-                  <div class="demo-email">hakan@alumni.edu</div>
-                </div>
-                <span class="demo-pill pill-admin">👑 Admin</span>
-              </button>
-              <button type="button" class="demo-btn" onclick="fillCredentials('ayse@alumni.edu', 'Password123!')">
-                <div>
-                  <div class="demo-role">Ayşe Yılmaz</div>
-                  <div class="demo-email">ayse@alumni.edu</div>
-                </div>
-                <span class="demo-pill pill-mentor">Mentor</span>
-              </button>
-              <button type="button" class="demo-btn" onclick="fillCredentials('mehmet@alumni.edu', 'Password123!')">
-                <div>
-                  <div class="demo-role">Mehmet Demir</div>
-                  <div class="demo-email">mehmet@alumni.edu</div>
-                </div>
-                <span class="demo-pill pill-employer">Employer</span>
-              </button>
-              <button type="button" class="demo-btn" onclick="fillCredentials('admin@istanbul.edu.tr', 'Password123!')">
-                <div>
-                  <div class="demo-role">Sistem Yöneticisi</div>
-                  <div class="demo-email">admin@istanbul.edu.tr</div>
-                </div>
-                <span class="demo-pill pill-admin">SuperAdmin</span>
-              </button>
-            </div>
-          </div>
-
-          <div class="security-card">
-            <h4>🔐 Security &amp; Session Specifications</h4>
-            <ul class="security-list">
-              <li>Stateless tamper-proof cryptographic HMAC session tokens.</li>
-              <li>Tokens stored in hardened <code>HttpOnly</code> &amp; <code>SameSite=Lax</code> cookies.</li>
-              <li>Passwords protected by salted PBKDF2 with SHA-512 derivation.</li>
-              <li>RBAC privilege enforcement (Students, Alumni, Employers, Admins).</li>
-            </ul>
-          </div>
-
-        </div>
-
-      </div>
-    </div>
-  </main>
-
-  <!-- Global Footer -->
-  <footer class="main-footer">
-    <div class="wrapper footer-inner">
-      <div>
-        <strong>İstanbul Üniversitesi &bull; Alumni Tracking System</strong> &bull; Founded 1453
-      </div>
-      <div>
-        <a href="/" style="color:#94a3b8; text-decoration:none; margin-right:12px;">Home</a>
-        <a href="/users" style="color:#94a3b8; text-decoration:none; margin-right:12px;">Alumni Directory</a>
-        <a href="/register" style="color:#94a3b8; text-decoration:none; margin-right:12px;">Register</a>
-        <a href="/login" style="color:#38bdf8; text-decoration:none; margin-right:12px;">Login</a>
-        <a href="/api/swagger" style="color:#94a3b8; text-decoration:none;">Swagger API</a>
-      </div>
-    </div>
-  </footer>
-
   <script>
+    (function() {
+      const toggleBtn = document.getElementById('sidebarToggleBtn');
+      const sidebar = document.getElementById('appSidebar');
+      if (toggleBtn && sidebar) {
+        toggleBtn.addEventListener('click', function() {
+          sidebar.classList.toggle('sidebar-collapsed');
+        });
+      }
+
+      const pwdToggle = document.getElementById('toggle-pwd');
+      const pwdInput = document.getElementById('password');
+      if (pwdToggle && pwdInput) {
+        pwdToggle.addEventListener('click', function() {
+          if (pwdInput.type === 'password') {
+            pwdInput.type = 'text';
+            pwdToggle.textContent = '🔒';
+          } else {
+            pwdInput.type = 'password';
+            pwdToggle.textContent = '👁️';
+          }
+        });
+      }
+    })();
+
     function fillCredentials(email, password) {
       const emailInput = document.getElementById('email');
       const passwordInput = document.getElementById('password');
       if (emailInput) emailInput.value = email;
       if (passwordInput) passwordInput.value = password;
       if (emailInput) emailInput.focus();
-    }
-
-    const toggleBtn = document.getElementById('toggle-pwd');
-    const pwdInput = document.getElementById('password');
-    if (toggleBtn && pwdInput) {
-      toggleBtn.addEventListener('click', function() {
-        if (pwdInput.type === 'password') {
-          pwdInput.type = 'text';
-          toggleBtn.textContent = '🔒';
-        } else {
-          pwdInput.type = 'password';
-          toggleBtn.textContent = '👁️';
-        }
-      });
     }
   </script>
 </body>

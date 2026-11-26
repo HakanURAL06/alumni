@@ -1,346 +1,251 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Application #{{ID}} — Candidate Review Dossier</title>
+  <title>Application Record #{{ID}} — Candidate Review Dossier</title>
+  <link rel="stylesheet" href="/css/portal.css">
   <style>
-    :root {
-      --iu-navy-950: #020617;
-      --iu-navy-900: #0f172a;
-      --iu-navy-700: #334155;
-      --iu-cobalt-600: #2563eb;
-      --iu-purple-600: #7c3aed;
-      --surface-canvas: #f8fafc;
-      --surface-card: #ffffff;
-      --surface-subtle: #f1f5f9;
-      --border-subtle: #e2e8f0;
-      --text-primary: #0f172a;
-      --text-secondary: #475569;
-      --text-muted: #94a3b8;
-      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08);
-      --radius-sm: 6px;
-      --radius-md: 10px;
-      --radius-lg: 16px;
-      --radius-full: 9999px;
-    }
-
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      color: var(--text-primary);
-      background-color: var(--surface-canvas);
-      line-height: 1.6;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      -webkit-font-smoothing: antialiased;
-    }
-
-    .wrapper { max-width: 960px; margin: 0 auto; padding: 0 24px; width: 100%; }
-
-    .top-bar {
-      background: var(--iu-navy-950);
-      color: var(--text-muted);
-      font-size: 0.8rem;
-      padding: 7px 0;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    }
-    .top-bar-inner { max-width: 1140px; margin: 0 auto; padding: 0 24px; display: flex; justify-content: space-between; align-items: center; }
-
-    header.main-nav {
-      background: rgba(15, 23, 42, 0.95);
-      backdrop-filter: blur(12px);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    }
-    .nav-container { max-width: 1140px; margin: 0 auto; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
-    .brand-logo { display: flex; align-items: center; gap: 12px; text-decoration: none; color: #ffffff; }
-    .logo-emblem {
-      width: 42px;
-      height: 42px;
-      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-      border-radius: var(--radius-md);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.4rem;
-    }
-    .brand-text { display: flex; flex-direction: column; }
-    .brand-title { font-size: 1.15rem; font-weight: 850; color: #ffffff; line-height: 1.2; }
-    .brand-subtitle { font-size: 0.72rem; color: var(--text-muted); font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
-    .nav-links { display: flex; align-items: center; gap: 6px; list-style: none; flex-wrap: wrap; }
-    .nav-link { color: #cbd5e1; text-decoration: none; font-size: 0.88rem; font-weight: 500; padding: 8px 14px; border-radius: var(--radius-sm); }
-    .nav-link:hover { color: #ffffff; background: rgba(255, 255, 255, 0.08); }
-    .nav-link.active { color: #c084fc; background: rgba(168, 85, 247, 0.15); font-weight: 600; }
-
-    main.main-content { flex: 1; padding: 36px 0 64px; }
-
-    .breadcrumb {
-      font-size: 0.85rem;
-      color: var(--text-secondary);
-      margin-bottom: 20px;
-      display: flex;
-      gap: 8px;
-      align-items: center;
-    }
-    .breadcrumb a { color: var(--iu-cobalt-600); text-decoration: none; font-weight: 600; }
-
-    .container {
-      background: var(--surface-card);
-      border: 1px solid var(--border-subtle);
-      border-top: 4px solid var(--iu-purple-600);
-      border-radius: var(--radius-lg);
-      padding: 36px;
-      box-shadow: var(--shadow-md);
-    }
-    .header-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 16px;
-      border-bottom: 1px solid var(--border-subtle);
-      padding-bottom: 18px;
-      margin-bottom: 24px;
-    }
-    h1 { font-size: 1.85rem; font-weight: 850; color: var(--text-primary); }
-    .status-pill {
-      font-size: 0.85rem;
-      font-weight: 700;
-      padding: 6px 14px;
-      border-radius: var(--radius-full);
-      background: var(--surface-subtle);
-      color: var(--iu-navy-700);
-    }
-    .status-Submitted { background: #e0f2fe; color: #0369a1; }
-    .status-UnderReview { background: #fef3c7; color: #92400e; }
-    .status-Interviewing { background: #ede9fe; color: #6d28d9; }
-    .status-Accepted { background: #dcfce7; color: #166534; }
-    .status-Rejected { background: #fee2e2; color: #991b1b; }
-
-    .grid-2 {
+    .review-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 20px;
+      gap: 24px;
       margin-bottom: 24px;
     }
-    .info-card {
-      background: var(--surface-canvas);
+    .info-box {
+      background: var(--surface-input);
       border: 1px solid var(--border-subtle);
       border-radius: var(--radius-md);
       padding: 20px;
     }
-    .info-card h3 {
-      margin-bottom: 12px;
-      font-size: 1.05rem;
-      font-weight: 800;
+    .info-box h3 {
+      font-size: 1rem;
+      font-weight: 700;
       color: var(--text-primary);
-      border-bottom: 1px solid var(--border-subtle);
+      margin-bottom: 12px;
       padding-bottom: 8px;
+      border-bottom: 1px solid var(--border-subtle);
     }
-    .field-row { margin-bottom: 8px; font-size: 0.92rem; }
-    .field-label { font-weight: 600; color: var(--text-secondary); }
-
-    .content-box {
-      background: var(--surface-canvas);
+    .field-line {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-size: 0.92rem;
+    }
+    .field-line strong {
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+    .field-line span, .field-line a {
+      color: var(--text-primary);
+      font-weight: 700;
+      text-decoration: none;
+    }
+    .field-line a { color: var(--iu-primary); }
+    .note-box {
+      background: var(--surface-input);
       border: 1px solid var(--border-subtle);
       border-radius: var(--radius-md);
-      padding: 18px;
-      color: var(--iu-navy-700);
-      margin-bottom: 24px;
+      padding: 18px 20px;
+      color: var(--text-regular);
+      line-height: 1.6;
       white-space: pre-wrap;
+      font-size: 0.94rem;
+      margin-bottom: 24px;
     }
-    .status-form-box {
-      background: linear-gradient(180deg, #faf5ff 0%, #ffffff 100%);
-      border: 1px solid #e9d5ff;
-      border-left: 4px solid var(--iu-purple-600);
+    .status-update-card {
+      background: #ffffff;
+      border: 1px solid var(--border-subtle);
+      border-left: 4px solid var(--iu-primary);
       border-radius: var(--radius-md);
-      padding: 22px;
+      padding: 20px 24px;
       margin-top: 24px;
     }
-    .actions-footer {
-      display: flex;
-      gap: 12px;
-      margin-top: 28px;
-      padding-top: 20px;
-      border-top: 1px solid var(--border-subtle);
-      align-items: center;
-      flex-wrap: wrap;
-    }
-    .btn-secondary {
-      background: var(--surface-subtle);
-      color: var(--iu-navy-700);
-      border: 1px solid var(--border-subtle);
-      padding: 9px 16px;
-      border-radius: var(--radius-sm);
-      text-decoration: none;
-      font-size: 0.88rem;
-      font-weight: 600;
-    }
-    .btn-resume {
-      background: var(--iu-purple-600);
-      color: #ffffff;
-      padding: 8px 16px;
-      border-radius: var(--radius-sm);
-      text-decoration: none;
-      font-size: 0.86rem;
-      font-weight: 600;
-      display: inline-block;
-    }
-    button.btn-primary {
-      background: linear-gradient(135deg, #a855f7 0%, #7c3aed 100%);
-      color: #ffffff;
-      border: none;
-      padding: 9px 20px;
-      border-radius: var(--radius-sm);
-      font-size: 0.9rem;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    footer.main-footer {
-      background: var(--iu-navy-950);
-      color: var(--text-muted);
-      border-top: 1px solid rgba(255, 255, 255, 0.08);
-      padding: 28px 0;
-      margin-top: auto;
-      font-size: 0.84rem;
-    }
-    .footer-inner { max-width: 1140px; margin: 0 auto; padding: 0 24px; display: flex; justify-content: space-between; align-items: center; }
-
-    @media (max-width: 720px) {
-      .grid-2 { grid-template-columns: 1fr; }
+    @media (max-width: 768px) {
+      .review-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
 
-  <div class="top-bar">
-    <div class="top-bar-inner">
-      <div style="color:#c084fc; font-weight:600;">📄 Candidate Review Dossier &bull; Application Record #{{ID}}</div>
-      <div><a href="/api/applications/{{ID}}" style="color:#cbd5e1; text-decoration:none;">JSON (/api/applications/{{ID}}) &rarr;</a></div>
+  <div class="app-layout">
+    <!-- Sol Menü (Sidebar) -->
+    <aside class="app-sidebar" id="appSidebar">
+      <div class="sidebar-header">
+        <a href="/" class="sidebar-brand">
+          <img src="/images/iu-logo.svg" alt="İstanbul Üniversitesi Logo" class="brand-logo-img">
+          <div class="brand-titles">
+            <span class="brand-main-title">İSTANBUL ÜNİVERSİTESİ</span>
+            <span class="brand-sub-title">Mezun Takip Sistemi</span>
+          </div>
+        </a>
+      </div>
+      <div class="sidebar-nav-container">
+        {{DYNAMIC_NAV_LINKS}}
+      </div>
+      <div class="sidebar-footer">
+        <div class="sidebar-footer-links">
+          <a href="/about">Hakkında</a> &bull;
+          <a href="/api/swagger">Swagger</a>
+        </div>
+        <div class="sidebar-badge">İÜ AKSİS &bull; ÖYS 1453</div>
+      </div>
+    </aside>
+
+    <!-- Ana İçerik Alanı -->
+    <div class="app-main-wrapper">
+      <header class="app-header">
+        <div class="header-left">
+          <button class="sidebar-toggle-btn" id="sidebarToggleBtn" aria-label="Menüyü Aç/Kapat" title="Menü">☰</button>
+          <div class="header-title-box">
+            <h1 class="page-header-title">Application Record #{{ID}}</h1>
+            <span class="page-header-desc">Aday Başvuru İnceleme Dosyası ve Değerlendirme</span>
+          </div>
+        </div>
+        <div class="header-right">
+          {{DYNAMIC_TOP_BAR_RIGHT}}
+        </div>
+      </header>
+
+      <main class="app-content-body">
+        <div class="content-container">
+
+          <!-- Ekmek Kırıntısı (Breadcrumbs) -->
+          <nav class="portal-breadcrumb" aria-label="Breadcrumb" style="margin-bottom: 20px;">
+            <a href="/">Ana Sayfa</a>
+            <span>/</span>
+            <a href="/applications">Başvurular</a>
+            <span>/</span>
+            <span style="color: var(--text-primary); font-weight: 600;">Application Record #{{ID}}</span>
+          </nav>
+
+          {{MESSAGE}}
+
+          <!-- Başvuru Başlık Kartı -->
+          <div class="card" style="margin-bottom: 24px;">
+            <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <h1 class="card-title" style="font-size: 1.45rem;">📄 Application Record #{{ID}}</h1>
+                <p class="card-subtitle">Başvuru Tarihi: <strong>{{APPLIED_AT}}</strong></p>
+              </div>
+              <span class="badge badge-info" style="font-size: 0.85rem; padding: 6px 14px;">{{STATUS}}</span>
+            </div>
+
+            <div class="review-grid">
+              <!-- Aday Bilgileri -->
+              <div class="info-box">
+                <h3>👤 Aday Mezun Profili</h3>
+                <div class="field-line">
+                  <strong>Ad Soyad:</strong>
+                  <a href="/users/{{USER_ID}}">{{USER_NAME}}</a>
+                </div>
+                <div class="field-line">
+                  <strong>Bölüm / Fakülte:</strong>
+                  <span>{{USER_DEPT}}</span>
+                </div>
+                <div class="field-line">
+                  <strong>Mezuniyet Yılı:</strong>
+                  <span>{{GRAD_YEAR}}</span>
+                </div>
+                <div class="field-line">
+                  <strong>E-posta:</strong>
+                  <a href="mailto:{{USER_EMAIL}}">{{USER_EMAIL}}</a>
+                </div>
+                <div style="margin-top: 14px; padding-top: 10px; border-top: 1px solid var(--border-subtle);">
+                  <a href="/users/{{USER_ID}}/applications" style="font-size: 0.85rem; color: var(--iu-primary); font-weight: 700; text-decoration: none;">Adayın Diğer Başvurularını İncele &rarr;</a>
+                </div>
+              </div>
+
+              <!-- İlan Bilgileri -->
+              <div class="info-box">
+                <h3>💼 Başvurulan Kariyer Pozisyonu</h3>
+                <div class="field-line">
+                  <strong>Pozisyon:</strong>
+                  <a href="/jobs/{{JOB_ID}}">{{JOB_TITLE}}</a>
+                </div>
+                <div class="field-line">
+                  <strong>Şirket:</strong>
+                  <span>{{JOB_COMPANY}}</span>
+                </div>
+                <div class="field-line">
+                  <strong>Lokasyon:</strong>
+                  <span>{{JOB_LOCATION}}</span>
+                </div>
+                <div style="margin-top: 14px; padding-top: 10px; border-top: 1px solid var(--border-subtle);">
+                  <a href="/jobs/{{JOB_ID}}/applications" style="font-size: 0.85rem; color: var(--iu-primary); font-weight: 700; text-decoration: none;">Bu İlanın Tüm Adaylarını Gör &rarr;</a>
+                </div>
+              </div>
+            </div>
+
+            <!-- CV / Özgeçmiş Belgesi -->
+            <div style="margin-bottom: 24px; padding: 16px 20px; background: var(--surface-input); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+              <div>
+                <strong style="color: var(--text-primary); font-size: 0.95rem;">📄 Aday Özgeçmiş Belgesi:</strong>
+                <span style="font-size: 0.86rem; color: var(--text-muted); margin-left: 8px;">{{RESUME_URL}}</span>
+              </div>
+              <a href="{{RESUME_URL}}" target="_blank" rel="noopener" class="btn btn-primary btn-sm">📥 Özgeçmişi Aç / İncele</a>
+            </div>
+
+            <!-- Ön Yazı -->
+            <h3 style="font-size: 1.05rem; font-weight: 700; color: var(--text-primary); margin-bottom: 8px;">💬 Aday Ön Yazısı ve Başvuru Notu</h3>
+            <div class="note-box">{{COVER_NOTE}}</div>
+
+            <!-- Değerlendirme Durumu Güncelleme Formu -->
+            <div class="status-update-card">
+              <h3 style="font-size: 1rem; font-weight: 700; color: var(--text-primary); margin-bottom: 8px;">⚡ Başvuru Değerlendirme Durumunu Güncelle</h3>
+              <form action="/applications/{{ID}}/status" method="POST" style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+                <select name="status" class="form-select" style="max-width: 240px;">
+                  <option value="Submitted">Submitted (Gönderildi)</option>
+                  <option value="Under Review">Under Review (İnceleniyor)</option>
+                  <option value="Interviewing">Interviewing (Mülakat)</option>
+                  <option value="Accepted">Accepted (Kabul Edildi)</option>
+                  <option value="Rejected">Rejected (Reddedildi)</option>
+                  <option value="Withdrawn">Withdrawn (Geri Çekildi)</option>
+                </select>
+                <button type="submit" class="btn btn-primary">Update Status</button>
+              </form>
+            </div>
+
+            <!-- Alt Butonlar -->
+            <div style="display: flex; gap: 12px; margin-top: 28px; padding-top: 20px; border-top: 1px solid var(--border-subtle); align-items: center; flex-wrap: wrap;">
+              <a href="/applications" class="btn btn-secondary">⬅️ Tüm Başvurular</a>
+              <a href="/jobs/{{JOB_ID}}" class="btn btn-outline">💼 İlan Detayı</a>
+              <a href="/users/{{USER_ID}}" class="btn btn-outline">👤 Mezun Profili</a>
+              <form action="/applications/{{ID}}/delete" method="POST" style="margin: 0; margin-left: auto;" onsubmit="return confirm('Bu başvuruyu silmek istediğinizden emin misiniz?');">
+                <button type="submit" class="btn btn-danger">🗑️ Delete Application</button>
+              </form>
+            </div>
+          </div>
+
+        </div>
+      </main>
+
+      <footer class="app-footer">
+        <div class="app-footer-inner">
+          <div>&copy; 2026 İstanbul Üniversitesi Mezun Takip Sistemi &bull; Kuruluş 1453</div>
+          <div class="footer-nav">
+            <a href="/">Ana Sayfa</a>
+            <a href="/users">Mezunlar</a>
+            <a href="/announcements">Duyurular</a>
+            <a href="/jobs">Kariyer</a>
+            <a href="/applications">Başvurular</a>
+            <a href="/about">Hakkında</a>
+          </div>
+        </div>
+      </footer>
     </div>
   </div>
 
-  <header class="main-nav">
-    <div class="nav-container">
-      <a href="/" class="brand-logo">
-        <div class="logo-emblem">🎓</div>
-        <div class="brand-text">
-          <span class="brand-title">Alumni Tracking System</span>
-          <span class="brand-subtitle">İstanbul Üniversitesi &bull; Mezun Portalı</span>
-        </div>
-      </a>
-      <nav>
-        <ul class="nav-links">
-          <li><a href="/" class="nav-link">Home</a></li>
-          <li><a href="/users" class="nav-link">Alumni Directory</a></li>
-          <li><a href="/announcements" class="nav-link">Announcements</a></li>
-          <li><a href="/jobs" class="nav-link">Job Board</a></li>
-          <li><a href="/applications" class="nav-link active">Applications</a></li>
-        </ul>
-      </nav>
-    </div>
-  </header>
-
-  <main class="main-content">
-    <div class="wrapper">
-
-      <div class="breadcrumb">
-        <a href="/">Home</a> <span>/</span>
-        <a href="/applications">Applications</a> <span>/</span>
-        <span>Application Record #{{ID}}</span>
-      </div>
-
-      <div class="container">
-        {{MESSAGE}}
-
-        <div class="header-bar">
-          <div>
-            <h1>📄 Application Record #{{ID}}</h1>
-            <div style="color:#64748b; font-size:0.9rem; margin-top:4px;">Submitted at: {{APPLIED_AT}}</div>
-          </div>
-          <div>
-            <span class="status-pill status-{{STATUS}}">{{STATUS}}</span>
-          </div>
-        </div>
-
-        <div class="grid-2">
-          <!-- Candidate Info -->
-          <div class="info-card">
-            <h3>👤 Candidate Profile</h3>
-            <div class="field-row"><span class="field-label">Name:</span> <a href="/users/{{USER_ID}}" style="font-weight:700; color:#2563eb; text-decoration:none;">{{USER_NAME}}</a></div>
-            <div class="field-row"><span class="field-label">Department:</span> {{USER_DEPT}}</div>
-            <div class="field-row"><span class="field-label">Graduation:</span> {{GRAD_YEAR}}</div>
-            <div class="field-row"><span class="field-label">Email:</span> <a href="mailto:{{USER_EMAIL}}" style="color:#2563eb;">{{USER_EMAIL}}</a></div>
-            <div style="margin-top:12px;">
-              <a href="/users/{{USER_ID}}/applications" style="font-size:0.85rem; color:#7c3aed; font-weight:700; text-decoration:none;">View All Submissions by Candidate &rarr;</a>
-            </div>
-          </div>
-
-          <!-- Job Info -->
-          <div class="info-card">
-            <h3>💼 Applied Career Opportunity</h3>
-            <div class="field-row"><span class="field-label">Position:</span> <a href="/jobs/{{JOB_ID}}" style="font-weight:700; color:#2563eb; text-decoration:none;">{{JOB_TITLE}}</a></div>
-            <div class="field-row"><span class="field-label">Company:</span> {{JOB_COMPANY}}</div>
-            <div class="field-row"><span class="field-label">Location:</span> {{JOB_LOCATION}}</div>
-            <div style="margin-top:12px;">
-              <a href="/jobs/{{JOB_ID}}/applications" style="font-size:0.85rem; color:#7c3aed; font-weight:700; text-decoration:none;">View All Candidates for this Job &rarr;</a>
-            </div>
-          </div>
-        </div>
-
-        <!-- Resume Link & Cover Note -->
-        <div style="margin-bottom:20px;">
-          <h3 style="margin-bottom:8px; font-size:1.05rem; color:#0f172a;">📄 Submitted Resume / Portfolio</h3>
-          <div>
-            <a href="{{RESUME_URL}}" target="_blank" class="btn-resume">📥 Open Resume Document</a>
-            <span style="font-size:0.85rem; color:#64748b; margin-left:8px;">{{RESUME_URL}}</span>
-          </div>
-        </div>
-
-        <h3 style="margin-bottom:8px; font-size:1.05rem; color:#0f172a;">💬 Candidate Pitch &amp; Cover Note</h3>
-        <div class="content-box">{{COVER_NOTE}}</div>
-
-        <!-- Change Application Status Form -->
-        <div class="status-form-box">
-          <h3 style="margin-bottom:10px; color:#581c87; font-size:1.05rem;">⚡ Update Application Evaluation Status</h3>
-          <form action="/applications/{{ID}}/status" method="POST" style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
-            <select name="status" style="padding:9px 14px; font-size:0.94rem; border:1px solid #d8b4fe; border-radius:6px; background:#fff;">
-              <option value="Submitted">Submitted</option>
-              <option value="Under Review">Under Review</option>
-              <option value="Interviewing">Interviewing</option>
-              <option value="Accepted">Accepted</option>
-              <option value="Rejected">Rejected</option>
-              <option value="Withdrawn">Withdrawn</option>
-            </select>
-            <button type="submit" class="btn-primary">Update Status</button>
-          </form>
-        </div>
-
-        <div class="actions-footer">
-          <a href="/applications" class="btn-secondary">⬅️ All Applications</a>
-          <a href="/jobs/{{JOB_ID}}" class="btn-secondary">💼 View Job</a>
-          <a href="/users/{{USER_ID}}" class="btn-secondary">👤 View Alumni</a>
-          <form action="/applications/{{ID}}/delete" method="POST" style="margin:0; margin-left:auto;" onsubmit="return confirm('Withdraw/delete this application?');">
-            <button type="submit" style="background:#fff1f2; color:#be123c; border:1px solid #fecdd3; padding:9px 16px; border-radius:6px; font-weight:600; cursor:pointer;">🗑️ Delete Application</button>
-          </form>
-        </div>
-      </div>
-
-    </div>
-  </main>
-
-  <footer class="main-footer">
-    <div class="footer-inner">
-      <div>&copy; 2026 Istanbul University Alumni Tracking System &bull; Founded 1453</div>
-      <div><a href="/applications" style="color:#94a3b8; text-decoration:none;">← Return to Applications Dashboard</a></div>
-    </div>
-  </footer>
-
+  <script>
+    (function() {
+      const toggleBtn = document.getElementById('sidebarToggleBtn');
+      const sidebar = document.getElementById('appSidebar');
+      if (toggleBtn && sidebar) {
+        toggleBtn.addEventListener('click', function() {
+          sidebar.classList.toggle('sidebar-collapsed');
+        });
+      }
+    })();
+  </script>
 </body>
 </html>

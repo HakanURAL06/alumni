@@ -1,249 +1,118 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{{TITLE}} - Announcement Detail</title>
-  <style>
-    :root {
-      --iu-navy-950: #020617;
-      --iu-navy-900: #0f172a;
-      --iu-cobalt-600: #2563eb;
-      --iu-gold-600: #d97706;
-      --surface-canvas: #f8fafc;
-      --surface-card: #ffffff;
-      --surface-subtle: #f1f5f9;
-      --border-subtle: #e2e8f0;
-      --text-primary: #0f172a;
-      --text-secondary: #475569;
-      --text-muted: #94a3b8;
-      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08);
-      --radius-sm: 6px;
-      --radius-md: 10px;
-      --radius-lg: 16px;
-      --radius-full: 9999px;
-    }
-
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      color: var(--text-primary);
-      background: var(--surface-canvas);
-      line-height: 1.65;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      -webkit-font-smoothing: antialiased;
-    }
-
-    .wrapper { max-width: 860px; margin: 0 auto; padding: 0 24px; width: 100%; }
-
-    .top-bar {
-      background: var(--iu-navy-950);
-      color: var(--text-muted);
-      font-size: 0.8rem;
-      padding: 7px 0;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    }
-    .top-bar-inner { max-width: 1140px; margin: 0 auto; padding: 0 24px; display: flex; justify-content: space-between; align-items: center; }
-
-    header.main-nav {
-      background: rgba(15, 23, 42, 0.95);
-      backdrop-filter: blur(12px);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    }
-    .nav-container { max-width: 1140px; margin: 0 auto; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
-    .brand-logo { display: flex; align-items: center; gap: 12px; text-decoration: none; color: #ffffff; }
-    .logo-emblem {
-      width: 42px;
-      height: 42px;
-      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-      border-radius: var(--radius-md);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.4rem;
-    }
-    .brand-text { display: flex; flex-direction: column; }
-    .brand-title { font-size: 1.15rem; font-weight: 850; color: #ffffff; line-height: 1.2; }
-    .brand-subtitle { font-size: 0.72rem; color: var(--text-muted); font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
-    .nav-links { display: flex; align-items: center; gap: 6px; list-style: none; flex-wrap: wrap; }
-    .nav-link { color: #cbd5e1; text-decoration: none; font-size: 0.88rem; font-weight: 500; padding: 8px 14px; border-radius: var(--radius-sm); }
-    .nav-link:hover { color: #ffffff; background: rgba(255, 255, 255, 0.08); }
-    .nav-link.active { color: #fbbf24; background: rgba(245, 158, 11, 0.14); font-weight: 600; }
-
-    main.main-content { flex: 1; padding: 36px 0 64px; }
-
-    .breadcrumb {
-      font-size: 0.85rem;
-      color: var(--text-secondary);
-      margin-bottom: 20px;
-      display: flex;
-      gap: 8px;
-      align-items: center;
-    }
-    .breadcrumb a { color: var(--iu-cobalt-600); text-decoration: none; font-weight: 600; }
-
-    .card {
-      background: var(--surface-card);
-      border: 1px solid var(--border-subtle);
-      border-top: 4px solid var(--iu-gold-600);
-      border-radius: var(--radius-lg);
-      padding: 36px;
-      box-shadow: var(--shadow-md);
-    }
-    .badge {
-      display: inline-block;
-      padding: 4px 12px;
-      border-radius: var(--radius-full);
-      font-size: 0.8rem;
-      font-weight: 700;
-      background: #fffbeb;
-      border: 1px solid #fde68a;
-      color: #b45309;
-      margin-bottom: 14px;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-    }
-    h1 {
-      color: var(--text-primary);
-      font-size: 2rem;
-      font-weight: 850;
-      line-height: 1.25;
-      margin-bottom: 12px;
-    }
-    .meta {
-      color: var(--text-secondary);
-      font-size: 0.92rem;
-      margin-bottom: 24px;
-      padding-bottom: 18px;
-      border-bottom: 1px solid var(--border-subtle);
-      display: flex;
-      flex-wrap: wrap;
-      gap: 16px;
-    }
-    .content-box {
-      background: var(--surface-canvas);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-md);
-      padding: 24px;
-      font-size: 1.05rem;
-      color: var(--text-primary);
-      margin-bottom: 28px;
-      white-space: pre-wrap;
-      line-height: 1.75;
-    }
-    .actions {
-      display: flex;
-      gap: 12px;
-      align-items: center;
-      padding-top: 20px;
-      border-top: 1px solid var(--border-subtle);
-      flex-wrap: wrap;
-    }
-    .btn {
-      padding: 10px 18px;
-      border-radius: var(--radius-sm);
-      font-size: 0.9rem;
-      font-weight: 600;
-      text-decoration: none;
-      cursor: pointer;
-      border: 1px solid transparent;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: all 0.15s ease;
-    }
-    .btn-edit { background: #fffbeb; color: #b45309; border-color: #fde68a; }
-    .btn-edit:hover { background: #d97706; color: #ffffff; }
-    .btn-delete { background: #fff1f2; color: #be123c; border-color: #fecdd3; }
-    .btn-delete:hover { background: #e11d48; color: #ffffff; }
-    .btn-secondary { background: var(--surface-subtle); color: var(--text-secondary); border-color: var(--border-subtle); }
-    .btn-secondary:hover { background: var(--border-subtle); color: var(--text-primary); }
-
-    footer.main-footer {
-      background: var(--iu-navy-950);
-      color: var(--text-muted);
-      border-top: 1px solid rgba(255, 255, 255, 0.08);
-      padding: 28px 0;
-      margin-top: auto;
-      font-size: 0.84rem;
-    }
-    .footer-inner { max-width: 1140px; margin: 0 auto; padding: 0 24px; display: flex; justify-content: space-between; align-items: center; }
-  </style>
+  <link rel="stylesheet" href="/css/portal.css">
 </head>
 <body>
 
-  <div class="top-bar">
-    <div class="top-bar-inner">
-      <div style="color:#fbbf24; font-weight:600;">📢 Official University Bulletin &bull; Announcement Detail #{{ID}}</div>
-      <div><a href="/api/announcements/{{ID}}" style="color:#cbd5e1; text-decoration:none;">JSON (/api/announcements/{{ID}}) &rarr;</a></div>
+  <div class="app-layout">
+    <!-- Sol Menü (Sidebar) -->
+    <aside class="app-sidebar" id="appSidebar">
+      <div class="sidebar-header">
+        <a href="/" class="sidebar-brand">
+          <img src="/images/iu-logo.svg" alt="İstanbul Üniversitesi Logo" class="brand-logo-img">
+          <div class="brand-titles">
+            <span class="brand-main-title">İSTANBUL ÜNİVERSİTESİ</span>
+            <span class="brand-sub-title">Mezun Takip Sistemi</span>
+          </div>
+        </a>
+      </div>
+      <div class="sidebar-nav-container">
+        {{DYNAMIC_NAV_LINKS}}
+      </div>
+      <div class="sidebar-footer">
+        <div class="sidebar-footer-links">
+          <a href="/about">Hakkında</a> &bull;
+          <a href="/api/swagger">Swagger</a>
+        </div>
+        <div class="sidebar-badge">İÜ AKSİS &bull; ÖYS 1453</div>
+      </div>
+    </aside>
+
+    <!-- Ana İçerik Alanı -->
+    <div class="app-main-wrapper">
+      <header class="app-header">
+        <div class="header-left">
+          <button class="sidebar-toggle-btn" id="sidebarToggleBtn" aria-label="Menüyü Aç/Kapat" title="Menü">☰</button>
+          <div class="header-title-box">
+            <h1 class="page-header-title">Announcement Detail</h1>
+            <span class="page-header-desc">Resmi Üniversite Bülteni &bull; Detay Görünümü</span>
+          </div>
+        </div>
+        <div class="header-right">
+          {{DYNAMIC_TOP_BAR_RIGHT}}
+        </div>
+      </header>
+
+      <main class="app-content-body">
+        <div class="content-container">
+
+          <!-- Ekmek Kırıntısı (Breadcrumbs) -->
+          <nav class="portal-breadcrumb" aria-label="Breadcrumb" style="margin-bottom: 20px;">
+            <a href="/">Ana Sayfa</a>
+            <span>/</span>
+            <a href="/announcements">Duyurular</a>
+            <span>/</span>
+            <span style="color: var(--text-primary); font-weight: 600;">Duyuru #{{ID}}</span>
+          </nav>
+
+          {{MESSAGE}}
+
+          <!-- Duyuru Kartı -->
+          <article class="card" style="max-width: 960px; margin: 0 auto;">
+            <div class="card-header">
+              <span class="badge badge-warning" style="margin-bottom: 8px;">{{CATEGORY}}</span>
+              <h1 class="card-title" style="font-size: 1.75rem; line-height: 1.3;">📢 {{TITLE}}</h1>
+              <div style="display: flex; gap: 16px; margin-top: 10px; color: var(--text-muted); font-size: 0.88rem; flex-wrap: wrap;">
+                <span>🏛️ Yayınlayan: <strong>{{AUTHOR}}</strong></span>
+                <span>📅 Tarih: <strong>{{DATE}}</strong></span>
+                <span>🔖 Kayıt ID: <strong>#{{ID}}</strong></span>
+              </div>
+            </div>
+
+            <div style="padding: 24px; background: var(--surface-input); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); font-size: 1rem; color: var(--text-regular); line-height: 1.75; white-space: pre-wrap; margin-bottom: 28px;">{{CONTENT}}</div>
+
+            <div style="display: flex; gap: 12px; align-items: center; padding-top: 20px; border-top: 1px solid var(--border-subtle); flex-wrap: wrap;">
+              <a href="/announcements/{{ID}}/edit" class="btn btn-primary">✏️ Edit Announcement</a>
+              <form action="/announcements/{{ID}}/delete" method="POST" style="margin: 0;" onsubmit="return confirm('Duyuruyu silmek istediğinizden emin misiniz?');">
+                <button type="submit" class="btn btn-danger">🗑️ Delete Announcement</button>
+              </form>
+              <a href="/announcements" class="btn btn-secondary">← Back to Announcements</a>
+            </div>
+          </article>
+
+        </div>
+      </main>
+
+      <footer class="app-footer">
+        <div class="app-footer-inner">
+          <div>&copy; 2026 İstanbul Üniversitesi Mezun Takip Sistemi &bull; Kuruluş 1453</div>
+          <div class="footer-nav">
+            <a href="/">Ana Sayfa</a>
+            <a href="/users">Mezunlar</a>
+            <a href="/announcements">Duyurular</a>
+            <a href="/jobs">Kariyer</a>
+            <a href="/applications">Başvurular</a>
+            <a href="/about">Hakkında</a>
+          </div>
+        </div>
+      </footer>
     </div>
   </div>
 
-  <header class="main-nav">
-    <div class="nav-container">
-      <a href="/" class="brand-logo">
-        <div class="logo-emblem">🎓</div>
-        <div class="brand-text">
-          <span class="brand-title">Alumni Tracking System</span>
-          <span class="brand-subtitle">İstanbul Üniversitesi &bull; Mezun Portalı</span>
-        </div>
-      </a>
-      <nav>
-        <ul class="nav-links">
-          <li><a href="/" class="nav-link">Home</a></li>
-          <li><a href="/users" class="nav-link">Alumni Directory</a></li>
-          <li><a href="/announcements" class="nav-link active">Announcements</a></li>
-          <li><a href="/jobs" class="nav-link">Job Board</a></li>
-          <li><a href="/applications" class="nav-link">Applications</a></li>
-        </ul>
-      </nav>
-    </div>
-  </header>
-
-  <main class="main-content">
-    <div class="wrapper">
-
-      <div class="breadcrumb">
-        <a href="/">Home</a> <span>/</span>
-        <a href="/announcements">Announcements</a> <span>/</span>
-        <span>Bulletin #{{ID}}</span>
-      </div>
-
-      <article class="card">
-        <span class="badge">{{CATEGORY}}</span>
-        <h1>📢 {{TITLE}}</h1>
-        <div class="meta">
-          <span>🏛️ Published by <strong>{{AUTHOR}}</strong></span>
-          <span>📅 Date: <strong>{{DATE}}</strong></span>
-          <span>🔖 Record ID: <strong>#{{ID}}</strong></span>
-        </div>
-
-        <div class="content-box">{{CONTENT}}</div>
-
-        <div class="actions">
-          <a href="/announcements/{{ID}}/edit" class="btn btn-edit">✏️ Edit Announcement</a>
-          <form action="/announcements/{{ID}}/delete" method="POST" style="display:inline;" onsubmit="return confirm('Delete this announcement?');">
-            <button type="submit" class="btn btn-delete">🗑️ Delete Announcement</button>
-          </form>
-          <a href="/announcements" class="btn btn-secondary">← Back to Announcements</a>
-        </div>
-      </article>
-
-    </div>
-  </main>
-
-  <footer class="main-footer">
-    <div class="footer-inner">
-      <div>&copy; 2026 Istanbul University Alumni Tracking System &bull; Founded 1453</div>
-      <div><a href="/announcements" style="color:#94a3b8; text-decoration:none;">← Return to Announcements</a></div>
-    </div>
-  </footer>
-
+  <script>
+    (function() {
+      const toggleBtn = document.getElementById('sidebarToggleBtn');
+      const sidebar = document.getElementById('appSidebar');
+      if (toggleBtn && sidebar) {
+        toggleBtn.addEventListener('click', function() {
+          sidebar.classList.toggle('sidebar-collapsed');
+        });
+      }
+    })();
+  </script>
 </body>
 </html>

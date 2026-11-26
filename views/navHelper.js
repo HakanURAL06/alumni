@@ -25,16 +25,16 @@ function escapeHtml(str) {
 function getRoleMeta(role) {
   switch (String(role || '').toLowerCase()) {
     case 'admin':
-      return { icon: '👑', label: 'Yönetici (Admin)', pillBg: '#fee2e2', pillColor: '#991b1b', pillBorder: '#fecaca' };
+      return { icon: '👑', label: 'Yönetici (Admin)', pillBg: '#FEE2E2', pillColor: '#991B1B', pillBorder: '#FECACA' };
     case 'moderator':
-      return { icon: '⚖️', label: 'Moderatör', pillBg: '#fef3c7', pillColor: '#92400e', pillBorder: '#fde68a' };
+      return { icon: '⚖️', label: 'Moderatör', pillBg: '#FEF3C7', pillColor: '#92400E', pillBorder: '#FDE68A' };
     case 'employer':
-      return { icon: '💼', label: 'İşveren', pillBg: '#faf5ff', pillColor: '#6b21a8', pillBorder: '#e9d5ff' };
+      return { icon: '💼', label: 'İşveren', pillBg: '#FAF5FF', pillColor: '#6B21A8', pillBorder: '#E9D5FF' };
     case 'student':
-      return { icon: '🎓', label: 'Öğrenci', pillBg: '#ecfdf5', pillColor: '#065f46', pillBorder: '#a7f3d0' };
+      return { icon: '🎓', label: 'Öğrenci', pillBg: '#ECFDF5', pillColor: '#065F46', pillBorder: '#A7F3D0' };
     case 'alumni':
     default:
-      return { icon: '🎓', label: 'Mezun', pillBg: '#eff6ff', pillColor: '#1e40af', pillBorder: '#bfdbfe' };
+      return { icon: '🎓', label: 'Mezun', pillBg: '#EFF6FF', pillColor: '#1E40AF', pillBorder: '#BFDBFE' };
   }
 }
 
@@ -211,18 +211,22 @@ function renderNavLinksHtml(currentUser = null, activePage = '') {
     if (item.isPill) {
       const { roleMeta } = item;
       return `
-        <li>
-          <span class="user-pill" style="display:inline-flex; align-items:center; gap:6px; background:${roleMeta.pillBg}; color:${roleMeta.pillColor}; border:1px solid ${roleMeta.pillBorder}; border-radius:999px; padding:4px 12px; font-size:0.8rem; font-weight:700;">
-            ${item.label} <span style="font-size:0.7rem; font-weight:600; opacity:0.85;">(${item.subLabel})</span>
-          </span>
+        <li style="margin-top:6px; margin-bottom:4px;">
+          <a href="/profile" class="nav-link user-pill-link" style="text-decoration:none; padding:8px 12px; background:var(--surface-input,#F5F7FA); border:1px solid var(--border-subtle,#E5E7EB); border-radius:8px; display:flex; align-items:center; gap:8px;">
+            <span style="font-size:1.1rem;">${roleMeta.icon}</span>
+            <div style="display:flex; flex-direction:column; line-height:1.2; overflow:hidden;">
+              <span style="font-size:0.82rem; font-weight:700; color:var(--text-primary,#1E293B); text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">${item.label}</span>
+              <span style="font-size:0.7rem; font-weight:600; color:var(--text-muted,#64748B);">${item.subLabel}</span>
+            </div>
+          </a>
         </li>
       `;
     }
 
     if (item.isLogout) {
       return `
-        <li>
-          <a href="/logout" class="nav-link btn-logout" style="background:rgba(239,68,68,0.15); color:#fca5a5 !important; border:1px solid rgba(239,68,68,0.35); border-radius:6px; padding:6px 12px; font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:5px; transition:all 0.15s ease;">
+        <li style="margin-top:8px;">
+          <a href="/logout" class="nav-link btn-logout" style="background:#FEE2E2; color:#DC2626 !important; border:1px solid #FECACA; border-radius:8px; padding:9px 14px; font-weight:600; text-decoration:none; display:flex; align-items:center; gap:8px; font-size:0.86rem; transition:all 0.15s ease;">
             ${item.label}
           </a>
         </li>
@@ -232,15 +236,15 @@ function renderNavLinksHtml(currentUser = null, activePage = '') {
     const activeClass = item.active ? ' active' : '';
     let extraStyle = '';
     if (item.highlight) {
-      extraStyle = ' style="color:#fde047; font-weight:750; background:rgba(234,179,8,0.15); border:1px solid rgba(234,179,8,0.35); border-radius:6px;"';
+      extraStyle = ' style="color:#D97706; font-weight:700; background:rgba(245,158,11,0.1); border:1px solid rgba(245,158,11,0.25); border-radius:8px;"';
     } else if (item.isButton) {
-      extraStyle = ' style="background:linear-gradient(135deg,#2563eb 0%,#1d4ed8 100%); color:#ffffff !important; font-weight:700; border-radius:6px;"';
+      extraStyle = ' style="background:#1D8CF8; color:#FFFFFF !important; font-weight:600; border-radius:8px; box-shadow:0 1px 2px rgba(29,140,248,0.25);"';
     }
 
     return `<li><a href="${item.href}" class="nav-link${activeClass}"${extraStyle}>${item.label}</a></li>`;
   }).join('');
 
-  return `<ul class="nav-links" style="display:flex; align-items:center; gap:6px; list-style:none; flex-wrap:wrap; margin:0; padding:0;">${lis}</ul>`;
+  return `<ul class="nav-links" style="display:flex; flex-direction:column; gap:4px; list-style:none; margin:0; padding:0;">${lis}</ul>`;
 }
 
 /**
@@ -255,36 +259,35 @@ function renderTopBarRightHtml(currentUser = null) {
   if (isAuthenticated) {
     let roleAction = '';
     if (role === 'admin') {
-      roleAction = '<a href="/admin" style="color:#fde047; font-weight:700; margin-right:12px; text-decoration:none;">🛡️ Admin Paneli &rarr;</a>';
+      roleAction = '<a href="/admin" style="color:#D97706; font-weight:700; margin-right:8px; text-decoration:none; padding:4px 10px; border-radius:6px; background:rgba(245,158,11,0.1); border:1px solid rgba(245,158,11,0.25); font-size:0.8rem;">🛡️ Admin Paneli &rarr;</a>';
     } else if (role === 'employer') {
-      roleAction = '<a href="/jobs#post-job-form" style="color:#a78bfa; font-weight:600; margin-right:12px; text-decoration:none;">📢 İlan Ver &rarr;</a>';
+      roleAction = '<a href="/jobs#post-job-form" style="color:#7C3AED; font-weight:600; margin-right:8px; text-decoration:none; padding:4px 10px; border-radius:6px; background:rgba(124,58,237,0.08); border:1px solid rgba(124,58,237,0.2); font-size:0.8rem;">📢 İlan Ver &rarr;</a>';
     } else if (role === 'student') {
-      roleAction = '<a href="/applications" style="color:#34d399; font-weight:600; margin-right:12px; text-decoration:none;">📝 Başvurularım &rarr;</a>';
+      roleAction = '<a href="/applications" style="color:#059669; font-weight:600; margin-right:8px; text-decoration:none; padding:4px 10px; border-radius:6px; background:rgba(5,150,105,0.08); border:1px solid rgba(5,150,105,0.2); font-size:0.8rem;">📝 Başvurularım &rarr;</a>';
     }
 
-    const profileLink = '<a href="/profile" style="color:#60a5fa; font-weight:600; margin-right:12px; text-decoration:none;">👤 Profilim &rarr;</a>';
+    const profileLink = '<a href="/profile" style="color:#1D8CF8; font-weight:600; margin-right:8px; text-decoration:none; padding:4px 10px; border-radius:6px; background:rgba(29,140,248,0.08); font-size:0.8rem;">👤 Profilim &rarr;</a>';
 
     return `
       <div style="display:inline-flex; align-items:center; flex-wrap:wrap; gap:8px;">
-        <span style="color:#cbd5e1; font-weight:600; font-size:0.78rem;">
+        <span style="color:#334155; font-weight:600; font-size:0.82rem; display:inline-flex; align-items:center; gap:6px;">
           ${meta.icon} Hoş geldiniz, <strong>${displayName}</strong>
-          <span style="background:${meta.pillBg}; color:${meta.pillColor}; padding:1px 6px; border-radius:999px; font-size:0.68rem; margin-left:4px;">${meta.label}</span>
+          <span style="background:${meta.pillBg}; color:${meta.pillColor}; border:1px solid ${meta.pillBorder}; padding:2px 8px; border-radius:999px; font-size:0.72rem; font-weight:700;">${meta.label}</span>
         </span>
-        <span style="color:rgba(255,255,255,0.25);">|</span>
+        <span style="color:#E2E8F0;">|</span>
         ${roleAction}
         ${profileLink}
-        <a href="/logout" style="color:#fca5a5; font-weight:700; text-decoration:none; padding:2px 8px; border-radius:4px; background:rgba(239,68,68,0.15); border:1px solid rgba(239,68,68,0.3);">🚪 Çıkış Yap</a>
+        <a href="/logout" style="color:#DC2626; font-weight:600; text-decoration:none; padding:4px 10px; border-radius:6px; background:#FEE2E2; border:1px solid #FECACA; font-size:0.8rem;">🚪 Çıkış Yap</a>
       </div>
     `;
   }
 
   return `
     <div style="display:inline-flex; align-items:center; flex-wrap:wrap; gap:10px;">
-      <a href="/login" style="color:#cbd5e1; text-decoration:none; font-weight:600;">🔑 Giriş Yap (Login)</a>
-      <span style="color:rgba(255,255,255,0.25);">|</span>
-      <a href="/register" style="color:#38bdf8; text-decoration:none; font-weight:600;">➕ Kayıt Ol (Register)</a>
-      <span style="color:rgba(255,255,255,0.25);">|</span>
-      <a href="/api/swagger" target="_blank" rel="noopener" style="color:#cbd5e1; text-decoration:none;">Swagger API &rarr;</a>
+      <a href="/login" style="color:#334155; text-decoration:none; font-weight:600; font-size:0.82rem; padding:5px 12px; border-radius:6px; border:1px solid #CBD5E1; background:#FFFFFF;">🔑 Giriş Yap (Login)</a>
+      <a href="/register" style="color:#FFFFFF; text-decoration:none; font-weight:600; font-size:0.82rem; padding:6px 14px; border-radius:6px; background:#1D8CF8; box-shadow:0 1px 2px rgba(29,140,248,0.2);">➕ Kayıt Ol (Register)</a>
+      <span style="color:#E2E8F0;">|</span>
+      <a href="/api/swagger" target="_blank" rel="noopener" style="color:#64748B; text-decoration:none; font-size:0.8rem; font-weight:500;">Swagger API &rarr;</a>
     </div>
   `;
 }

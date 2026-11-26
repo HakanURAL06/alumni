@@ -92,17 +92,28 @@ A dedicated, comprehensive brand vision, institutional mission, and community sp
 <a id="design"></a>
 ## 🎨 Design System & UI Specification (`design.md`)
 
-A comprehensive, production-grade UI design specification inspired by **[Refero Styles](https://refero.design)** and the **[VoltAgent/awesome-design-md](https://github.com/VoltAgent/awesome-design-md)** standard is documented in **[`design.md`](./design.md)**:
+A comprehensive, production-grade UI design specification modeled on the corporate, clean, and modern aesthetic of Istanbul University's primary digital portals (**İÜ AKSİS & ÖYS**) and documented in **[`design.md`](./design.md)**:
 
 👉 **[Read the Full Design System Specification (design.md)](./design.md)**
 
 ### Key Highlights Covered in `design.md`:
-1. **Design Tokens:** Strict CSS variables for Istanbul University Navy (`#0f172a`), Bosphorus Cobalt (`#2563eb`), Golden Amber (`#d97706`), Emerald Green (`#059669`), Royal Purple (`#7c3aed`), Crimson Rose (`#e11d48`), surface canvases, and border tokens.
-2. **Typography Scale:** System-font typography hierarchy (`-apple-system`, `Segoe UI`, `Roboto`) with responsive fluid sizing from 2.85rem display heroes to micro-badges.
-3. **8-Point Spatial Grid:** Standardized margins, gap metrics, and container geometry (`max-width: 1140px`).
-4. **Core Component Standards:** Navigation bar, hero showcase, live KPI bar, debounced search & filter toolbars, core module cards, Guardian observability banner, and terminal cURL simulator.
-5. **Micro-Interactions & a11y:** Smooth hover elevations, focus ring accessibility, WCAG AA/AAA color contrast, zero cumulative layout shift (CLS), and completely self-contained offline CSS.
-6. **Page-by-Page Specification (All 14 Screens):** Detailed visual, interactive, and SSR layout breakdown for every page in `public/`, `views/`, and `middleware/guardianShared.js` ([see Section 8 in `design.md`](./design.md#8-complete-page-by-page-design-specification-all-14-front-end-screens)).
+1. **İÜ AKSİS & ÖYS Visual Identity:** Clean corporate architecture featuring the official Istanbul University vector seal emblem ([`public/images/iu-logo.svg`](./public/images/iu-logo.svg)), 1453 founding heritage, and high data-ink layout standards.
+2. **Corporate Design Tokens (`public/css/portal.css`):**
+   - **Primary Brand Accent:** Corporate Blue (`#1D8CF8` / `#0F7AE5`) for active navigation, active tabs, and primary action buttons.
+   - **Surfaces & Canvas:** Cool light gray canvas (`#F4F6F9`), pure white card surfaces (`#FFFFFF`), and soft gray input backgrounds (`#F5F7FA`).
+   - **Typography Palette:** Dark anthracite headings (`#1E293B`), readable body copy (`#334155`), and muted metadata (`#64748B`).
+   - **Balanced Accents:** Emerald Green (`#2E7D32`), Golden Amber (`#F59E0B`), Royal Purple (`#7C3AED`), Deep Navy (`#1E293B`), Crimson Red (`#DC2626`), Sky Blue (`#0284C7`), and Coral Pink (`#F88379`).
+3. **Layout & Shell Hierarchy:**
+   - **Collapsible Left Sidebar (`#appSidebar`):** Fixed 260px vertical menu with `#FFFFFF` background, thin right border (`#E5E7EB`), vector IU emblem, and role-adaptive vertical navigation with active blue indicator.
+   - **White Top Header Bar (`.app-header`):** Clean `#FFFFFF` bar with thin bottom border (`#E5E7EB`), mobile hamburger toggle, page title, real-time status pill, role pill/avatar, and logout button.
+   - **Cool Gray Content Canvas (`.app-content-body`):** High-contrast `#F4F6F9` canvas wrapping all content in rounded white cards (`#FFFFFF`, `8px-12px` border-radius, subtle drop shadow).
+4. **Standardized Components & Button Hierarchy:**
+   - **Dashboard Action Cards:** 2-3 column responsive grid with colored square icon box on left, title and description in middle, and subtle rightward arrow (`>`) on right.
+   - **Horizontal Tab Navigation:** White card headers with corporate blue bottom border underline for active tabs.
+   - **2-Column Responsive Forms:** Inputs styled with `#F5F7FA` background, `8px` corner radius, and smooth focus rings.
+   - **Button Hierarchy:** Filled corporate blue primary buttons (`#1D8CF8`), outline secondary buttons (`#D1D5DB`), and soft red danger buttons (`#FEE2E2` / `#DC2626`) right-aligned with consistent spacing.
+   - **Spacious Data Tables:** Generous row padding, soft gray headers (`#F8FAFC`), and subtle hover row highlight.
+5. **Page-by-Page Specification (All 18 Screens):** Detailed visual, interactive, and SSR layout breakdown for every screen across `public/`, `views/`, and `middleware/` ([see Section 8 in `design.md`](./design.md#8-complete-page-by-page-design-specification-all-18-front-end-screens)).
 
 ---
 

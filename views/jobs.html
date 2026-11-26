@@ -1,497 +1,200 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Career Board & Job Postings — Istanbul University Alumni Portal</title>
-  <style>
-    :root {
-      --iu-navy-950: #020617;
-      --iu-navy-900: #0f172a;
-      --iu-navy-700: #334155;
-      --iu-cobalt-600: #2563eb;
-      --iu-emerald-600: #059669;
-      --iu-emerald-500: #10b981;
-      --surface-canvas: #f8fafc;
-      --surface-card: #ffffff;
-      --surface-subtle: #f1f5f9;
-      --border-subtle: #e2e8f0;
-      --border-strong: #cbd5e1;
-      --text-primary: #0f172a;
-      --text-secondary: #475569;
-      --text-muted: #94a3b8;
-      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-      --radius-sm: 6px;
-      --radius-md: 10px;
-      --radius-lg: 16px;
-      --radius-full: 9999px;
-    }
-
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      color: var(--text-primary);
-      background-color: var(--surface-canvas);
-      line-height: 1.55;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      -webkit-font-smoothing: antialiased;
-    }
-
-    .wrapper { max-width: 1140px; margin: 0 auto; padding: 0 24px; width: 100%; }
-
-    .top-bar {
-      background: var(--iu-navy-950);
-      color: var(--text-muted);
-      font-size: 0.8rem;
-      padding: 7px 0;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    }
-    .top-bar-inner { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
-    .status-indicator { display: inline-flex; align-items: center; gap: 6px; color: #34d399; font-weight: 600; }
-    .status-dot { width: 7px; height: 7px; background: #10b981; border-radius: 50%; box-shadow: 0 0 8px #10b981; }
-    .top-bar a { color: #cbd5e1; text-decoration: none; }
-
-    header.main-nav {
-      background: rgba(15, 23, 42, 0.95);
-      backdrop-filter: blur(12px);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-      box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.2);
-    }
-    .nav-container { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; gap: 16px; }
-    .brand-logo { display: flex; align-items: center; gap: 12px; text-decoration: none; color: #ffffff; }
-    .logo-emblem {
-      width: 42px;
-      height: 42px;
-      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-      border-radius: var(--radius-md);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.4rem;
-    }
-    .brand-text { display: flex; flex-direction: column; }
-    .brand-title { font-size: 1.15rem; font-weight: 850; color: #ffffff; line-height: 1.2; }
-    .brand-subtitle { font-size: 0.72rem; color: var(--text-muted); font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
-    .nav-links { display: flex; align-items: center; gap: 6px; list-style: none; flex-wrap: wrap; }
-    .nav-link { color: #cbd5e1; text-decoration: none; font-size: 0.88rem; font-weight: 500; padding: 8px 14px; border-radius: var(--radius-sm); }
-    .nav-link:hover { color: #ffffff; background: rgba(255, 255, 255, 0.08); }
-    .nav-link.active { color: #34d399; background: rgba(16, 185, 129, 0.14); font-weight: 600; }
-    .nav-cta { background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: #ffffff !important; font-weight: 600 !important; }
-
-    .page-banner {
-      background: linear-gradient(135deg, #0b1120 0%, #0f172a 55%, #064e3b 100%);
-      color: #ffffff;
-      padding: 40px 0;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    }
-    .banner-flex { display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 20px; }
-    .badge {
-      display: inline-block;
-      background: rgba(16, 185, 129, 0.16);
-      border: 1px solid rgba(16, 185, 129, 0.4);
-      color: #34d399;
-      padding: 4px 12px;
-      border-radius: var(--radius-full);
-      font-size: 0.78rem;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      margin-bottom: 12px;
-    }
-    .page-banner h1 { font-size: 2.2rem; font-weight: 850; letter-spacing: -0.025em; margin-bottom: 6px; color: #ffffff; }
-    p.subtitle { color: #cbd5e1; font-size: 1rem; max-width: 680px; }
-    .btn-jump {
-      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-      color: #ffffff;
-      text-decoration: none;
-      padding: 11px 20px;
-      border-radius: var(--radius-md);
-      font-size: 0.9rem;
-      font-weight: 700;
-      box-shadow: 0 4px 12px rgba(5, 150, 105, 0.35);
-    }
-
-    main.main-content { flex: 1; padding: 36px 0 64px; }
-
-    .alert-success {
-      background: #dcfce7;
-      border: 1px solid #86efac;
-      border-left: 4px solid #16a34a;
-      color: #166534;
-      padding: 14px 18px;
-      border-radius: var(--radius-md);
-      margin-bottom: 24px;
-      font-weight: 600;
-    }
-    .alert-info {
-      background: #e0f2fe;
-      border: 1px solid #7dd3fc;
-      border-left: 4px solid #0284c7;
-      color: #0369a1;
-      padding: 14px 18px;
-      border-radius: var(--radius-md);
-      margin-bottom: 24px;
-      font-weight: 600;
-    }
-    .alert-danger {
-      background: #fee2e2;
-      border: 1px solid #fca5a5;
-      border-left: 4px solid #dc2626;
-      color: #991b1b;
-      padding: 14px 18px;
-      border-radius: var(--radius-md);
-      margin-bottom: 24px;
-      font-weight: 600;
-    }
-
-    .toolbar-card {
-      background: var(--surface-card);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-lg);
-      padding: 16px 20px;
-      margin-bottom: 24px;
-      box-shadow: var(--shadow-sm);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 14px;
-    }
-    .search-box { flex: 1; min-width: 240px; position: relative; }
-    .search-box input {
-      width: 100%;
-      padding: 10px 14px 10px 38px;
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-md);
-      background: var(--surface-canvas);
-      font-size: 0.9rem;
-    }
-    .search-box::before { content: "🔍"; position: absolute; left: 12px; top: 50%; transform: translateY(-50%); }
-    .chip-group { display: flex; gap: 6px; flex-wrap: wrap; }
-    .filter-btn {
-      background: var(--surface-subtle);
-      border: 1px solid transparent;
-      color: var(--text-secondary);
-      padding: 6px 12px;
-      border-radius: var(--radius-full);
-      font-size: 0.78rem;
-      font-weight: 600;
-      cursor: pointer;
-    }
-    .filter-btn.active, .filter-btn:hover {
-      background: #ecfdf5;
-      color: #059669;
-      border-color: #a7f3d0;
-    }
-
-    .container {
-      background: var(--surface-card);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-lg);
-      padding: 28px;
-      box-shadow: var(--shadow-sm);
-    }
-    .table-wrap {
-      overflow-x: auto;
-      margin-bottom: 32px;
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-md);
-    }
-    table { width: 100%; border-collapse: collapse; }
-    th, td {
-      padding: 14px 16px;
-      text-align: left;
-      border-bottom: 1px solid var(--border-subtle);
-      vertical-align: middle;
-      font-size: 0.92rem;
-    }
-    th {
-      background: var(--surface-subtle);
-      color: var(--text-secondary);
-      font-weight: 700;
-      font-size: 0.78rem;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-    }
-    tbody tr:last-child td { border-bottom: none; }
-    tbody tr:hover { background: #f8fafc; }
-
-    .location-badge {
-      font-size: 0.82rem;
-      color: var(--text-secondary);
-      background: var(--surface-subtle);
-      padding: 4px 10px;
-      border-radius: var(--radius-full);
-      font-weight: 500;
-    }
-    .type-badge {
-      font-size: 0.76rem;
-      font-weight: 700;
-      padding: 4px 10px;
-      border-radius: var(--radius-full);
-      background: #e0e7ff;
-      color: #3730a3;
-    }
-    .status-badge {
-      font-size: 0.76rem;
-      font-weight: 700;
-      padding: 4px 10px;
-      border-radius: var(--radius-full);
-      background: #dcfce7;
-      color: #166534;
-    }
-    .status-Closed { background: #fee2e2; color: #991b1b; }
-    .status-Draft { background: #fef3c7; color: #92400e; }
-
-    .actions-cell { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
-    .btn-sm {
-      padding: 6px 10px;
-      border-radius: var(--radius-sm);
-      font-size: 0.78rem;
-      font-weight: 600;
-      text-decoration: none;
-      cursor: pointer;
-      border: 1px solid transparent;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      transition: all 0.15s ease;
-    }
-    .btn-view { background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; }
-    .btn-view:hover { background: #2563eb; color: #ffffff; }
-    .btn-edit { background: #fffbeb; color: #b45309; border-color: #fde68a; }
-    .btn-edit:hover { background: #d97706; color: #ffffff; }
-    .btn-apps { background: #ecfdf5; color: #059669; border-color: #a7f3d0; }
-    .btn-apps:hover { background: #059669; color: #ffffff; }
-    .btn-delete { background: #fff1f2; color: #be123c; border-color: #fecdd3; }
-    .btn-delete:hover { background: #e11d48; color: #ffffff; }
-
-    .card-form {
-      background: linear-gradient(180deg, #ecfdf5 0%, #ffffff 100%);
-      border: 1px solid #a7f3d0;
-      border-top: 4px solid var(--iu-emerald-600);
-      border-radius: var(--radius-lg);
-      padding: 28px;
-      margin-top: 12px;
-    }
-    .card-form h2 { font-size: 1.3rem; font-weight: 800; color: var(--text-primary); margin-bottom: 6px; }
-    .form-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 16px;
-      margin-bottom: 16px;
-      margin-top: 16px;
-    }
-    .form-group { display: flex; flex-direction: column; }
-    label { font-size: 0.84rem; font-weight: 600; margin-bottom: 6px; color: var(--iu-navy-700); }
-    input, select, textarea {
-      padding: 10px 13px;
-      border: 1px solid var(--border-strong);
-      border-radius: var(--radius-sm);
-      font-size: 0.92rem;
-      background: #ffffff;
-      color: var(--text-primary);
-      font-family: inherit;
-    }
-    input:focus, select:focus, textarea:focus {
-      outline: none;
-      border-color: var(--iu-emerald-500);
-      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
-    }
-    button.btn-primary {
-      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-      color: #ffffff;
-      border: none;
-      padding: 11px 24px;
-      border-radius: var(--radius-md);
-      font-size: 0.94rem;
-      font-weight: 700;
-      cursor: pointer;
-      box-shadow: 0 4px 10px rgba(5, 150, 105, 0.25);
-    }
-    button.btn-primary:hover { background: #047857; }
-
-    footer.main-footer {
-      background: var(--iu-navy-950);
-      color: var(--text-muted);
-      border-top: 1px solid rgba(255, 255, 255, 0.08);
-      padding: 32px 0;
-      margin-top: auto;
-      font-size: 0.84rem;
-    }
-    .footer-inner { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; }
-  </style>
+  <title>Kariyer ve İş İlanları — İstanbul Üniversitesi Mezun Takip Sistemi</title>
+  <link rel="stylesheet" href="/css/portal.css">
 </head>
 <body>
 
-  <div class="top-bar">
-    <div class="wrapper top-bar-inner">
-      <div class="status-indicator">
-        <span class="status-dot"></span>
-        <span>Istanbul University &bull; Alumni-for-Alumni Career Exchange (JP-R1..JP-R7)</span>
+  <div class="app-layout">
+    <!-- Sol Menü (Sidebar) -->
+    <aside class="app-sidebar" id="appSidebar">
+      <div class="sidebar-header">
+        <a href="/" class="sidebar-brand">
+          <img src="/images/iu-logo.svg" alt="İstanbul Üniversitesi Logo" class="brand-logo-img">
+          <div class="brand-titles">
+            <span class="brand-main-title">İSTANBUL ÜNİVERSİTESİ</span>
+            <span class="brand-sub-title">Mezun Takip Sistemi</span>
+          </div>
+        </a>
       </div>
-      <div>
-        <a href="/admin" style="color:#38bdf8; margin-right:12px;">🛡️ Admin Panel</a>
-        <a href="/logout" style="color:#fca5a5; font-weight:700; margin-right:12px;">🚪 Çıkış Yap</a>
-        <a href="/api/jobs">JSON Endpoint (/api/jobs) &rarr;</a>
+      <div class="sidebar-nav-container">
+        {{DYNAMIC_NAV_LINKS}}
       </div>
+      <div class="sidebar-footer">
+        <div class="sidebar-footer-links">
+          <a href="/about">Hakkında</a> &bull;
+          <a href="/api/swagger">Swagger</a>
+        </div>
+        <div class="sidebar-badge">İÜ AKSİS &bull; ÖYS 1453</div>
+      </div>
+    </aside>
+
+    <!-- Ana İçerik Alanı -->
+    <div class="app-main-wrapper">
+      <header class="app-header">
+        <div class="header-left">
+          <button class="sidebar-toggle-btn" id="sidebarToggleBtn" aria-label="Menüyü Aç/Kapat" title="Menü">☰</button>
+          <div class="header-title-box">
+            <h1 class="page-header-title">Job Postings & Career Opportunities</h1>
+            <span class="page-header-desc">İstanbul Üniversitesi Mezunlar ve Partner Kuruluşlar Kariyer Kapısı</span>
+          </div>
+        </div>
+        <div class="header-right">
+          {{DYNAMIC_TOP_BAR_RIGHT}}
+        </div>
+      </header>
+
+      <main class="app-content-body">
+        <div class="content-container">
+
+          {{MESSAGE}}
+
+          <!-- Arama & Filtre Araç Çubuğu -->
+          <div class="card" style="margin-bottom: 20px; padding: 18px 24px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
+              <div style="flex: 1; min-width: 280px; position: relative;">
+                <input type="text" id="job-search" class="form-input" style="padding-left: 40px;" placeholder="Pozisyon, şirket, lokasyon veya maaş ile ara..." autocomplete="off">
+                <span style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 0.95rem;">🔍</span>
+              </div>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+                <button type="button" class="btn btn-sm btn-outline filter-btn active" data-type="">Tümü</button>
+                <button type="button" class="btn btn-sm btn-outline filter-btn" data-type="Full-time">Tam Zamanlı</button>
+                <button type="button" class="btn btn-sm btn-outline filter-btn" data-type="Remote">Uzaktan (Remote)</button>
+                <button type="button" class="btn btn-sm btn-outline filter-btn" data-type="Internship">Staj</button>
+                <button type="button" class="btn btn-sm btn-outline filter-btn" data-type="Contract">Sözleşmeli</button>
+                <a href="#post-job-form" class="btn btn-primary btn-sm" style="margin-left: 6px;">📢 Yeni İlan Yayınla</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- İlan Tablosu Kartı -->
+          <div class="card" style="margin-bottom: 24px;">
+            <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <h2 class="card-title" style="font-size: 1.15rem;">💼 Açık Kariyer Fırsatları &amp; Pozisyonlar</h2>
+                <p class="card-subtitle">İstanbul Üniversitesi mezunları ve partner kuruluşlar tarafından listelenen güncel ilanlar.</p>
+              </div>
+              <a href="/api/jobs" class="btn btn-outline btn-sm" target="_blank" rel="noopener">JSON Veri (/api/jobs) &rarr;</a>
+            </div>
+
+            <div class="table-container">
+              <table id="jobs-table" class="portal-table">
+                <thead>
+                  <tr>
+                    <th style="width: 70px;">ID</th>
+                    <th>Pozisyon &amp; Şirket</th>
+                    <th>Lokasyon</th>
+                    <th>Çalışma Türü</th>
+                    <th>Ücret Skalası</th>
+                    <th>Durum</th>
+                    <th style="text-align: right; width: 250px;">İşlemler</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {{JOB_ROWS}}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Yeni İlan Yayınlama Form Kartı -->
+          <div class="card" id="post-job-form">
+            <div class="card-header">
+              <h2 class="card-title">📢 Yeni Bir Kariyer Fırsatı Yayınla</h2>
+              <p class="card-subtitle">İstanbul Üniversitesi mezun ve öğrencileri için yeni iş veya staj ilanı oluşturun (JP-R1..JP-R7 iş kurallarına tabidir).</p>
+            </div>
+
+            <form action="/jobs" method="POST">
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="title" class="form-label required">İlan Başlığı * (max 120 karakter)</label>
+                  <input type="text" id="title" name="title" class="form-input" maxlength="120" placeholder="Örn: Senior Backend Engineer" required>
+                </div>
+                <div class="form-group">
+                  <label for="company" class="form-label required">Şirket / Kurum Adı *</label>
+                  <input type="text" id="company" name="company" class="form-input" placeholder="Örn: TechCorp Innovations" required>
+                </div>
+                <div class="form-group">
+                  <label for="location" class="form-label required">Lokasyon *</label>
+                  <input type="text" id="location" name="location" class="form-input" placeholder="Örn: İstanbul / Hibrit veya Uzaktan" required>
+                </div>
+                <div class="form-group">
+                  <label for="jobType" class="form-label required">Çalışma Türü *</label>
+                  <select id="jobType" name="jobType" class="form-select" required>
+                    <option value="Full-time">Tam Zamanlı (Full-time)</option>
+                    <option value="Part-time">Yarı Zamanlı (Part-time)</option>
+                    <option value="Contract">Sözleşmeli (Contract)</option>
+                    <option value="Internship">Staj (Internship)</option>
+                    <option value="Remote">Uzaktan (Remote)</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="salary" class="form-label">Ücret Skalası / Maaş</label>
+                  <input type="text" id="salary" name="salary" class="form-input" placeholder="Örn: ₺85,000 / ay">
+                </div>
+                <div class="form-group">
+                  <label for="contactEmail" class="form-label required">İletişim E-posta Adresi *</label>
+                  <input type="email" id="contactEmail" name="contactEmail" class="form-input" placeholder="kariyer@sirket.com" required>
+                </div>
+                <div class="form-group">
+                  <label for="postedBy" class="form-label required">Yayınlayan Üye (Kullanıcı ID) *</label>
+                  <input type="number" id="postedBy" name="postedBy" class="form-input" value="1" min="1" required>
+                </div>
+                <div class="form-group">
+                  <label for="applicationDeadline" class="form-label">Son Başvuru Tarihi</label>
+                  <input type="date" id="applicationDeadline" name="applicationDeadline" class="form-input">
+                </div>
+              </div>
+
+              <div class="form-group" style="margin-top: 16px;">
+                <label for="description" class="form-label">İş / Görev Tanımı</label>
+                <textarea id="description" name="description" class="form-textarea" rows="3" placeholder="Pozisyonun sorumluluklarını ve kapsamını özetleyiniz..."></textarea>
+              </div>
+
+              <div class="form-group" style="margin-top: 16px;">
+                <label for="requirements" class="form-label">Temel Gereksinimler &amp; Nitelikler</label>
+                <textarea id="requirements" name="requirements" class="form-textarea" rows="2" placeholder="Örn: Node.js, PostgreSQL, Docker, 3+ yıl deneyim..."></textarea>
+              </div>
+
+              <div class="form-actions" style="margin-top: 24px;">
+                <a href="/jobs" class="btn btn-secondary">Vazgeç</a>
+                <button type="submit" class="btn btn-primary">🚀 İlanı Yayınla</button>
+              </div>
+            </form>
+          </div>
+
+        </div>
+      </main>
+
+      <footer class="app-footer">
+        <div class="app-footer-inner">
+          <div>&copy; 2026 İstanbul Üniversitesi Mezun Takip Sistemi &bull; Kuruluş 1453</div>
+          <div class="footer-nav">
+            <a href="/">Ana Sayfa</a>
+            <a href="/users">Mezunlar</a>
+            <a href="/announcements">Duyurular</a>
+            <a href="/jobs">Kariyer</a>
+            <a href="/applications">Başvurular</a>
+            <a href="/about">Hakkında</a>
+          </div>
+        </div>
+      </footer>
     </div>
   </div>
 
-  <header class="main-nav">
-    <div class="wrapper nav-container">
-      <a href="/" class="brand-logo">
-        <div class="logo-emblem">🎓</div>
-        <div class="brand-text">
-          <span class="brand-title">Alumni Tracking System</span>
-          <span class="brand-subtitle">İstanbul Üniversitesi &bull; Mezun Portalı</span>
-        </div>
-      </a>
-      <nav>
-        <ul class="nav-links">
-          <li><a href="/" class="nav-link">Home</a></li>
-          <li><a href="/users" class="nav-link">Alumni Directory</a></li>
-          <li><a href="/register" class="nav-link">➕ Register</a></li>
-          <li><a href="/login" class="nav-link">🔑 Login</a></li>
-          <li><a href="/announcements" class="nav-link">Announcements</a></li>
-          <li><a href="/jobs" class="nav-link active">Job Board</a></li>
-          <li><a href="/applications" class="nav-link">Applications</a></li>
-          <li><a href="/admin" class="nav-link">🛡️ Admin</a></li>
-          <li><a href="/logout" class="nav-link" style="color:#f87171; font-weight:700;">🚪 Çıkış Yap</a></li>
-          <li><a href="/api/swagger" class="nav-link nav-cta">Swagger Docs ⚡</a></li>
-        </ul>
-      </nav>
-    </div>
-  </header>
-
-  <section class="page-banner">
-    <div class="wrapper banner-flex">
-      <div>
-        <span class="badge">Career Opportunities Board</span>
-        <h1>💼 Job Postings & Career Opportunities</h1>
-        <p class="subtitle">Explore high-impact roles posted by Istanbul University alumni and partner organizations. Apply directly with your alumni profile.</p>
-      </div>
-      <a href="#post-job-form" class="btn-jump">📢 Post Opportunity</a>
-    </div>
-  </section>
-
-  <main class="main-content">
-    <div class="wrapper">
-
-      <div class="toolbar-card">
-        <div class="search-box">
-          <input type="text" id="job-search" placeholder="Filter opportunities by title, company, location, or salary..." autocomplete="off">
-        </div>
-        <div class="chip-group">
-          <button type="button" class="filter-btn active" data-type="">All Roles</button>
-          <button type="button" class="filter-btn" data-type="Full-time">Full-time</button>
-          <button type="button" class="filter-btn" data-type="Remote">Remote</button>
-          <button type="button" class="filter-btn" data-type="Internship">Internship</button>
-          <button type="button" class="filter-btn" data-type="Contract">Contract</button>
-        </div>
-      </div>
-
-      <div class="container">
-        {{MESSAGE}}
-
-        <div class="table-wrap">
-          <table id="jobs-table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Position &amp; Company</th>
-                <th>Location</th>
-                <th>Type</th>
-                <th>Salary</th>
-                <th>Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {{JOB_ROWS}}
-            </tbody>
-          </table>
-        </div>
-
-        <!-- Create New Job Form -->
-        <div class="card-form" id="post-job-form">
-          <h2>📢 Post a New Career Opportunity</h2>
-          <p style="font-size:0.88rem; color:#475569;">Publish an opening for fellow Istanbul University graduates (validated under <code>JP-R1</code> max 120-char title &amp; <code>JP-R2</code>–<code>JP-R7</code>).</p>
-          <form action="/jobs" method="POST">
-            <div class="form-grid">
-              <div class="form-group">
-                <label for="title">Job Title * (max 120 chars)</label>
-                <input type="text" id="title" name="title" maxlength="120" placeholder="e.g. Senior Backend Engineer" required>
-              </div>
-              <div class="form-group">
-                <label for="company">Company / Organization *</label>
-                <input type="text" id="company" name="company" placeholder="e.g. TechCorp Innovations" required>
-              </div>
-              <div class="form-group">
-                <label for="location">Location *</label>
-                <input type="text" id="location" name="location" placeholder="e.g. Istanbul / Hybrid, Remote" required>
-              </div>
-              <div class="form-group">
-                <label for="jobType">Job Type *</label>
-                <select id="jobType" name="jobType" required>
-                  <option value="Full-time">Full-time</option>
-                  <option value="Part-time">Part-time</option>
-                  <option value="Contract">Contract</option>
-                  <option value="Internship">Internship</option>
-                  <option value="Remote">Remote</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label for="salary">Compensation / Salary</label>
-                <input type="text" id="salary" name="salary" placeholder="e.g. ₺85,000 / month">
-              </div>
-              <div class="form-group">
-                <label for="contactEmail">Contact Email *</label>
-                <input type="email" id="contactEmail" name="contactEmail" placeholder="careers@company.com" required>
-              </div>
-              <div class="form-group">
-                <label for="postedBy">Publisher Alumni (User ID) *</label>
-                <input type="number" id="postedBy" name="postedBy" value="1" min="1" required>
-              </div>
-              <div class="form-group">
-                <label for="applicationDeadline">Application Deadline</label>
-                <input type="date" id="applicationDeadline" name="applicationDeadline">
-              </div>
-            </div>
-
-            <div class="form-group" style="margin-bottom:16px;">
-              <label for="description">Job Description</label>
-              <textarea id="description" name="description" rows="3" placeholder="Briefly describe the responsibilities and scope of this role..."></textarea>
-            </div>
-
-            <div class="form-group" style="margin-bottom:16px;">
-              <label for="requirements">Key Requirements &amp; Skills</label>
-              <textarea id="requirements" name="requirements" rows="2" placeholder="e.g. Node.js, PostgreSQL, Docker, 3+ years experience..."></textarea>
-            </div>
-
-            <button type="submit" class="btn-primary">🚀 Publish Opportunity</button>
-          </form>
-        </div>
-      </div>
-
-    </div>
-  </main>
-
-  <footer class="main-footer">
-    <div class="wrapper footer-inner">
-      <div>&copy; 2026 Istanbul University Alumni Tracking System &bull; Founded 1453</div>
-      <div><a href="/" style="color:#94a3b8; text-decoration:none;">← Return to Portal Home</a></div>
-    </div>
-  </footer>
-
   <script>
     (function() {
+      const toggleBtn = document.getElementById('sidebarToggleBtn');
+      const sidebar = document.getElementById('appSidebar');
+      if (toggleBtn && sidebar) {
+        toggleBtn.addEventListener('click', function() {
+          sidebar.classList.toggle('sidebar-collapsed');
+        });
+      }
+
       const searchInput = document.getElementById('job-search');
       const filterBtns = document.querySelectorAll('.filter-btn');
       const rows = Array.from(document.querySelectorAll('#jobs-table tbody tr'));

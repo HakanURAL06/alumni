@@ -1,753 +1,210 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Member Registration — Istanbul University Alumni Tracking System</title>
-  <meta name="description" content="Official registration portal for Istanbul University alumni, current students, and partner employers.">
+  <title>Kayıt Ol — İstanbul Üniversitesi Mezun Takip Sistemi</title>
+  <meta name="description" content="İstanbul Üniversitesi mezunları, öğrencileri ve işverenleri için kayıt ve üyelik sayfası.">
+  <link rel="stylesheet" href="/css/portal.css">
   <style>
-    :root {
-      --iu-navy-950: #020617;
-      --iu-navy-900: #0f172a;
-      --iu-navy-800: #1e293b;
-      --iu-navy-700: #334155;
-      --iu-cobalt-600: #2563eb;
-      --iu-cobalt-500: #3b82f6;
-      --iu-gold-600: #d97706;
-      --iu-emerald-600: #059669;
-      --iu-purple-600: #7c3aed;
-      --surface-canvas: #f8fafc;
-      --surface-card: #ffffff;
-      --surface-subtle: #f1f5f9;
-      --border-subtle: #e2e8f0;
-      --border-strong: #cbd5e1;
-      --text-primary: #0f172a;
-      --text-secondary: #475569;
-      --text-muted: #94a3b8;
-      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.04);
-      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
-      --radius-sm: 6px;
-      --radius-md: 10px;
-      --radius-lg: 16px;
-      --radius-full: 9999px;
-    }
-
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      color: var(--text-primary);
-      background-color: var(--surface-canvas);
-      line-height: 1.55;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      -webkit-font-smoothing: antialiased;
-    }
-
-    .wrapper { max-width: 1140px; margin: 0 auto; padding: 0 24px; width: 100%; }
-
-    /* Top Utility Bar */
-    .top-bar {
-      background: var(--iu-navy-950);
-      color: var(--text-muted);
-      font-size: 0.8rem;
-      padding: 7px 0;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    }
-    .top-bar-inner { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
-    .status-indicator { display: inline-flex; align-items: center; gap: 6px; color: #4ade80; font-weight: 600; }
-    .status-dot { width: 7px; height: 7px; background: #4ade80; border-radius: 50%; box-shadow: 0 0 8px #4ade80; }
-    .top-bar a { color: #cbd5e1; text-decoration: none; }
-
-    /* Sticky Main Header */
-    header.main-nav {
-      background: rgba(15, 23, 42, 0.95);
-      backdrop-filter: blur(12px);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-      box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.2);
-    }
-    .nav-container { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; gap: 16px; }
-    .brand-logo { display: flex; align-items: center; gap: 12px; text-decoration: none; color: #ffffff; }
-    .logo-emblem {
-      width: 42px;
-      height: 42px;
-      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-      border-radius: var(--radius-md);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.4rem;
-    }
-    .brand-text { display: flex; flex-direction: column; }
-    .brand-title { font-size: 1.15rem; font-weight: 850; color: #ffffff; line-height: 1.2; }
-    .brand-subtitle { font-size: 0.72rem; color: var(--text-muted); font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
-    .nav-links { display: flex; align-items: center; gap: 6px; list-style: none; flex-wrap: wrap; }
-    .nav-link { color: #cbd5e1; text-decoration: none; font-size: 0.88rem; font-weight: 500; padding: 8px 14px; border-radius: var(--radius-sm); transition: all 0.15s ease; }
-    .nav-link:hover { color: #ffffff; background: rgba(255, 255, 255, 0.08); }
-    .nav-link.active { color: #38bdf8; background: rgba(56, 189, 248, 0.14); font-weight: 600; }
-    .nav-cta { background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: #ffffff !important; font-weight: 600 !important; }
-
-    /* Hero Banner */
-    .page-banner {
-      background: linear-gradient(135deg, #0b1120 0%, #0f172a 50%, #1e3a8a 100%);
-      color: #ffffff;
-      padding: 42px 0;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    }
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: rgba(56, 189, 248, 0.15);
-      border: 1px solid rgba(56, 189, 248, 0.35);
-      color: #38bdf8;
-      padding: 4px 12px;
-      border-radius: var(--radius-full);
-      font-size: 0.78rem;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      margin-bottom: 12px;
-    }
-    .page-banner h1 { font-size: 2.25rem; font-weight: 850; letter-spacing: -0.025em; margin-bottom: 8px; color: #ffffff; }
-    .page-banner p.subtitle { color: #cbd5e1; font-size: 1.02rem; max-width: 720px; }
-
-    main.main-content { flex: 1; padding: 36px 0 64px; }
-
-    .alert-success {
-      background: #dcfce7;
-      border: 1px solid #86efac;
-      border-left: 4px solid #16a34a;
-      color: #166534;
-      padding: 14px 18px;
-      border-radius: var(--radius-md);
-      margin-bottom: 24px;
-      font-weight: 600;
-    }
-    .alert-danger {
-      background: #fee2e2;
-      border: 1px solid #fca5a5;
-      border-left: 4px solid #dc2626;
-      color: #991b1b;
-      padding: 16px 20px;
-      border-radius: var(--radius-md);
-      margin-bottom: 24px;
-      font-weight: 600;
-    }
-    .alert-danger ul { margin-top: 6px; padding-left: 20px; font-weight: 500; font-size: 0.9rem; }
-
-    .register-layout {
+    .register-layout-grid {
       display: grid;
-      grid-template-columns: 1.65fr 1fr;
-      gap: 28px;
-      align-items: start;
+      grid-template-columns: 1.45fr 1fr;
+      gap: 32px;
+      max-width: 1140px;
+      margin: 0 auto;
     }
-
-    .form-card {
-      background: var(--surface-card);
-      border: 1px solid var(--border-subtle);
-      border-top: 4px solid var(--iu-cobalt-600);
-      border-radius: var(--radius-lg);
-      padding: 32px;
-      box-shadow: var(--shadow-md);
-    }
-
-    .section-step {
-      margin-bottom: 28px;
-      padding-bottom: 24px;
-      border-bottom: 1px solid var(--border-subtle);
-    }
-    .section-step:last-of-type {
-      border-bottom: none;
-      margin-bottom: 16px;
-      padding-bottom: 8px;
-    }
-    .step-header {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 6px;
-    }
-    .step-num {
-      width: 26px;
-      height: 26px;
-      border-radius: 50%;
-      background: #eff6ff;
-      color: var(--iu-cobalt-600);
-      font-size: 0.8rem;
-      font-weight: 800;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      border: 1px solid #bfdbfe;
-    }
-    .step-title { font-size: 1.15rem; font-weight: 800; color: var(--text-primary); }
-    .step-desc { font-size: 0.86rem; color: var(--text-secondary); margin-bottom: 18px; }
-
-    /* Interactive Role Selector Cards */
-    .role-cards {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-      margin-bottom: 16px;
-    }
-    .role-card {
-      border: 2px solid var(--border-subtle);
-      background: var(--surface-canvas);
-      border-radius: var(--radius-md);
-      padding: 14px;
-      cursor: pointer;
-      transition: all 0.15s ease;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-    .role-card:hover { border-color: #93c5fd; background: #ffffff; }
-    .role-card.active {
-      border-color: var(--iu-cobalt-600);
-      background: #eff6ff;
-      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
-    }
-    .role-card .r-icon { font-size: 1.4rem; }
-    .role-card .r-name { font-size: 0.92rem; font-weight: 800; color: var(--text-primary); }
-    .role-card .r-sub { font-size: 0.76rem; color: var(--text-secondary); line-height: 1.35; }
-
-    .form-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-    }
-    .form-group {
-      display: flex;
-      flex-direction: column;
-      margin-bottom: 14px;
-    }
-    .form-group.full-width {
-      grid-column: 1 / -1;
-    }
-    label {
-      font-size: 0.85rem;
-      font-weight: 600;
-      margin-bottom: 6px;
-      color: var(--iu-navy-700);
-    }
-    .field-hint {
-      font-size: 0.76rem;
-      color: var(--text-muted);
-      margin-top: 4px;
-    }
-    input[type="text"],
-    input[type="email"],
-    input[type="password"],
-    input[type="number"],
-    input[type="url"],
-    select {
-      padding: 11px 13px;
-      border: 1px solid var(--border-strong);
-      border-radius: var(--radius-sm);
-      font-size: 0.94rem;
-      background: #ffffff;
-      color: var(--text-primary);
-      font-family: inherit;
-      transition: border-color 0.15s, box-shadow 0.15s;
-    }
-    input:focus, select:focus {
-      outline: none;
-      border-color: var(--iu-cobalt-600);
-      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
-    }
-
-    .password-meter {
-      height: 5px;
-      background: var(--border-subtle);
-      border-radius: var(--radius-full);
-      margin-top: 6px;
-      overflow: hidden;
-    }
-    .password-meter-bar {
-      height: 100%;
-      width: 0%;
-      background: #ef4444;
-      transition: width 0.2s ease, background 0.2s ease;
-    }
-
-    .checkbox-box {
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      background: var(--surface-canvas);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-md);
-      padding: 12px 14px;
-      margin-bottom: 12px;
-    }
-    .checkbox-box input[type="checkbox"] {
-      margin-top: 3px;
-      width: 17px;
-      height: 17px;
-      accent-color: var(--iu-cobalt-600);
-      cursor: pointer;
-    }
-    .checkbox-box label {
-      margin: 0;
-      font-size: 0.88rem;
-      font-weight: 500;
-      color: var(--text-primary);
-      cursor: pointer;
-    }
-
-    .submit-bar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 16px;
-      margin-top: 20px;
-      padding-top: 20px;
-      border-top: 1px solid var(--border-subtle);
-    }
-    button.btn-primary {
-      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-      color: #ffffff;
-      border: none;
-      padding: 13px 28px;
-      border-radius: var(--radius-md);
-      font-size: 0.98rem;
-      font-weight: 700;
-      cursor: pointer;
-      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
-      transition: all 0.15s ease;
-    }
-    button.btn-primary:hover {
-      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-      transform: translateY(-1px);
-    }
-
-    /* Sidebar Info Cards */
-    .side-panel {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-    .info-card {
-      background: var(--surface-card);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-lg);
-      padding: 24px;
-      box-shadow: var(--shadow-sm);
-    }
-    .info-card h3 {
-      font-size: 1.05rem;
-      font-weight: 800;
-      color: var(--text-primary);
-      margin-bottom: 12px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .role-badge-list {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-    .role-badge-item {
-      background: var(--surface-canvas);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-md);
-      padding: 12px;
-    }
-    .role-badge-item strong {
-      display: block;
-      font-size: 0.88rem;
-      color: var(--text-primary);
-      margin-bottom: 3px;
-    }
-    .role-badge-item p {
-      font-size: 0.8rem;
-      color: var(--text-secondary);
-      line-height: 1.45;
-    }
-    .rule-list {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      font-size: 0.83rem;
-      color: var(--text-secondary);
-    }
-    .rule-list code {
-      background: #eff6ff;
-      color: #1d4ed8;
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-weight: 700;
-      font-size: 0.76rem;
-    }
-
-    footer.main-footer {
-      background: var(--iu-navy-950);
-      color: var(--text-muted);
-      border-top: 1px solid rgba(255, 255, 255, 0.08);
-      padding: 28px 0;
-      margin-top: auto;
-      font-size: 0.84rem;
-    }
-    .footer-inner { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; }
-
-    @media (max-width: 920px) {
-      .register-layout { grid-template-columns: 1fr; }
-    }
-    @media (max-width: 640px) {
-      .role-cards { grid-template-columns: 1fr; }
-      .form-grid { grid-template-columns: 1fr; }
+    @media (max-width: 900px) {
+      .register-layout-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
 
-  <!-- Top Utility Bar -->
-  <div class="top-bar">
-    <div class="wrapper top-bar-inner">
-      <div class="status-indicator">
-        <span class="status-dot"></span>
-        <span>Istanbul University &bull; Official Alumni, Student &amp; Employer Registration</span>
+  <div class="app-layout">
+    <!-- Sol Menü (Sidebar) -->
+    <aside class="app-sidebar" id="appSidebar">
+      <div class="sidebar-header">
+        <a href="/" class="sidebar-brand">
+          <img src="/images/iu-logo.svg" alt="İstanbul Üniversitesi Logo" class="brand-logo-img">
+          <div class="brand-titles">
+            <span class="brand-main-title">İSTANBUL ÜNİVERSİTESİ</span>
+            <span class="brand-sub-title">Mezun Takip Sistemi</span>
+          </div>
+        </a>
       </div>
-      <div><a href="/users">View Registered Directory (/users) &rarr;</a></div>
+      <div class="sidebar-nav-container">
+        {{DYNAMIC_NAV_LINKS}}
+      </div>
+      <div class="sidebar-footer">
+        <div class="sidebar-footer-links">
+          <a href="/about">Hakkında</a> &bull;
+          <a href="/api/swagger">Swagger</a>
+        </div>
+        <div class="sidebar-badge">İÜ AKSİS &bull; ÖYS 1453</div>
+      </div>
+    </aside>
+
+    <!-- Ana İçerik Alanı -->
+    <div class="app-main-wrapper">
+      <header class="app-header">
+        <div class="header-left">
+          <button class="sidebar-toggle-btn" id="sidebarToggleBtn" aria-label="Menüyü Aç/Kapat" title="Menü">☰</button>
+          <div class="header-title-box">
+            <h1 class="page-header-title">Register for the Istanbul University Network</h1>
+            <span class="page-header-desc">Mezunlar, Öğrenciler ve İşverenler İçin Resmi Kayıt Ekranı</span>
+          </div>
+        </div>
+        <div class="header-right">
+          {{DYNAMIC_TOP_BAR_RIGHT}}
+        </div>
+      </header>
+
+      <main class="app-content-body">
+        <div class="content-container">
+
+          <div class="register-layout-grid">
+
+            <!-- Sol Kolon: Kayıt Formu -->
+            <div class="card">
+              <div class="card-header" style="margin-bottom: 20px;">
+                <h2 class="card-title">Register for the Istanbul University Network</h2>
+                <p class="card-subtitle">Akademik topluluğumuza katılmak ve kariyer fırsatlarına erişmek için formu doldurun.</p>
+              </div>
+
+              {{MESSAGE}}
+
+              <form action="/register" method="POST" id="register-form">
+                
+                <!-- Rol Seçimi -->
+                <div class="form-group" style="margin-bottom: 20px;">
+                  <label for="role" class="form-label required">Üyelik Rolü (Role) *</label>
+                  <select name="role" id="role" class="form-select" required>
+                    <option value="alumni" {{ROLE_ALUMNI_SELECTED}}>🎓 Mezun (Alumni)</option>
+                    <option value="student" {{ROLE_STUDENT_SELECTED}}>📚 Mevcut Öğrenci (Student)</option>
+                    <option value="employer" {{ROLE_EMPLOYER_SELECTED}}>💼 İşveren / Kurumsal Partner (Employer)</option>
+                  </select>
+                </div>
+
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label for="name" class="form-label required">Ad Soyad (Full Name) *</label>
+                    <input type="text" id="name" name="name" class="form-input" value="{{FORM_NAME}}" placeholder="Örn: Deniz Arslan" required minlength="2">
+                  </div>
+
+                  <div class="form-group">
+                    <label for="email" class="form-label required">E-posta Adresi *</label>
+                    <input type="email" id="email" name="email" class="form-input" value="{{FORM_EMAIL}}" placeholder="Örn: deniz@alumni.edu" required>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="password" class="form-label required">Şifre *</label>
+                    <input type="password" id="password" name="password" class="form-input" placeholder="••••••••" required minlength="8">
+                    <span class="form-hint">En az 8 karakter.</span>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="confirmPassword" class="form-label required">Şifre Tekrarı *</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" class="form-input" placeholder="••••••••" required minlength="8">
+                  </div>
+
+                  <div class="form-group">
+                    <label for="department" class="form-label required">Fakülte / Bölüm *</label>
+                    <input type="text" id="department" name="department" class="form-input" value="{{FORM_DEPARTMENT}}" placeholder="Örn: Hukuk Fakültesi" required>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="graduationYear" class="form-label required">Mezuniyet Yılı *</label>
+                    <input type="number" id="graduationYear" name="graduationYear" class="form-input" value="{{FORM_GRADUATION_YEAR}}" placeholder="Örn: 2025" min="1923" max="2035" required>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="studentNumber" class="form-label">Öğrenci / Mezun Numarası</label>
+                    <input type="text" id="studentNumber" name="studentNumber" class="form-input" value="{{FORM_STUDENT_NUMBER}}" placeholder="Örn: 1306190001">
+                  </div>
+
+                  <div class="form-group">
+                    <label for="title" class="form-label">Mesleki Unvan / Pozisyon</label>
+                    <input type="text" id="title" name="title" class="form-input" value="{{FORM_TITLE}}" placeholder="Örn: Hukuk Stajyeri, Avukat">
+                  </div>
+
+                  <div class="form-group">
+                    <label for="company" class="form-label">Şirket / Kurum</label>
+                    <input type="text" id="company" name="company" class="form-input" value="{{FORM_COMPANY}}" placeholder="Örn: Bosphorus Legal">
+                  </div>
+
+                  <div class="form-group">
+                    <label for="linkedinUrl" class="form-label">LinkedIn / Portfolyo URL</label>
+                    <input type="url" id="linkedinUrl" name="linkedinUrl" class="form-input" value="{{FORM_LINKEDIN_URL}}" placeholder="https://linkedin.com/in/...">
+                  </div>
+
+                  <div class="form-group full-width" style="background: var(--surface-input); border: 1px solid var(--border-subtle); padding: 16px 20px; border-radius: var(--radius-md);">
+                    <label class="form-checkbox-label">
+                      <input type="checkbox" id="isMentor" name="isMentor" value="true" {{FORM_IS_MENTOR_CHECKED}}>
+                      <span>🤝 <strong>Öğrenci ve Genç Mezunlara Mentorluk Desteği Vermek İstiyorum</strong></span>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="form-actions" style="margin-top: 28px; padding-top: 20px; border-top: 1px solid var(--border-subtle);">
+                  <a href="/login" class="btn btn-secondary">Zaten Hesabım Var (Giriş Yap)</a>
+                  <button type="submit" class="btn btn-primary">Kaydı Tamamla &rarr;</button>
+                </div>
+              </form>
+            </div>
+
+            <!-- Sağ Kolon: Bilgilendirme -->
+            <div style="display: flex; flex-direction: column; gap: 20px;">
+              <div class="card">
+                <h3 class="card-title" style="font-size: 1.05rem; margin-bottom: 12px;">🎓 Neden Kayıt Olmalısınız?</h3>
+                <ul style="list-style: none; display: flex; flex-direction: column; gap: 12px; font-size: 0.88rem; color: var(--text-regular);">
+                  <li>🏛️ <strong>Geniş Mezun Ağı:</strong> Türkiye'nin en köklü üniversitesinin küresel mezun ağına erişin.</li>
+                  <li>💼 <strong>Özel Kariyer Fırsatları:</strong> Yalnızca İÜ mezunlarına ve öğrencilerine açık ilanları inceleyin.</li>
+                  <li>🤝 <strong>Mentorluk Desteği:</strong> Deneyimli mezunlardan rehberlik alın veya genç mezunlara mentorluk yapın.</li>
+                  <li>📢 <strong>Kampüs Etkinlikleri:</strong> Beyazıt buluşmaları, akademik kongreler ve seminerlerden anında haberdar olun.</li>
+                </ul>
+              </div>
+
+              <div class="card" style="background: var(--surface-input);">
+                <h4 style="font-size: 0.92rem; font-weight: 700; color: var(--text-primary); margin-bottom: 8px;">📋 Kayıt Kuralları &bull; Doğrulama</h4>
+                <ul style="list-style: none; display: flex; flex-direction: column; gap: 6px; font-size: 0.82rem; color: var(--text-muted);">
+                  <li><code>USR-R1</code> E-posta adresi sistemde benzersiz olmalıdır.</li>
+                  <li><code>USR-R2</code> Geçerli bir mezuniyet yılı girilmelidir (1923–2035).</li>
+                  <li><code>AUTH-P1</code> Şifre en az 8 karakter uzunluğunda olmalıdır.</li>
+                </ul>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </main>
+
+      <footer class="app-footer">
+        <div class="app-footer-inner">
+          <div>&copy; 2026 İstanbul Üniversitesi Mezun Takip Sistemi &bull; Kuruluş 1453</div>
+          <div class="footer-nav">
+            <a href="/">Ana Sayfa</a>
+            <a href="/users">Mezunlar</a>
+            <a href="/announcements">Duyurular</a>
+            <a href="/jobs">Kariyer</a>
+            <a href="/login">Giriş Yap</a>
+            <a href="/about">Hakkında</a>
+          </div>
+        </div>
+      </footer>
     </div>
   </div>
 
-  <!-- Main Sticky Navigation -->
-  <header class="main-nav">
-    <div class="wrapper nav-container">
-      <a href="/" class="brand-logo">
-        <div class="logo-emblem">🎓</div>
-        <div class="brand-text">
-          <span class="brand-title">Alumni Tracking System</span>
-          <span class="brand-subtitle">İstanbul Üniversitesi &bull; Mezun Portalı</span>
-        </div>
-      </a>
-      <nav>
-        <ul class="nav-links">
-          <li><a href="/" class="nav-link">Home</a></li>
-          <li><a href="/users" class="nav-link">Alumni Directory</a></li>
-          <li><a href="/register" class="nav-link active">➕ Register</a></li>
-          <li><a href="/login" class="nav-link">🔑 Login</a></li>
-          <li><a href="/announcements" class="nav-link">Announcements</a></li>
-          <li><a href="/jobs" class="nav-link">Job Board</a></li>
-          <li><a href="/applications" class="nav-link">Applications</a></li>
-          <li><a href="/api/swagger" class="nav-link nav-cta">Swagger Docs ⚡</a></li>
-        </ul>
-      </nav>
-    </div>
-  </header>
-
-  <!-- Page Banner -->
-  <section class="page-banner">
-    <div class="wrapper">
-      <span class="badge">✨ Member Onboarding &bull; RBAC Role Assignment (USR-R1..USR-R7)</span>
-      <h1>🎓 Register for the Istanbul University Network</h1>
-      <p class="subtitle">Create your verified member account to connect with fellow graduates, post or apply for career opportunities, and participate in university mentorship.</p>
-    </div>
-  </section>
-
-  <!-- Main Content -->
-  <main class="main-content">
-    <div class="wrapper">
-
-      {{MESSAGE}}
-
-      <div class="register-layout">
-        <!-- Main Registration Form Card -->
-        <div class="form-card">
-          <form action="/register" method="POST" id="register-form">
-
-            <!-- Step 1: Role Selection -->
-            <div class="section-step">
-              <div class="step-header">
-                <span class="step-num">1</span>
-                <h2 class="step-title">Select Your System Role</h2>
-              </div>
-              <p class="step-desc">Choose the role that represents your current relationship with Istanbul University (governed by <code>USR-R3</code> &amp; <code>USR-R4</code>).</p>
-
-              <div class="role-cards" id="role-cards">
-                <div class="role-card active" data-role="alumni">
-                  <span class="r-icon">🎓</span>
-                  <span class="r-name">Alumni (Mezun)</span>
-                  <span class="r-sub">Graduated member. Post jobs, apply to roles &amp; mentor students.</span>
-                </div>
-                <div class="role-card" data-role="student">
-                  <span class="r-icon">🎒</span>
-                  <span class="r-name">Current Student</span>
-                  <span class="r-sub">Enrolled student. Apply for internships, entry roles &amp; connect.</span>
-                </div>
-                <div class="role-card" data-role="employer">
-                  <span class="r-icon">💼</span>
-                  <span class="r-name">Employer Partner</span>
-                  <span class="r-sub">Recruiter or partner company hiring Istanbul University talent.</span>
-                </div>
-              </div>
-
-              <div class="form-group" style="margin-bottom:0;">
-                <label for="role">Selected Account Role *</label>
-                <select id="role" name="role" required>
-                  <option value="alumni" {{ROLE_ALUMNI_SELECTED}}>alumni — Verified Graduate (Mezun - Default)</option>
-                  <option value="student" {{ROLE_STUDENT_SELECTED}}>student — Current Undergraduate / Graduate Student (Mevcut Öğrenci)</option>
-                  <option value="employer" {{ROLE_EMPLOYER_SELECTED}}>employer — Corporate Recruiter / Hiring Partner (İşveren)</option>
-                </select>
-              </div>
-            </div>
-
-            <!-- Step 2: Personal Identity & Credentials -->
-            <div class="section-step">
-              <div class="step-header">
-                <span class="step-num">2</span>
-                <h2 class="step-title">Personal Identity &amp; Credentials</h2>
-              </div>
-              <p class="step-desc">Your email address is normalized and uniquely indexed under <code>USR-R1</code>.</p>
-
-              <div class="form-grid">
-                <div class="form-group">
-                  <label for="name">Full Name *</label>
-                  <input type="text" id="name" name="name" minlength="2" maxlength="120" value="{{FORM_NAME}}" placeholder="e.g. Ahmet Yılmaz" required />
-                  <span class="field-hint">Min 2, max 120 characters</span>
-                </div>
-
-                <div class="form-group">
-                  <label for="email">Email Address *</label>
-                  <input type="email" id="email" name="email" maxlength="255" value="{{FORM_EMAIL}}" placeholder="e.g. ahmet.yilmaz@alumni.edu" required />
-                  <span class="field-hint">Stored trimmed &amp; lowercased (RFC 5322)</span>
-                </div>
-
-                <div class="form-group">
-                  <label for="password">Password *</label>
-                  <input type="password" id="password" name="password" minlength="8" placeholder="At least 8 characters" required />
-                  <div class="password-meter"><div class="password-meter-bar" id="pwd-meter-bar"></div></div>
-                  <span class="field-hint" id="pwd-strength-text">Minimum 8 characters</span>
-                </div>
-
-                <div class="form-group">
-                  <label for="confirmPassword">Confirm Password *</label>
-                  <input type="password" id="confirmPassword" name="confirmPassword" minlength="8" placeholder="Re-enter your password" required />
-                  <span class="field-hint" id="pwd-match-text">Must match password</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- Step 3: Academic Background -->
-            <div class="section-step">
-              <div class="step-header">
-                <span class="step-num">3</span>
-                <h2 class="step-title">Istanbul University Academic Affiliation</h2>
-              </div>
-              <p class="step-desc">Specify your faculty/department and graduation cohort year (<code>USR-R2</code>: 1900–2100).</p>
-
-              <div class="form-grid">
-                <div class="form-group">
-                  <label for="department">Faculty / Academic Department *</label>
-                  <input type="text" id="department" name="department" list="iu-departments" minlength="2" maxlength="150" value="{{FORM_DEPARTMENT}}" placeholder="e.g. Computer Engineering" required />
-                  <datalist id="iu-departments">
-                    <option value="Computer Engineering"></option>
-                    <option value="Software Engineering"></option>
-                    <option value="Electrical & Electronics Engineering"></option>
-                    <option value="Industrial Engineering"></option>
-                    <option value="Faculty of Law (Hukuk Fakültesi)"></option>
-                    <option value="Istanbul Faculty of Medicine (İstanbul Tıp)"></option>
-                    <option value="Faculty of Economics (İktisat Fakültesi)"></option>
-                    <option value="Faculty of Science (Fen Fakültesi)"></option>
-                    <option value="Faculty of Letters (Edebiyat Fakültesi)"></option>
-                    <option value="Faculty of Communication (İletişim)"></option>
-                    <option value="Architecture"></option>
-                  </datalist>
-                </div>
-
-                <div class="form-group">
-                  <label for="graduationYear" id="grad-year-label">Graduation Year (Cohort) *</label>
-                  <input type="number" id="graduationYear" name="graduationYear" min="1900" max="2100" value="{{FORM_GRADUATION_YEAR}}" placeholder="e.g. 2024" required />
-                  <span class="field-hint">Valid cohort bounds: 1900–2100</span>
-                </div>
-
-                <div class="form-group full-width">
-                  <label for="studentNumber">Student / Diploma Registration Number (Optional)</label>
-                  <input type="text" id="studentNumber" name="studentNumber" maxlength="40" value="{{FORM_STUDENT_NUMBER}}" placeholder="e.g. 0301200042 (Accelerates YÖKSİS / Alumni Office verification)" />
-                </div>
-              </div>
-            </div>
-
-            <!-- Step 4: Professional Profile & Mentorship -->
-            <div class="section-step">
-              <div class="step-header">
-                <span class="step-num">4</span>
-                <h2 class="step-title">Career Profile &amp; Mentorship</h2>
-              </div>
-              <p class="step-desc">Optional career details help connect you with hiring opportunities and student mentees.</p>
-
-              <div class="form-grid">
-                <div class="form-group">
-                  <label for="title">Current Professional Title / Headline</label>
-                  <input type="text" id="title" name="title" maxlength="150" value="{{FORM_TITLE}}" placeholder="e.g. Senior Backend Engineer" />
-                </div>
-
-                <div class="form-group">
-                  <label for="company">Current Company / Organization</label>
-                  <input type="text" id="company" name="company" maxlength="150" value="{{FORM_COMPANY}}" placeholder="e.g. TechCorp Innovations" />
-                </div>
-
-                <div class="form-group full-width">
-                  <label for="linkedinUrl">LinkedIn / Portfolio URL</label>
-                  <input type="url" id="linkedinUrl" name="linkedinUrl" maxlength="300" value="{{FORM_LINKEDIN_URL}}" placeholder="https://linkedin.com/in/your-profile" />
-                </div>
-              </div>
-
-              <div class="checkbox-box">
-                <input type="checkbox" id="isMentor" name="isMentor" value="true" {{FORM_IS_MENTOR_CHECKED}} />
-                <label for="isMentor">
-                  <strong>🤝 Volunteer as an Istanbul University Career Mentor</strong><br>
-                  <span style="font-size:0.8rem; color:#475569;">Allow current students and recent graduates to discover your profile for career guidance and resume feedback.</span>
-                </label>
-              </div>
-
-              <div class="checkbox-box">
-                <input type="checkbox" id="termsAccepted" name="termsAccepted" value="true" checked required />
-                <label for="termsAccepted">
-                  <strong>🔒 KVKK &amp; Community Code of Conduct *</strong><br>
-                  <span style="font-size:0.8rem; color:#475569;">I confirm my affiliation with Istanbul University and agree to the ethical data governance guidelines.</span>
-                </label>
-              </div>
-            </div>
-
-            <div class="submit-bar">
-              <a href="/users" style="color:#475569; text-decoration:none; font-size:0.9rem; font-weight:600;">← Browse Alumni Directory</a>
-              <button type="submit" class="btn-primary">🚀 Complete Registration</button>
-            </div>
-          </form>
-        </div>
-
-        <!-- Right Sidebar: Role Permissions & DDD Rules -->
-        <aside class="side-panel">
-          <div class="info-card">
-            <h3>🛡️ Role Capabilities (RBAC)</h3>
-            <ul class="role-badge-list">
-              <li class="role-badge-item">
-                <strong>🎓 Alumni (Mezun — Default)</strong>
-                <p>Full directory profile, publish career opportunities (<code>POST /jobs</code>), evaluate candidates applying to your jobs, apply to peer postings, and mentor students.</p>
-              </li>
-              <li class="role-badge-item">
-                <strong>🎒 Current Student (Mevcut Öğrenci)</strong>
-                <p>Explore alumni mentors, apply to active internships and entry-level jobs (<code>POST /applications</code>), and manage your application dossier.</p>
-              </li>
-              <li class="role-badge-item">
-                <strong>💼 Employer Partner (İşveren)</strong>
-                <p>Publish and manage corporate job openings, review applicant CVs (<code>/jobs/:id/applications</code>), and update candidate evaluation statuses.</p>
-              </li>
-            </ul>
-          </div>
-
-          <div class="info-card">
-            <h3>📋 Validation Rules (ddd.md)</h3>
-            <ul class="rule-list">
-              <li><code>USR-R1</code> Case-insensitive unique RFC 5322 email address.</li>
-              <li><code>USR-R2</code> Graduation year integer within <code>1900..2100</code>.</li>
-              <li><code>USR-R3</code> Canonical role enum assignment (defaults to <code>alumni</code>).</li>
-              <li><code>USR-R4</code> Self-escalation to <code>moderator</code> or <code>admin</code> is strictly blocked (<code>403 Forbidden</code>).</li>
-              <li><code>USR-R7</code> Accounts initialize in <code>active</code> state upon validation.</li>
-            </ul>
-          </div>
-        </aside>
-      </div>
-
-    </div>
-  </main>
-
-  <footer class="main-footer">
-    <div class="wrapper footer-inner">
-      <div>&copy; 2026 Istanbul University Alumni Tracking System &bull; Founded 1453</div>
-      <div><a href="/users" style="color:#94a3b8; text-decoration:none;">Alumni Directory (/users)</a></div>
-    </div>
-  </footer>
-
   <script>
     (function() {
-      const roleSelect = document.getElementById('role');
-      const roleCards = document.querySelectorAll('#role-cards .role-card');
-      const gradLabel = document.getElementById('grad-year-label');
-
-      function syncRoleUI(selectedRole) {
-        roleCards.forEach(function(card) {
-          const r = card.getAttribute('data-role');
-          if (r === selectedRole) {
-            card.classList.add('active');
-          } else {
-            card.classList.remove('active');
-          }
-        });
-        if (gradLabel) {
-          gradLabel.textContent = selectedRole === 'student'
-            ? 'Expected Graduation Year *'
-            : 'Graduation Year (Cohort) *';
-        }
-      }
-
-      roleCards.forEach(function(card) {
-        card.addEventListener('click', function() {
-          const r = card.getAttribute('data-role');
-          if (roleSelect && r) {
-            roleSelect.value = r;
-            syncRoleUI(r);
-          }
-        });
-      });
-
-      if (roleSelect) {
-        syncRoleUI(roleSelect.value);
-        roleSelect.addEventListener('change', function(e) {
-          syncRoleUI(e.target.value);
+      const toggleBtn = document.getElementById('sidebarToggleBtn');
+      const sidebar = document.getElementById('appSidebar');
+      if (toggleBtn && sidebar) {
+        toggleBtn.addEventListener('click', function() {
+          sidebar.classList.toggle('sidebar-collapsed');
         });
       }
-
-      // Live password strength & match indicator
-      const pwdInput = document.getElementById('password');
-      const confirmInput = document.getElementById('confirmPassword');
-      const meterBar = document.getElementById('pwd-meter-bar');
-      const strengthText = document.getElementById('pwd-strength-text');
-      const matchText = document.getElementById('pwd-match-text');
-
-      function checkPassword() {
-        const val = pwdInput ? pwdInput.value : '';
-        let score = 0;
-        if (val.length >= 8) score += 40;
-        if (/[A-Z]/.test(val) && /[a-z]/.test(val)) score += 25;
-        if (/\d/.test(val)) score += 20;
-        if (/[^A-Za-z0-9]/.test(val)) score += 15;
-
-        if (meterBar) {
-          meterBar.style.width = Math.min(100, score) + '%';
-          meterBar.style.background = score < 40 ? '#ef4444' : (score < 75 ? '#f59e0b' : '#10b981');
-        }
-        if (strengthText) {
-          if (!val) strengthText.textContent = 'Minimum 8 characters';
-          else if (val.length < 8) strengthText.textContent = 'Too short (' + val.length + '/8 chars)';
-          else if (score < 75) strengthText.textContent = 'Good password strength';
-          else strengthText.textContent = 'Strong password ✓';
-        }
-        if (confirmInput && matchText && confirmInput.value) {
-          if (confirmInput.value === val) {
-            matchText.textContent = 'Passwords match ✓';
-            matchText.style.color = '#059669';
-          } else {
-            matchText.textContent = 'Passwords do not match';
-            matchText.style.color = '#dc2626';
-          }
-        }
-      }
-
-      if (pwdInput) pwdInput.addEventListener('input', checkPassword);
-      if (confirmInput) confirmInput.addEventListener('input', checkPassword);
     })();
   </script>
 </body>

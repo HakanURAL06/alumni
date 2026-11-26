@@ -1,184 +1,74 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{{NAME}} — Alumni Profile (View Layer)</title>
+  <link rel="stylesheet" href="/css/portal.css">
   <style>
-    :root {
-      --iu-navy-950: #020617;
-      --iu-navy-900: #0f172a;
-      --iu-navy-800: #1e293b;
-      --iu-cobalt-600: #2563eb;
-      --surface-canvas: #f8fafc;
-      --surface-card: #ffffff;
-      --surface-subtle: #f1f5f9;
-      --border-subtle: #e2e8f0;
-      --text-primary: #0f172a;
-      --text-secondary: #475569;
-      --text-muted: #94a3b8;
-      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08);
-      --radius-sm: 6px;
-      --radius-md: 10px;
-      --radius-lg: 16px;
-      --radius-full: 9999px;
-    }
-
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      color: var(--text-primary);
-      background: var(--surface-canvas);
-      line-height: 1.55;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      -webkit-font-smoothing: antialiased;
-    }
-
-    .wrapper { max-width: 1040px; margin: 0 auto; padding: 0 24px; width: 100%; }
-
-    .top-bar {
-      background: var(--iu-navy-950);
-      color: var(--text-muted);
-      font-size: 0.8rem;
-      padding: 7px 0;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    }
-    .top-bar-inner { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
-    .status-indicator { display: inline-flex; align-items: center; gap: 6px; color: #4ade80; font-weight: 600; }
-    .status-dot { width: 7px; height: 7px; background: #4ade80; border-radius: 50%; }
-    .top-bar a { color: #cbd5e1; text-decoration: none; }
-
-    header.main-nav {
-      background: rgba(15, 23, 42, 0.95);
-      backdrop-filter: blur(12px);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    }
-    .nav-container { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; gap: 16px; }
-    .brand-logo { display: flex; align-items: center; gap: 12px; text-decoration: none; color: #ffffff; }
-    .logo-emblem {
-      width: 42px;
-      height: 42px;
-      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-      border-radius: var(--radius-md);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.4rem;
-    }
-    .brand-text { display: flex; flex-direction: column; }
-    .brand-title { font-size: 1.15rem; font-weight: 850; color: #ffffff; line-height: 1.2; }
-    .brand-subtitle { font-size: 0.72rem; color: var(--text-muted); font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
-    .nav-links { display: flex; align-items: center; gap: 6px; list-style: none; flex-wrap: wrap; }
-    .nav-link { color: #cbd5e1; text-decoration: none; font-size: 0.88rem; font-weight: 500; padding: 8px 14px; border-radius: var(--radius-sm); }
-    .nav-link:hover { color: #ffffff; background: rgba(255, 255, 255, 0.08); }
-    .nav-link.active { color: #38bdf8; background: rgba(56, 189, 248, 0.12); font-weight: 600; }
-
-    main.main-content { flex: 1; padding: 36px 0 64px; }
-
-    .breadcrumb {
-      font-size: 0.85rem;
-      color: var(--text-secondary);
-      margin-bottom: 20px;
-      display: flex;
-      gap: 8px;
-      align-items: center;
-    }
-    .breadcrumb a { color: var(--iu-cobalt-600); text-decoration: none; font-weight: 600; }
-    .breadcrumb a:hover { text-decoration: underline; }
-
-    .profile-hero {
-      background: linear-gradient(135deg, #0f172a 0%, #1e293b 60%, #1e3a8a 100%);
+    .profile-hero-card {
+      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
       color: #ffffff;
       border-radius: var(--radius-lg);
-      padding: 32px;
+      padding: 28px 32px;
       margin-bottom: 24px;
+      box-shadow: var(--shadow-md);
       display: flex;
       align-items: center;
       gap: 24px;
       flex-wrap: wrap;
-      box-shadow: var(--shadow-md);
     }
-    .avatar-circle {
-      width: 76px;
-      height: 76px;
+    .profile-avatar-circle {
+      width: 80px;
+      height: 80px;
       border-radius: 50%;
-      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-      border: 3px solid rgba(255, 255, 255, 0.25);
+      background: linear-gradient(135deg, #1d8cf8 0%, #007bff 100%);
+      border: 3px solid rgba(255, 255, 255, 0.2);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 2rem;
+      font-size: 2.2rem;
       flex-shrink: 0;
+      box-shadow: 0 4px 12px rgba(29, 140, 248, 0.4);
     }
-    .badge {
-      display: inline-block;
-      background: rgba(56, 189, 248, 0.15);
-      border: 1px solid rgba(56, 189, 248, 0.35);
-      color: #38bdf8;
-      padding: 4px 12px;
-      border-radius: var(--radius-full);
-      font-size: 0.78rem;
-      font-weight: 700;
-      margin-bottom: 8px;
-    }
-    .profile-hero h1 {
-      font-size: 1.95rem;
+    .profile-hero-card h1 {
+      font-size: 1.85rem;
       font-weight: 850;
       color: #ffffff;
       margin-bottom: 4px;
+      line-height: 1.2;
     }
-    .profile-hero .meta-line {
+    .profile-hero-meta {
       color: #cbd5e1;
-      font-size: 0.95rem;
+      font-size: 0.92rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
     }
-
     .profile-grid {
       display: grid;
-      grid-template-columns: 1.4fr 1fr;
+      grid-template-columns: 1.35fr 1fr;
       gap: 24px;
     }
-
-    .card {
-      background: var(--surface-card);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-lg);
-      padding: 28px;
-      box-shadow: var(--shadow-sm);
-    }
-    .card h2 {
-      font-size: 1.15rem;
-      font-weight: 800;
-      color: var(--text-primary);
-      margin-bottom: 16px;
-      padding-bottom: 12px;
-      border-bottom: 1px solid var(--border-subtle);
-    }
-
-    .details {
+    .detail-list {
       display: flex;
       flex-direction: column;
-      gap: 14px;
+      gap: 12px;
       margin-bottom: 24px;
     }
     .detail-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 10px 14px;
-      background: var(--surface-canvas);
+      padding: 11px 16px;
+      background: var(--surface-input);
       border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-md);
-      font-size: 0.94rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.92rem;
     }
     .detail-row strong {
-      color: var(--text-secondary);
+      color: var(--text-muted);
       font-weight: 600;
     }
     .detail-row span, .detail-row a {
@@ -186,177 +76,200 @@
       color: var(--text-primary);
       text-decoration: none;
     }
-    .detail-row a { color: var(--iu-cobalt-600); }
-
-    .actions {
+    .detail-row a { color: var(--iu-primary); }
+    .rel-card {
+      background: var(--surface-input);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 16px;
+      margin-bottom: 14px;
+    }
+    .rel-card h3 {
+      font-size: 0.96rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 6px;
+    }
+    .rel-card p {
+      font-size: 0.84rem;
+      color: var(--text-regular);
+      margin-bottom: 12px;
+      line-height: 1.45;
+    }
+    .rel-link {
+      font-size: 0.84rem;
+      font-weight: 700;
+      color: var(--iu-primary);
+      text-decoration: none;
+    }
+    .rel-link:hover { text-decoration: underline; }
+    .actions-bar {
       display: flex;
       gap: 10px;
       align-items: center;
       flex-wrap: wrap;
-      padding-top: 16px;
+      padding-top: 18px;
       border-top: 1px solid var(--border-subtle);
     }
-    .btn {
-      padding: 10px 18px;
-      border-radius: var(--radius-sm);
-      font-size: 0.88rem;
-      font-weight: 600;
-      text-decoration: none;
-      cursor: pointer;
-      border: 1px solid transparent;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: all 0.15s ease;
-    }
-    .btn-edit { background: #fffbeb; color: #b45309; border-color: #fde68a; }
-    .btn-edit:hover { background: #d97706; color: #ffffff; }
-    .btn-delete { background: #fff1f2; color: #be123c; border-color: #fecdd3; }
-    .btn-delete:hover { background: #e11d48; color: #ffffff; }
-    .btn-secondary { background: var(--surface-subtle); color: var(--text-secondary); border-color: var(--border-subtle); }
-    .btn-secondary:hover { background: var(--border-subtle); color: var(--text-primary); }
-
-    .rel-card {
-      background: var(--surface-canvas);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-md);
-      padding: 16px;
-      margin-bottom: 14px;
-    }
-    .rel-card h3 { font-size: 0.98rem; font-weight: 700; margin-bottom: 6px; color: var(--text-primary); }
-    .rel-card p { font-size: 0.84rem; color: var(--text-secondary); margin-bottom: 12px; }
-    .rel-link {
-      display: inline-block;
-      font-size: 0.84rem;
-      font-weight: 700;
-      color: var(--iu-cobalt-600);
-      text-decoration: none;
-    }
-    .rel-link:hover { text-decoration: underline; }
-
-    footer.main-footer {
-      background: var(--iu-navy-950);
-      color: var(--text-muted);
-      border-top: 1px solid rgba(255, 255, 255, 0.08);
-      padding: 28px 0;
-      margin-top: auto;
-      font-size: 0.84rem;
-    }
-    .footer-inner { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; }
-
-    @media (max-width: 768px) {
+    @media (max-width: 900px) {
       .profile-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
 
-  <div class="top-bar">
-    <div class="wrapper top-bar-inner">
-      <div class="status-indicator">
-        <span class="status-dot"></span>
-        <span>Istanbul University &bull; Verified Graduate Profile #{{ID}}</span>
+  <div class="app-layout">
+    <!-- Sol Menü (Sidebar) -->
+    <aside class="app-sidebar" id="appSidebar">
+      <div class="sidebar-header">
+        <a href="/" class="sidebar-brand">
+          <img src="/images/iu-logo.svg" alt="İstanbul Üniversitesi Logo" class="brand-logo-img">
+          <div class="brand-titles">
+            <span class="brand-main-title">İSTANBUL ÜNİVERSİTESİ</span>
+            <span class="brand-sub-title">Mezun Takip Sistemi</span>
+          </div>
+        </a>
       </div>
-      <div><a href="/api/users/{{ID}}">JSON Profile (/api/users/{{ID}}) &rarr;</a></div>
+      <div class="sidebar-nav-container">
+        {{DYNAMIC_NAV_LINKS}}
+      </div>
+      <div class="sidebar-footer">
+        <div class="sidebar-footer-links">
+          <a href="/about">Hakkında</a> &bull;
+          <a href="/api/swagger">Swagger</a>
+        </div>
+        <div class="sidebar-badge">İÜ AKSİS &bull; ÖYS 1453</div>
+      </div>
+    </aside>
+
+    <!-- Ana İçerik Alanı -->
+    <div class="app-main-wrapper">
+      <header class="app-header">
+        <div class="header-left">
+          <button class="sidebar-toggle-btn" id="sidebarToggleBtn" aria-label="Menüyü Aç/Kapat" title="Menü">☰</button>
+          <div class="header-title-box">
+            <h1 class="page-header-title">{{NAME}} (#{{ID}})</h1>
+            <span class="page-header-desc">İstanbul Üniversitesi Doğrulanmış Mezun ve Üye Profili</span>
+          </div>
+        </div>
+        <div class="header-right">
+          {{DYNAMIC_TOP_BAR_RIGHT}}
+        </div>
+      </header>
+
+      <main class="app-content-body">
+        <div class="content-container">
+
+          <!-- Ekmek Kırıntısı (Breadcrumbs) -->
+          <nav class="portal-breadcrumb" aria-label="Breadcrumb" style="margin-bottom: 20px;">
+            <a href="/">Ana Sayfa</a>
+            <span>/</span>
+            <a href="/users">Alumni Directory</a>
+            <span>/</span>
+            <span style="color: var(--text-primary); font-weight: 600;">{{NAME}} (#{{ID}})</span>
+          </nav>
+
+          {{PERSONAL_WORKSPACE_BANNER}}
+
+          <!-- Profil Başlık Kartı (Hero) -->
+          <div class="profile-hero-card">
+            <div class="profile-avatar-circle">{{AVATAR_ICON}}</div>
+            <div style="flex: 1;">
+              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap;">
+                <span class="badge" style="margin: 0; background: rgba(29, 140, 248, 0.2); color: #93c5fd; border: 1px solid rgba(29, 140, 248, 0.4);">MVC View Layer &bull; Detail View</span>
+                {{BADGES_ROW}}
+              </div>
+              <h1>{{NAME}}</h1>
+              <div class="profile-hero-meta">
+                <span>🎓 {{DEPARTMENT}}</span>
+                <span>&bull;</span>
+                <span>Mezuniyet: {{GRADUATION_YEAR}}</span>
+                <span>&bull;</span>
+                <span>İstanbul Üniversitesi</span>
+              </div>
+              {{HEADLINE_INFO}}
+            </div>
+          </div>
+
+          <!-- Profil 2 Sütunlu Grid Düzeni -->
+          <div class="profile-grid">
+            
+            <!-- Sol Kolon: Akademik ve İletişim Bilgileri -->
+            <div class="card">
+              <div class="card-header">
+                <h2 class="card-title">📋 Akademik ve İletişim Dosyası</h2>
+                <p class="card-subtitle">Kullanıcının sistemde kayıtlı resmi akademik kimlik ve iletişim bilgileri.</p>
+              </div>
+
+              <div class="detail-list">
+                <div class="detail-row">
+                  <strong>Kayıt ID:</strong>
+                  <span>#{{ID}}</span>
+                </div>
+                <div class="detail-row">
+                  <strong>Sistem Rolü:</strong>
+                  <span>{{ROLE_LABEL}}</span>
+                </div>
+                <div class="detail-row">
+                  <strong>Hesap Durumu:</strong>
+                  <span>{{STATUS_LABEL}}</span>
+                </div>
+                <div class="detail-row">
+                  <strong>Fakülte / Bölüm:</strong>
+                  <span>{{DEPARTMENT}}</span>
+                </div>
+                <div class="detail-row">
+                  <strong>Mezuniyet Yılı:</strong>
+                  <span>{{GRADUATION_YEAR}}</span>
+                </div>
+                <div class="detail-row">
+                  <strong>E-posta Adresi:</strong>
+                  <a href="mailto:{{EMAIL}}">{{EMAIL}}</a>
+                </div>
+                {{EXTRA_DETAILS}}
+              </div>
+
+              <div class="actions-bar">
+                {{ACTIONS_HTML}}
+              </div>
+            </div>
+
+            <!-- Sağ Kolon: Rol Bazlı Aktiviteler -->
+            <div class="card">
+              {{ROLE_ACTIVITY_CARD}}
+            </div>
+
+          </div>
+
+        </div>
+      </main>
+
+      <footer class="app-footer">
+        <div class="app-footer-inner">
+          <div>&copy; 2026 İstanbul Üniversitesi Mezun Takip Sistemi &bull; Kuruluş 1453</div>
+          <div class="footer-nav">
+            <a href="/">Ana Sayfa</a>
+            <a href="/users">Mezunlar</a>
+            <a href="/announcements">Duyurular</a>
+            <a href="/jobs">Kariyer</a>
+            <a href="/applications">Başvurular</a>
+            <a href="/about">Hakkında</a>
+          </div>
+        </div>
+      </footer>
     </div>
   </div>
 
-  <header class="main-nav">
-    <div class="wrapper nav-container">
-      <a href="/" class="brand-logo">
-        <div class="logo-emblem">🎓</div>
-        <div class="brand-text">
-          <span class="brand-title">Alumni Tracking System</span>
-          <span class="brand-subtitle">İstanbul Üniversitesi &bull; Mezun Portalı</span>
-        </div>
-      </a>
-      <nav>
-        <ul class="nav-links">
-          <li><a href="/" class="nav-link">Home</a></li>
-          <li><a href="/users" class="nav-link active">Alumni Directory</a></li>
-          <li><a href="/announcements" class="nav-link">Announcements</a></li>
-          <li><a href="/jobs" class="nav-link">Job Board</a></li>
-          <li><a href="/applications" class="nav-link">Applications</a></li>
-          <li><a href="/about" class="nav-link">About</a></li>
-        </ul>
-      </nav>
-    </div>
-  </header>
-
-  <main class="main-content">
-    <div class="wrapper">
-
-      <div class="breadcrumb">
-        <a href="/">Home</a> <span>/</span>
-        <a href="/users">Alumni Directory</a> <span>/</span>
-        <span>{{NAME}} (#{{ID}})</span>
-      </div>
-
-      {{PERSONAL_WORKSPACE_BANNER}}
-
-      <div class="profile-hero">
-        <div class="avatar-circle">{{AVATAR_ICON}}</div>
-        <div style="flex: 1;">
-          <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px; flex-wrap:wrap;">
-            <span class="badge" style="margin:0;">MVC View Layer &bull; Detail View</span>
-            {{BADGES_ROW}}
-          </div>
-          <h1>{{NAME}}</h1>
-          <div class="meta-line">🎓 {{DEPARTMENT}} &bull; Class of {{GRADUATION_YEAR}} &bull; Istanbul University</div>
-          {{HEADLINE_INFO}}
-        </div>
-      </div>
-
-      <div class="profile-grid">
-        <div class="card">
-          <h2>📋 Academic &amp; Contact Dossier</h2>
-          <div class="details">
-            <div class="detail-row">
-              <strong>ID:</strong>
-              <span>#{{ID}}</span>
-            </div>
-            <div class="detail-row">
-              <strong>Role:</strong>
-              <span>{{ROLE_LABEL}}</span>
-            </div>
-            <div class="detail-row">
-              <strong>Account Status:</strong>
-              <span>{{STATUS_LABEL}}</span>
-            </div>
-            <div class="detail-row">
-              <strong>Department:</strong>
-              <span>{{DEPARTMENT}}</span>
-            </div>
-            <div class="detail-row">
-              <strong>Graduation Year:</strong>
-              <span>{{GRADUATION_YEAR}}</span>
-            </div>
-            <div class="detail-row">
-              <strong>Email:</strong>
-              <a href="mailto:{{EMAIL}}">{{EMAIL}}</a>
-            </div>
-            {{EXTRA_DETAILS}}
-          </div>
-
-          <div class="actions">
-            {{ACTIONS_HTML}}
-          </div>
-        </div>
-
-        <div class="card">
-          {{ROLE_ACTIVITY_CARD}}
-        </div>
-      </div>
-
-    </div>
-  </main>
-
-  <footer class="main-footer">
-    <div class="wrapper footer-inner">
-      <div>&copy; 2026 Istanbul University Alumni Tracking System &bull; Founded 1453</div>
-      <div><a href="/users" style="color:#94a3b8; text-decoration:none;">← Return to Alumni Directory</a></div>
-    </div>
-  </footer>
-
+  <script>
+    (function() {
+      const toggleBtn = document.getElementById('sidebarToggleBtn');
+      const sidebar = document.getElementById('appSidebar');
+      if (toggleBtn && sidebar) {
+        toggleBtn.addEventListener('click', function() {
+          sidebar.classList.toggle('sidebar-collapsed');
+        });
+      }
+    })();
+  </script>
 </body>
 </html>
